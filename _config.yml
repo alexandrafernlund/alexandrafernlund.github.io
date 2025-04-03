@@ -5,3 +5,4 @@ description:
 include:
   - assets/css/styles.css
   - index.html
+  - script.js
