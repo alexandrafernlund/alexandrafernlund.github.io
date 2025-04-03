@@ -6,12 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load responses.json BEFORE allowing input
     async function loadResponses() {
         try {
-            const response = await fetch('responses.json');
+            console.log("Loading responses...");
+            const response = await fetch('responses.json'); // Make sure the path is correct
             responses = await response.json();
             console.log("Bot responses loaded successfully.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
-            responses = {}; // Ensure it's still an object
+            responses = {}; // Ensure it's still an object in case of error
         }
     }
 
@@ -80,5 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Run functions on page load
     displayWelcomeMessage();
-    loadResponses(); // Load responses.json before interacting
+    loadResponses().then(() => {
+        console.log("Responses are ready to be used.");
+    });
 });
