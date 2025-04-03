@@ -1,3 +1,5 @@
 title: Alexandras Portfolio
 description: 
 theme: tactile
+css: 
+- /assets/css/styles.css
