@@ -44,18 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Get Bot Response (AFTER JSON is loaded)
-    async function loadResponses() {
-        try {
-            const response = await fetch('responses.json');
-            responses = await response.json();
-            console.log("Bot responses loaded successfully.");
-        } catch (error) {
-            console.error("Error loading responses.json:", error);
-            responses = {}; // Keep it an object to prevent errors
-        }
-    }
-
     // Match user input against multiple possible keys
     function getBotResponse(input) {
         input = input.toLowerCase();
@@ -73,8 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         return "I didn't understand that. Try asking about my portfolio or projects.";
-    }
-turn responses[input] || "I didn't understand that. Try 'portfolio' or 'projects'.";
     }
 
     // Handle user input (Wait for JSON to load)
@@ -94,5 +80,5 @@ turn responses[input] || "I didn't understand that. Try 'portfolio' or 'projects
 
     // Run functions on page load
     displayWelcomeMessage();
-    loadResponses();
+    loadResponses(); // Load responses.json
 });
