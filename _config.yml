@@ -1,5 +1,14 @@
 title: Alexandras Portfolio
 description: 
 theme: tactile
-css: 
-- /assets/css/styles.css
+
+
+# Manually include custom CSS
+plugins:
+  - jekyll-remote-theme
+
+markdown: kramdown
+
+# Custom CSS
+include:
+  - assets/css/styles.css
