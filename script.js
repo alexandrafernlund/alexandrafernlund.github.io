@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         input = input.toLowerCase();
 
         if (Object.keys(responses).length === 0) {
-            return "Responses are still loading... Please try again in a moment.";
+            return "I need to get my neurons working. Give me a second...";
         }
 
         // Check for keyword matches
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        return "I didn't understand that. Try asking about my portfolio or projects.";
+        return "I didn't understand that. Guess I have a bug in my code... Damn.";
     }
 
     // Handle user input (Wait for JSON to load)
