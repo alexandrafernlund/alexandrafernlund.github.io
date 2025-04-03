@@ -80,5 +80,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Run functions on page load
     displayWelcomeMessage();
-    loadResponses(); // Load responses.json
+    loadResponses(); // Load responses.json before interacting
 });
