@@ -1,7 +1,8 @@
 {
   "hello": "Hi!",
-  "how old are you": "I am 28 years old!",
-  "what is your name": "My name is Alexandra Fernlund.",
+  "hi": "Hello!",
+  "how old are you": "Glad you asked! I am 28 years old.",
+  "what is your name": "My name is Alexandra Fernlund. What's yours?'",
   "portfolio": "Check out my portfolio and projects on this site!",
   "projects": "I specialize in web development, using HTML, CSS, and JavaScript.",
   "skills": "I am skilled in JavaScript, React, and Node.js.",
