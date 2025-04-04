@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Check for greetings (e.g., "hi", "hello", "hey")
-        const greetingPatterns = [/hi/, /hello/, /hey/, /greetings/];
+        const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
             if (pattern.test(input)) {
                 return responses.greeting.text;  // Return greeting response
