@@ -18,8 +18,8 @@ body {
 /* Chatbot Terminal Section */
 #chat-terminal {
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 80%;
+    transform: translateX(-80%);
     width: 100%;
     height: 100%;
     background-color: #000;
@@ -107,14 +107,12 @@ body {
     }
 }
 
-/* This should NOT be inside @keyframes */
 @media (max-width: 768px) {
     #chat-terminal {
         width: 90%;
         bottom: 10px;
     }
 }
-
 
 .typing {
     color: #fff;
