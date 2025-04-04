@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const messages = [
             'Initializing terminal...',
             'Loading portfolio bot...',
-            'Ready. Type a question to start interacting!'
+            'Ready. Type a question to start interacting!',
+            'You can ask about my projects, technical skills, or any personal questions you are curious about.'
         ];
         let index = 0;
 
@@ -90,6 +91,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle user input (Wait for JSON to load)
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
+            const userName = userInput.value.trim();
+            userInput.value = ''; // Clear input
+            userContext.name = userName; // Store the name for future reference
+            displayMessage(`Nice to meet you, ${userName}!`, 'bot');
+            displayMessage("What can I help you with today?", 'bot');
+
             const userMessage = userInput.value;
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = ''; // Clear input immediately
