@@ -17,12 +17,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to display messages
-    function displayMessage(message, sender) {
+    function typeBotMessage(message) {
         const div = document.createElement('div');
-        div.classList.add(sender);
-        div.textContent = message;
+        div.classList.add('bot');
         output.appendChild(div);
-        output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
+        output.scrollTop = output.scrollHeight;
+
+        let index = 0;
+
+        function typeNextChar() {
+            if (index < message.length) {
+                div.textContent += message.charAt(index);
+                index++;
+
+                // Random delay between 20ms and 80ms
+                const delay = Math.floor(Math.random() * 60) + 20;
+                setTimeout(typeNextChar, delay);
+            }
+        }
+
+        typeNextChar();
     }
 
     // Welcome message animation
@@ -45,43 +59,65 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Match user input against multiple possible keys
     function getBotResponse(input) {
         input = input.toLowerCase();
 
         if (Object.keys(responses).length === 0) {
-            return "I need to get my neurons working. Give me a second...";
+            return "Responses are still loading... Please try again in a moment.";
         }
 
-        // Check for keyword matches
-        for (let key in responses) {
-            let possibleInputs = key.split("|"); // Split multiple patterns
-            if (possibleInputs.some(word => input.includes(word))) {
-                return responses[key]; // Return the matched response
+        for (let pattern in responses) {
+            let regex = new RegExp(pattern, "i"); // Convert JSON keys into regex
+            if (regex.test(input)) {
+                return responses[pattern]; // Return the matching response
             }
         }
 
-        return "I didn't understand that. Guess I have a bug in my code... Damn.";
+        return "I didn't understand that. Try asking about my portfolio or projects.";
     }
+
 
     // Handle user input (Wait for JSON to load)
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value;
             displayMessage(`> ${userMessage}`, 'user');
+            userInput.value = ''; // Clear input immediately
 
+            // Show typing indicator
+            const typingIndicator = displayBotTyping();
+
+            // Simulate delay, then show actual bot message
             setTimeout(() => {
+                typingIndicator.remove(); // Remove typing block
                 const botMessage = getBotResponse(userMessage);
-                displayMessage(botMessage, 'bot');
-            }, 500); // Typing delay for realism
-
-            userInput.value = ''; // Clear input
+                typeBotMessage(botMessage);
+            }, 800); // Adjust delay as you like
         }
     });
+
+    function displayBotTyping() {
+        const typing = document.createElement('div');
+        typing.classList.add('bot', 'typing');
+        typing.textContent = '|'; // Terminal-style cursor
+        output.appendChild(typing);
+        output.scrollTop = output.scrollHeight;
+        return typing;
+    }
 
     // Run functions on page load
     displayWelcomeMessage();
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
+
+    function displayBotTyping() {
+        const typing = document.createElement('div');
+        typing.classList.add('bot', 'typing');
+        typing.textContent = '|';
+        output.appendChild(typing);
+        output.scrollTop = output.scrollHeight;
+        return typing;
+    }
+
 });
