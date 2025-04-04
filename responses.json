@@ -1,24 +1,25 @@
 {
+  "greeting": {
+    "text": "Hello! How can I help you today?",
+    "category": "general"
+  },
+  "projects": {
+    "text": "She's got a variety of projects, including web development, AI, and more. Would you like to hear about one of them?",
+    "category": "portfolio"
+  },
+  "skills": {
+    "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
+    "category": "technical"
+  },
+  "work": {
+    "text": "She has worked on multiple projects, from personal websites to complex AI applications. Let me know if you'd like to explore any specific ones!",
+    "category": "portfolio"
+  },
   "name": {
     "text": "I'm Alexandra's bot. What's your name?",
     "setAwaitingName": true
   },
-  "hello": {
-    "text": "Hello, {{name}}! How can I help you today?"
-  },
-  "projects": {
-    "text": "I have a variety of projects in the portfolio. You can ask about her web development, AI work, and more! What would you like to know?"
-  },
-  "portfolio": {
-    "text": "The portfolio includes projects on web development, artificial intelligence, and more. Let me know if you’d like details about any of them!"
-  },
-  "skills": {
-    "text": "She is skilled in web development, AI, and problem-solving. She primarily uses JavaScript, Python, and frameworks like React. Let me know if you'd like more specifics!"
-  },
-  "default": {
-    "text": "I'm not sure about that. Could you ask something else, or perhaps inquire about my portfolio or projects?"
-  },
   "unknown": {
-    "text": "I didn’t quite get that. You can ask me about my projects, skills, or tell me about what you'd like to know."
+    "text": "Sorry, I didn’t catch that. Could you try again?"
   }
 }

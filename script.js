@@ -75,35 +75,43 @@ document.addEventListener('DOMContentLoaded', function () {
     function getBotResponse(input) {
         input = input.toLowerCase();
 
+        // Check if the responses.json has loaded
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
 
-        // Check if user is asking for their name
+        // Check for greetings (e.g., "hi", "hello", "hey")
+        const greetingPatterns = [/hi/, /hello/, /hey/, /greetings/];
+        for (let pattern of greetingPatterns) {
+            if (pattern.test(input)) {
+                return responses.greeting.text;  // Return greeting response
+            }
+        }
+
+        // Handle the case where the user is asking for the bot's name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true;
-            return "I'm Alexandra's bot. What's your name?";
+            return responses.name.text;
         }
 
-        // If we're expecting the user's name
+        // If the bot is waiting for the user's name
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Format name properly
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Capitalize name
             userContext.awaitingName = false;
-            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about her work or projects.`;
+            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about Alexandra's work or projects.`;
         }
 
-        // Keyword Matching
-        const keywords = ['name', 'projects', 'portfolio', 'skills', 'work'];
+        // Handle specific keyword matches
+        const keywords = ['projects', 'portfolio', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
-                const responseKey = keyword;
-                const response = responses[responseKey] || responses["default"];
+                const response = responses[keyword] || responses["default"];
                 return response.text.replace("{{name}}", userContext.name || "friend");
             }
         }
 
-        // Fallback if no matching response
-        return responses["unknown"].text;
+        // Fallback for unmatched input
+        return responses.unknown.text;
     }
 
     // Handle user input
