@@ -1,32 +1,41 @@
 document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
-    let responses = {}; // Empty at first, loads later
-    let userContext = {}; // Initialize userContext object to store user information like name
+    let responses = {};
+    let userContext = {};
 
-    // Load responses.json BEFORE allowing input
+    // Global function to show the terminal and hide the site
+    window.showTerminal = function () {
+        document.getElementById('chat-terminal').style.display = 'block';
+        document.getElementById('main-site').style.display = 'none';
+    };
+
+    // Global function to show the main site and hide the terminal
+    window.showMainSite = function () {
+        document.getElementById('chat-terminal').style.display = 'none';
+        document.getElementById('main-site').style.display = 'block';
+    };
+
     async function loadResponses() {
         try {
             console.log("Loading responses...");
-            const response = await fetch('responses.json'); // Make sure the path is correct
+            const response = await fetch('responses.json');
             responses = await response.json();
             console.log("Bot responses loaded successfully.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
-            responses = {}; // Ensure it's still an object in case of error
+            responses = {};
         }
     }
 
-    // Function to display messages
     function displayMessage(message, sender) {
         const div = document.createElement('div');
-        div.classList.add(sender); // Add class for styling (e.g., 'user' or 'bot')
+        div.classList.add(sender);
         div.textContent = message;
         output.appendChild(div);
-        output.scrollTop = output.scrollHeight; // Auto-scroll to the bottom
+        output.scrollTop = output.scrollHeight;
     }
 
-    // Function to type the bot's message
     function typeBotMessage(message) {
         const div = document.createElement('div');
         div.classList.add('bot');
@@ -39,8 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-
-                // Random delay between 20ms and 80ms
                 const delay = Math.floor(Math.random() * 60) + 20;
                 setTimeout(typeNextChar, delay);
             }
@@ -49,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();
     }
 
-    // Welcome message animation
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -64,51 +70,43 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < messages.length) {
                 displayMessage(messages[index], 'bot');
                 index++;
-                setTimeout(showNextMessage, 800); // Delayed typing effect
+                setTimeout(showNextMessage, 800);
             }
         }
 
         showNextMessage();
     }
 
-    // Get bot response based on user input
     function getBotResponse(input) {
         input = input.toLowerCase();
 
         if (input === "exit terminal") {
-            function showTerminal() {
-                document.getElementById('chat-terminal').style.display = 'none';
-                document.getElementById('main-site').style.display = 'block';
-            }
+            showMainSite();
+            return "Exiting terminal... Welcome to the main site!";
         }
 
-        // Check if the responses.json has loaded
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
 
-        // Check for greetings (e.g., "hi", "hello", "hey")
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
             if (pattern.test(input)) {
-                return responses.greeting.text;  // Return greeting response
+                return responses.greeting.text;
             }
         }
 
-        // Handle the case where the user is asking for the bot's name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true;
             return responses.name.text;
         }
 
-        // If the bot is waiting for the user's name
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Capitalize name
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1);
             userContext.awaitingName = false;
             return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about Alexandra's work or projects.`;
         }
 
-        // Handle specific keyword matches
         const keywords = ['projects', 'portfolio', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
@@ -117,41 +115,35 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Fallback for unmatched input
         return responses.unknown.text;
     }
 
-    // Handle user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
 
-            // Otherwise, display user message and show bot response
             displayMessage(`> ${userMessage}`, 'user');
-            userInput.value = ''; // Clear input immediately after capturing
+            userInput.value = '';
 
-            // Show typing indicator
             const typingIndicator = displayBotTyping();
 
-            // Simulate delay, then show actual bot message
             setTimeout(() => {
-                typingIndicator.remove(); // Remove typing block
+                typingIndicator.remove();
                 const botMessage = getBotResponse(userMessage);
-                typeBotMessage(botMessage); // Display bot message
-            }, 800); // Adjust delay as you like
+                typeBotMessage(botMessage);
+            }, 800);
         }
     });
 
     function displayBotTyping() {
         const typing = document.createElement('div');
         typing.classList.add('bot', 'typing');
-        typing.textContent = '|'; // Terminal-style cursor
+        typing.textContent = '|';
         output.appendChild(typing);
         output.scrollTop = output.scrollHeight;
         return typing;
     }
 
-    // Run functions on page load
     displayWelcomeMessage();
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
