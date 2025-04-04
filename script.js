@@ -108,14 +108,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
 
-            // If it's the user's first message, greet them and ask for their name
-            if (!userContext.name) {
-                userContext.name = userMessage; // Store the name
+            // Check if the bot is expecting the user's name
+            if (userContext.awaitingName) {
+                userContext.name = userMessage;
+                userContext.awaitingName = false;
                 displayMessage(`Nice to meet you, ${userContext.name}!`, 'bot');
                 displayMessage("What can I help you with today?", 'bot');
-                userInput.value = ''; // Clear input after greeting
-                return; // Stop further execution for now
+                userInput.value = '';
+                return;
             }
+
 
             // Otherwise, display user message and show bot response
             displayMessage(`> ${userMessage}`, 'user');
