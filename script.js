@@ -28,29 +28,37 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function displayMessage(message, sender) {
+    // Function to display message (character by character)
+    function typeMessage(message, sender) {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
         output.scrollTop = output.scrollHeight;
-        typeMessage(message, div);
-    }
 
-    function typeMessage(message, div) {
         let index = 0;
 
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20;  // Random delay for each character
-                setTimeout(typeNextChar, delay);
+                const delay = Math.floor(Math.random() * 60) + 20;  // Random delay for typing animation
+                setTimeout(typeNextChar, delay); // Calls itself for the next character
             }
         }
 
         typeNextChar(); // Start the typing effect
     }
 
+    // Function to display message in output container
+    function displayMessage(message, sender) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
+        output.scrollTop = output.scrollHeight;
+        typeMessage(message, sender);  // Call to type message character by character
+    }
+
+    // Display welcome message when the terminal is initialized
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -65,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < messages.length) {
                 displayMessage(messages[index], 'bot');
                 index++;
-                setTimeout(showNextMessage, 800);  // Wait before showing next message
+                setTimeout(showNextMessage, 800); // Wait before showing next message
             }
         }
 
@@ -113,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return responses.unknown.text;
     }
 
+    // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
@@ -125,11 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 typingIndicator.remove();
                 const botMessage = getBotResponse(userMessage);
-                displayMessage(botMessage, 'bot');
+                displayMessage(botMessage, 'bot');  // Display bot response with typing effect
             }, 800);
         }
     });
 
+    // Display bot typing indicator
     function displayBotTyping() {
         const typing = document.createElement('div');
         typing.classList.add('bot', 'typing');
