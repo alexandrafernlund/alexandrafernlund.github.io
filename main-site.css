@@ -39,28 +39,23 @@ section {
         margin: 0;
         color: #fff;
         font-family: "Orbitron", monospace;
-        animation: type 5s steps(40) 1s forwards, blink-caret 0.75s step-end infinite;
+        display: inline-block;
+        white-space: nowrap; /* Prevent wrapping */
+        border-right: 2px solid #fff; /* Simulate a cursor */
+        padding-right: 5px;
+        animation: blink-caret 0.75s step-end infinite; /* Blinking cursor animation */
     }
 
-        @keyframes type {
-            0% {
-                width: 0;
-            }
-
-            100% {
-                width: 100%;
-            }
+    /* Cursor blinking animation */
+    @keyframes blink-caret {
+        50% {
+            border-color: transparent;
         }
 
-        @keyframes blink-caret {
-            50% {
-                border-color: transparent;
-            }
-
-            100% {
-                border-color: #fff;
-            }
+        100% {
+            border-color: #fff;
         }
+    }
 
     .hero p {
         font-size: 1rem;

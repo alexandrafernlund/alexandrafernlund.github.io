@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();  // Start typing the first character
     }
 
-
     // Display the welcome message in the terminal
     function displayWelcomeMessage() {
         const messages = [
