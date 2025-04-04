@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Handle specific keyword matches
-        const keywords = ['projects', 'skills', 'work'];
+        const keywords = ['projects', 'portfolio', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
                 const response = responses[keyword] || responses["unknown"];
