@@ -75,6 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function getBotResponse(input) {
         input = input.toLowerCase();
 
+        if (input === "exit terminal") {
+            document.getElementById('chat-terminal').style.display = 'none';
+            document.getElementById('main-site').style.display = 'block';
+        }
+
         // Check if the responses.json has loaded
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";

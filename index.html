@@ -4,16 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alexandra Fernlund</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/terminal.css">
+    <link rel="stylesheet" href="/main-site.css">
 </head>
 <body>
-
     <!-- Chatbot Terminal Section -->
     <section id="chatbot-section">
         <div class="terminal">
             <div id="output"></div>
             <input type="text" id="userInput" placeholder="Ask me anything..." autofocus>
         </div>
+    </section>
+
+    <section id="main-site" style="display: none;">
+        <section class="about" id="about">
+            <h2>About Me</h2>
+            <p>
+                I’m a web developer with a love for sci-fi aesthetics, futuristic terminals, and crafting immersive digital experiences. I blend creative design with technical know-how to build websites and apps that are not only functional—but fun.
+            </p>
+            <p><a href="#" onclick="showTerminal()">Launch Terminal</a></p>
+        </section>
+
+        <section class="portfolio" id="portfolio">
+            <h2>Projects</h2>
+            <div class="project-list">
+                <div class="project">
+                    <h3>Galactic Chatbot</h3>
+                    <p>A sci-fi-themed chatbot interface with hidden Easter eggs and state-machine logic.</p>
+                    <a href="#" target="_blank">View Project</a>
+                </div>
+                <div class="project">
+                    <h3>Terminal Portfolio</h3>
+                    <p>A fully interactive portfolio site that mimics a retro computer terminal.</p>
+                    <a href="#" target="_blank">View Project</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <h2>Contact</h2>
+            <p>Want to collaborate, ask a question, or just say hello?</p>
+            <p>Mail: <a href="mailto:alexandra@example.com">alexandra@example.com</a></p>
+            <p>
+                <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+            </p>
+        </section>
     </section>
 
     <script src="/script.js"></script>
