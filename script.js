@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
+    userInput.focus();
     const output = document.getElementById('output');
     let responses = {};
     let userContext = {};
@@ -8,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.showTerminal = function () {
         document.getElementById('chat-terminal').style.display = 'block';
         document.getElementById('main-site').style.display = 'none';
+        const userInput = document.getElementById('userInput');
+        userInput.focus();
     };
 
     // Global function to show the main site and hide the terminal
