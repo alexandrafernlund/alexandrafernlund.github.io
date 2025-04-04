@@ -3,7 +3,8 @@ description:
 
 # Force GitHub to include custom CSS
 include:
-  - styles.css
+  - main-site.css
+  - terminal.css
   - index.html
   - script.js
   - responses.json
