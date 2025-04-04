@@ -23,14 +23,13 @@ a {
 
 section {
     padding: 4em 2em;
-    max-width: 100%;
+    max-width: 70%;
     margin: auto;
 }
 
 .hero {
     text-align: center;
     padding: 6em 2em 4em;
-    border-bottom: 2px solid #fff;
 }
 
     .hero h1 {
@@ -40,7 +39,7 @@ section {
     }
 
     .hero p {
-        font-size: 1.5rem;
+        font-size: 1rem;
         color: #fff;
     }
 
