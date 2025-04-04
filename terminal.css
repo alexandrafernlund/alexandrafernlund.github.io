@@ -16,7 +16,7 @@ body {
 }
 
 /* Chatbot Terminal Section */
-#chatbot-section {
+#chat-terminal {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
@@ -66,7 +66,7 @@ body {
 }
 
 /* Input field styling */
-input {
+#chat-terminal input {
     background-color: #000;
     color: #fff;
     border: 1px solid #fff;
@@ -79,25 +79,25 @@ input {
 }
 
     /* Cursor animation */
-    input::after {
-        content: '|'; /* Simulate the cursor */
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        animation: blink 1s step-end infinite;
-    }
+#chat-terminal input::after {
+    content: '|'; /* Simulate the cursor */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: blink 1s step-end infinite;
+}
 
     /* Placeholder text styling */
-    input::placeholder {
-        color: #fff;
-    }
+#chat-terminal input::placeholder {
+    color: #fff;
+}
 
     /* Focus effect on input */
-    input:focus {
-        border: 1px solid #fff;
-        background-color: #000;
-    }
+#chat-terminal input:focus {
+    border: 1px solid #fff;
+    background-color: #000;
+}
 
 /* Cursor blinking animation */
 @keyframes blink {
@@ -108,14 +108,16 @@ input {
     100% {
         visibility: visible;
     }
-
-    @media (max-width: 768px) {
-        #chatbot-section
-
-{
-    width: 90%;
-    bottom: 10px;
 }
+
+/* This should NOT be inside @keyframes */
+@media (max-width: 768px) {
+    #chat-terminal {
+        width: 90%;
+        bottom: 10px;
+    }
+}
+
 
 .typing {
     color: #fff;
