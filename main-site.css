@@ -40,21 +40,6 @@ section {
         color: #fff;
         font-family: "Orbitron", monospace;
         display: inline-block;
-        white-space: nowrap; /* Prevent wrapping */
-        border-right: 2px solid #fff; /* Simulate a cursor */
-        padding-right: 5px;
-        animation: blink-caret 0.75s step-end infinite; /* Blinking cursor animation */
-    }
-
-    /* Cursor blinking animation */
-    @keyframes blink-caret {
-        50% {
-            border-color: transparent;
-        }
-
-        100% {
-            border-color: #fff;
-        }
     }
 
     .hero p {
