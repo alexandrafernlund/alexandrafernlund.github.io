@@ -1,22 +1,24 @@
 {
-  "what('?s| is) your name\\??": {
-    "text": "I'm Alexandra's bot — what's *your* name?",
+  "name": {
+    "text": "I'm Alexandra's bot. What's your name?",
     "setAwaitingName": true
   },
-  "my name is (.+)": {
-    "text": "Nice to meet you, $1!",
-    "saveName": true
+  "hello": {
+    "text": "Hello, {{name}}! How can I help you today?"
   },
-  "what can i ask": {
-    "text": "Try asking about: projects, skills, design, or even music taste!"
+  "projects": {
+    "text": "I have a variety of projects in my portfolio. You can ask about my web development, AI work, and more! What would you like to know?"
   },
-  "how are you\\??": {
-    "text": "I'm doing well, {{name}} — thanks for asking!"
+  "portfolio": {
+    "text": "My portfolio includes projects on web development, artificial intelligence, and more. Let me know if you’d like details about any of them!"
   },
-
-  "hello|hi|hey": "Hello! How can I assist you?",
-  "how\\s+old|her\\s+age|age\\?": "Alexandra is 28 years old!",
-  "your\\s+name|who\\s+are\\s+you": "I am Alexandra's bot'. Nice to meet you!",
-  "portfolio|show\\s+me\\s+your\\s+work": "Check out my portfolio and projects here",
-  "projects|what\\s+have\\s+you\\s+built": "Check out my portfolio and projects here"
+  "skills": {
+    "text": "I am skilled in web development, AI, and problem-solving. I primarily use JavaScript, Python, and frameworks like React. Let me know if you'd like more specifics!"
+  },
+  "default": {
+    "text": "I'm not sure about that. Could you ask something else, or perhaps inquire about my portfolio or projects?"
+  },
+  "unknown": {
+    "text": "I didn’t quite get that. You can ask me about my projects, skills, or tell me about what you'd like to know."
+  }
 }
