@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20;
+                const delay = Math.floor(Math.random() * 60) + 20; // Random typing speed
                 setTimeout(typeNextChar, delay);
             }
         }
