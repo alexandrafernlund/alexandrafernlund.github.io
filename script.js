@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
     let responses = {}; // Empty at first, loads later
+    let userContext = {}; // Initialize userContext object to store user information like name
 
     // Load responses.json BEFORE allowing input
     async function loadResponses() {
@@ -17,6 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to display messages
+    function displayMessage(message, sender) {
+        const div = document.createElement('div');
+        div.classList.add(sender); // Add class for styling (e.g., 'user' or 'bot')
+        div.textContent = message;
+        output.appendChild(div);
+        output.scrollTop = output.scrollHeight; // Auto-scroll to the bottom
+    }
+
+    // Function to type the bot's message
     function typeBotMessage(message) {
         const div = document.createElement('div');
         div.classList.add('bot');
@@ -39,16 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();
     }
 
-    // Function to display messages
-    function displayMessage(message, sender) {
-        const div = document.createElement('div');
-        div.classList.add(sender); // Add class for styling (e.g., 'user' or 'bot')
-        div.textContent = message;
-        output.appendChild(div);
-        output.scrollTop = output.scrollHeight; // Auto-scroll to the bottom
-    }
-
-
     // Welcome message animation
     function displayWelcomeMessage() {
         const messages = [
@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
+    // Get bot response based on user input
     function getBotResponse(input) {
         input = input.toLowerCase();
 
@@ -80,26 +81,30 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let pattern in responses) {
             let regex = new RegExp(pattern, "i"); // Convert JSON keys into regex
             if (regex.test(input)) {
-                return responses[pattern]; // Return the matching response
+                return responses[pattern];
             }
         }
 
         return "I didn't understand that. Try asking about my portfolio or projects.";
     }
 
-
-    // Handle user input (Wait for JSON to load)
+    // Handle user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
-            const userName = userInput.value.trim();
-            userInput.value = ''; // Clear input
-            userContext.name = userName; // Store the name for future reference
-            displayMessage(`Nice to meet you, ${userName}!`, 'bot');
-            displayMessage("What can I help you with today?", 'bot');
+            const userMessage = userInput.value.trim();
 
-            const userMessage = userInput.value;
+            // If it's the user's first message, greet them and ask for their name
+            if (!userContext.name) {
+                userContext.name = userMessage; // Store the name
+                displayMessage(`Nice to meet you, ${userContext.name}!`, 'bot');
+                displayMessage("What can I help you with today?", 'bot');
+                userInput.value = ''; // Clear input after greeting
+                return; // Stop further execution for now
+            }
+
+            // Otherwise, display user message and show bot response
             displayMessage(`> ${userMessage}`, 'user');
-            userInput.value = ''; // Clear input immediately
+            userInput.value = ''; // Clear input immediately after capturing
 
             // Show typing indicator
             const typingIndicator = displayBotTyping();
@@ -108,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 typingIndicator.remove(); // Remove typing block
                 const botMessage = getBotResponse(userMessage);
-                typeBotMessage(botMessage);
+                typeBotMessage(botMessage); // Display bot message
             }, 800); // Adjust delay as you like
         }
     });
@@ -127,5 +132,4 @@ document.addEventListener('DOMContentLoaded', function () {
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
-
 });
