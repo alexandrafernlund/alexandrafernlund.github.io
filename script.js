@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // If we're expecting the user's name
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Store nicely formatted name
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Format name nicely
             userContext.awaitingName = false;
             return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about my work or projects.`;
         }
@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Inject captured group (e.g., Jim for name)
                 let message = response.text.replace(/\$(\d+)/g, (_, i) => match[i] || "");
 
-                // Replace {{name}} with the actual user's name
+                // Replace {{name}} with the actual user's name if available
                 message = message.replace("{{name}}", userContext.name || "friend");
 
-                // Additional logic to handle storing user's name if required
+                // Handle name saving and awaiting logic
                 if (response.setAwaitingName) {
                     userContext.awaitingName = true;
                 }
@@ -118,8 +118,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        return "I didn't understand that. I must have a bug in my code... Damn.";
+        return "I didn't quite understand that. Try asking about my portfolio, projects, or hobbies.";
     }
+
 
     // Handle user input
     userInput.addEventListener('keydown', function (event) {
