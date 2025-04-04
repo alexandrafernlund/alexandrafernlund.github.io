@@ -13,7 +13,11 @@ body {
     flex-direction: column;
     height: 100vh;
     padding: 0;
+}
+
+html, body {
     overflow-x: hidden;
+    width: 100%;
 }
 
 /* Chatbot Terminal Section */
