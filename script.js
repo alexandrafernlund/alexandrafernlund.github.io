@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Handle specific keyword matches
-        const keywords = ['projects', 'portfolio', 'skills', 'work'];
+        const keywords = ['projects', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
-                const response = responses[keyword] || responses["default"];
+                const response = responses[keyword] || responses["unknown"];
                 return response.text.replace("{{name}}", userContext.name || "friend");
             }
         }
