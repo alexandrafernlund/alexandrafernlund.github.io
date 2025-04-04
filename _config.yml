@@ -6,6 +6,7 @@ include:
   - styles.css
   - index.html
   - script.js
+  - responses.json
 
 baseurl: ""
 url: "https://alexandrafernlund.github.io"

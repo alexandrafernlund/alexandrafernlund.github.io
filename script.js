@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to display messages
+    function displayMessage(message, sender) {
+        const div = document.createElement('div');
+        div.classList.add(sender); // Add class for styling (e.g., 'user' or 'bot')
+        div.textContent = message;
+        output.appendChild(div);
+        output.scrollTop = output.scrollHeight; // Auto-scroll to the bottom
+    }
+
+    // Function to type the bot's message
     function typeBotMessage(message) {
         const div = document.createElement('div');
         div.classList.add('bot');
@@ -59,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
+    // Get bot response based on user input
     function getBotResponse(input) {
         input = input.toLowerCase();
 
@@ -66,16 +76,16 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
+        // Match user input with regex patterns
         for (let pattern in responses) {
-            let regex = new RegExp(pattern, "i"); // Convert JSON keys into regex
+            let regex = new RegExp(pattern, "i");
             if (regex.test(input)) {
-                return responses[pattern]; // Return the matching response
+                return responses[pattern];
             }
         }
 
         return "I didn't understand that. Try asking about my portfolio or projects.";
     }
-
 
     // Handle user input (Wait for JSON to load)
     userInput.addEventListener('keydown', function (event) {
@@ -91,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 typingIndicator.remove(); // Remove typing block
                 const botMessage = getBotResponse(userMessage);
-                typeBotMessage(botMessage);
+                typeBotMessage(botMessage); // Simulate typing effect
             }, 800); // Adjust delay as you like
         }
     });
@@ -110,14 +120,4 @@ document.addEventListener('DOMContentLoaded', function () {
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
-
-    function displayBotTyping() {
-        const typing = document.createElement('div');
-        typing.classList.add('bot', 'typing');
-        typing.textContent = '|';
-        output.appendChild(typing);
-        output.scrollTop = output.scrollHeight;
-        return typing;
-    }
-
 });
