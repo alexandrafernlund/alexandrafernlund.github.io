@@ -85,7 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (input === "exit terminal") {
             showMainSite();
-            return "Exiting terminal... Welcome to the main site!";
+            displayMessage("Exiting terminal... Welcome to the main site!", 'bot'); 
+            return; 
         }
 
         if (Object.keys(responses).length === 0) {
