@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
+    const heroTitle = document.getElementById('hero-title');
     let responses = {};
     let userContext = {};
 
@@ -15,6 +16,22 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('chat-terminal').style.display = 'none';
         document.getElementById('main-site').style.display = 'block';
     };
+
+    // Typing animation for hero title
+    function typeHeroTitle(text, element, speed = 150) {
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    // Call typeHeroTitle with the desired text for the hero h1
+    typeHeroTitle('Welcome to Alexandra\'s Portfolio', heroTitle, 150);
 
     async function loadResponses() {
         try {
@@ -135,17 +152,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const heroTitle = document.querySelector('#hero h1');
-        const heroText = "Alexandra Fernlund";
-
-        // Clear the content so it can type it in
-        heroTitle.textContent = "";
-
-        typeWriter(heroText, heroTitle, 100); // Feel free to change typing speed
-    });
-
-
     function displayBotTyping() {
         const typing = document.createElement('div');
         typing.classList.add('bot', 'typing');
@@ -159,18 +165,4 @@ document.addEventListener('DOMContentLoaded', function () {
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
-
-    function typeWriter(text, element, speed = 50) {
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            }
-        }
-        type();
-    }
-
-
 });

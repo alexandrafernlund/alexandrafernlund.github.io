@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
 body {
     margin: 0;
     padding: 0;
@@ -32,11 +34,33 @@ section {
     padding: 6em 2em 4em;
 }
 
-    .hero h1 {
+    #hero-title h1 {
         font-size: 4rem;
         margin: 0;
         color: #fff;
+        font-family: "Orbitron", monospace;
+        animation: type 5s steps(40) 1s forwards, blink-caret 0.75s step-end infinite;
     }
+
+        @keyframes type {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            50% {
+                border-color: transparent;
+            }
+
+            100% {
+                border-color: #fff;
+            }
+        }
 
     .hero p {
         font-size: 1rem;
@@ -88,3 +112,8 @@ section {
         .contact a:hover {
             color: #fff;
         }
+
+
+
+
+
