@@ -79,48 +79,32 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
-        // If the user is asking for your name
+        // Check if user is asking for their name
         if (/what('?s| is) your name\??/.test(input)) {
-            userContext.awaitingName = true; // Flag to capture their next input
+            userContext.awaitingName = true;
             return "I'm Alexandra's bot. What's your name?";
         }
 
         // If we're expecting the user's name
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Format name nicely
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Format name properly
             userContext.awaitingName = false;
-            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about my work or projects.`;
+            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about her work or projects.`;
         }
 
-        // Fallback to checking responses.json patterns
-        for (let pattern in responses) {
-            let regex = new RegExp(pattern, "i");
-            let match = input.match(regex);
-            if (match) {
-                let response = responses[pattern];
-
-                // Inject captured group (e.g., Jim for name)
-                let message = response.text.replace(/\$(\d+)/g, (_, i) => match[i] || "");
-
-                // Replace {{name}} with the actual user's name if available
-                message = message.replace("{{name}}", userContext.name || "friend");
-
-                // Handle name saving and awaiting logic
-                if (response.setAwaitingName) {
-                    userContext.awaitingName = true;
-                }
-
-                if (response.saveName && match[1]) {
-                    userContext.name = match[1].charAt(0).toUpperCase() + match[1].slice(1);
-                }
-
-                return message;
+        // Keyword Matching
+        const keywords = ['name', 'projects', 'portfolio', 'skills', 'work'];
+        for (let keyword of keywords) {
+            if (input.includes(keyword)) {
+                const responseKey = keyword;
+                const response = responses[responseKey] || responses["default"];
+                return response.text.replace("{{name}}", userContext.name || "friend");
             }
         }
 
-        return "I didn't quite understand that. Try asking about my portfolio, projects, or hobbies.";
+        // Fallback if no matching response
+        return responses["unknown"].text;
     }
-
 
     // Handle user input
     userInput.addEventListener('keydown', function (event) {

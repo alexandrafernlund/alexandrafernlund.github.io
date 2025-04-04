@@ -7,13 +7,13 @@
     "text": "Hello, {{name}}! How can I help you today?"
   },
   "projects": {
-    "text": "I have a variety of projects in my portfolio. You can ask about my web development, AI work, and more! What would you like to know?"
+    "text": "I have a variety of projects in the portfolio. You can ask about her web development, AI work, and more! What would you like to know?"
   },
   "portfolio": {
-    "text": "My portfolio includes projects on web development, artificial intelligence, and more. Let me know if you’d like details about any of them!"
+    "text": "The portfolio includes projects on web development, artificial intelligence, and more. Let me know if you’d like details about any of them!"
   },
   "skills": {
-    "text": "I am skilled in web development, AI, and problem-solving. I primarily use JavaScript, Python, and frameworks like React. Let me know if you'd like more specifics!"
+    "text": "She is skilled in web development, AI, and problem-solving. She primarily uses JavaScript, Python, and frameworks like React. Let me know if you'd like more specifics!"
   },
   "default": {
     "text": "I'm not sure about that. Could you ask something else, or perhaps inquire about my portfolio or projects?"
