@@ -31,29 +31,24 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayMessage(message, sender) {
         const div = document.createElement('div');
         div.classList.add(sender);
-        div.textContent = message;
         output.appendChild(div);
         output.scrollTop = output.scrollHeight;
+        typeMessage(message, div);
     }
 
-    function typeBotMessage(message) {
-        const div = document.createElement('div');
-        div.classList.add('bot');
-        output.appendChild(div);
-        output.scrollTop = output.scrollHeight;
-
+    function typeMessage(message, div) {
         let index = 0;
 
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20;
+                const delay = Math.floor(Math.random() * 60) + 20;  // Random delay for each character
                 setTimeout(typeNextChar, delay);
             }
         }
 
-        typeNextChar();
+        typeNextChar(); // Start the typing effect
     }
 
     function displayWelcomeMessage() {
@@ -70,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < messages.length) {
                 displayMessage(messages[index], 'bot');
                 index++;
-                setTimeout(showNextMessage, 800);
+                setTimeout(showNextMessage, 800);  // Wait before showing next message
             }
         }
 
@@ -130,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 typingIndicator.remove();
                 const botMessage = getBotResponse(userMessage);
-                typeBotMessage(botMessage);
+                displayMessage(botMessage, 'bot');
             }, 800);
         }
     });
