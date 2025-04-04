@@ -78,15 +78,30 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
+        // If the user is asking for your name
+        if (/what('?s| is) your name\??/.test(input)) {
+            userContext.awaitingName = true; // Flag to capture their next input
+            return "I'm PortfolioBot — but what's *your* name?";
+        }
+
+        // If we're expecting the user's name
+        if (userContext.awaitingName) {
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Store nicely formatted name
+            userContext.awaitingName = false;
+            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about my work or projects.`;
+        }
+
+        // Fallback to checking responses.json patterns
         for (let pattern in responses) {
-            let regex = new RegExp(pattern, "i"); // Convert JSON keys into regex
+            let regex = new RegExp(pattern, "i");
             if (regex.test(input)) {
                 return responses[pattern];
             }
         }
 
-        return "I didn't understand that. Try asking about my portfolio or projects.";
+        return "I didn't understand that. Try asking about my portfolio, experience, or hobbies.";
     }
+
 
     // Handle user input
     userInput.addEventListener('keydown', function (event) {
