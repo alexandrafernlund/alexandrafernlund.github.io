@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < text.length) {
                 heroTitle.textContent += text.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20; // Same delay as bot messages
+                const delay = Math.floor(Math.random() * 60) + 20; // Random delay to mimic typing
                 setTimeout(typeNextChar, delay);
             }
         }
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize typing animation for the hero title
     if (heroTitle) {
-        typeHeroTitle('Welcome to Alexandra\'s Portfolio');
+        typeHeroTitle('Alexandra Fernlund');
     }
 
     displayWelcomeMessage();
