@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
             'Initializing terminal...',
             'Loading portfolio bot...',
             'Ready.',
-            "I am Alexandra's bot. You can ask me about her projects, technical skills, or any personal questions you are curious about."
+            "Hi! I'm Alexandra's bot.",
+            "You can ask me about her projects, technical skills, or any personal questions you're' curious about."
         ];
         let index = 0;
 
@@ -94,14 +95,31 @@ document.addEventListener('DOMContentLoaded', function () {
         // Fallback to checking responses.json patterns
         for (let pattern in responses) {
             let regex = new RegExp(pattern, "i");
-            if (regex.test(input)) {
-                return responses[pattern];
+            let match = input.match(regex);
+            if (match) {
+                let response = responses[pattern];
+
+                // Inject captured group (e.g., Jim for name)
+                let message = response.text.replace(/\$(\d+)/g, (_, i) => match[i] || "");
+
+                // Replace {{name}} with the actual user's name
+                message = message.replace("{{name}}", userContext.name || "friend");
+
+                // Additional logic to handle storing user's name if required
+                if (response.setAwaitingName) {
+                    userContext.awaitingName = true;
+                }
+
+                if (response.saveName && match[1]) {
+                    userContext.name = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+                }
+
+                return message;
             }
         }
 
         return "I didn't understand that. I must have a bug in my code... Damn.";
     }
-
 
     // Handle user input
     userInput.addEventListener('keydown', function (event) {

@@ -1,7 +1,22 @@
 {
+  "what('?s| is) your name\\??": {
+    "text": "I'm Alexandra's bot — what's *your* name?",
+    "setAwaitingName": true
+  },
+  "my name is (.+)": {
+    "text": "Nice to meet you, $1!",
+    "saveName": true
+  },
+  "what can i ask": {
+    "text": "Try asking about: projects, skills, design, or even music taste!"
+  },
+  "how are you\\??": {
+    "text": "I'm doing well, {{name}} — thanks for asking!"
+  },
+
   "hello|hi|hey": "Hello! How can I assist you?",
   "how\\s+old|her\\s+age|age\\?": "Alexandra is 28 years old!",
   "your\\s+name|who\\s+are\\s+you": "I am Alexandra's bot'. Nice to meet you!",
-  "portfolio|show\\s+me\\s+your\\s+work": "Check out my portfolio and projects on this site!",
-  "projects|what\\s+have\\s+you\\s+built": "I specialize in web development, using HTML, CSS, and JavaScript."
+  "portfolio|show\\s+me\\s+your\\s+work": "Check out my portfolio and projects here",
+  "projects|what\\s+have\\s+you\\s+built": "Check out my portfolio and projects here"
 }
