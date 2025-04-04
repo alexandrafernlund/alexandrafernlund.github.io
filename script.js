@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'Loading portfolio bot...',
             'Ready.',
             "Hi! I'm Alexandra's bot.",
-            "You can ask me about her projects, technical skills, or any personal questions you're' curious about."
+            "You can ask me about her projects, technical skills, or any personal questions you're curious about."
         ];
         let index = 0;
 
