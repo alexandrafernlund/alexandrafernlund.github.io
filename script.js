@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const messages = [
             'Initializing terminal...',
             'Loading portfolio bot...',
-            'Ready. Type a question to start interacting!',
-            'You can ask about my projects, technical skills, or any personal questions you are curious about.'
+            'Ready.',
+            "I am Alexandra's bot. You can ask me about her projects, technical skills, or any personal questions you are curious about."
         ];
         let index = 0;
 
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // If the user is asking for your name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true; // Flag to capture their next input
-            return "I'm Alexandra's bot — what's *your* name?";
+            return "I'm Alexandra's bot. What's your name?";
         }
 
         // If we're expecting the user's name
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        return "I didn't understand that. Try asking about my portfolio, experience, or hobbies.";
+        return "I didn't understand that. I must have a bug in my code... Damn.";
     }
 
 
