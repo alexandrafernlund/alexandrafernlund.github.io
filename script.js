@@ -76,8 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
         input = input.toLowerCase();
 
         if (input === "exit terminal") {
-            document.getElementById('chat-terminal').style.display = 'none';
-            document.getElementById('main-site').style.display = 'block';
+            function showTerminal() {
+                document.getElementById('chat-terminal').style.display = 'none';
+                document.getElementById('main-site').style.display = 'block';
+            }
         }
 
         // Check if the responses.json has loaded
