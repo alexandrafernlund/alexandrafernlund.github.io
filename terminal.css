@@ -147,8 +147,5 @@ html, body {
     }
 }
 
-.typing::after {
-    content: '|';
-    animation: blink 1s step-end infinite;
-}
+
 
