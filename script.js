@@ -108,17 +108,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
 
-            // Check if the bot is expecting the user's name
-            if (userContext.awaitingName) {
-                userContext.name = userMessage;
-                userContext.awaitingName = false;
-                displayMessage(`Nice to meet you, ${userContext.name}!`, 'bot');
-                displayMessage("What can I help you with today?", 'bot');
-                userInput.value = '';
-                return;
-            }
-
-
             // Otherwise, display user message and show bot response
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = ''; // Clear input immediately after capturing
