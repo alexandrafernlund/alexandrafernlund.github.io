@@ -17,22 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('main-site').style.display = 'block';
     };
 
-    // Typing animation for hero title
-    function typeHeroTitle(text, element, speed = 150) {
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            }
-        }
-        type();
-    }
-
-    // Call typeHeroTitle with the desired text for the hero h1
-    typeHeroTitle('Welcome to Alexandra\'s Portfolio', heroTitle, 150);
-
     async function loadResponses() {
         try {
             console.log("Loading responses...");
@@ -53,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         output.scrollTop = output.scrollHeight;
     }
 
+    // Typing animation for bot messages
     function typeBotMessage(message) {
         const div = document.createElement('div');
         div.classList.add('bot');
@@ -73,6 +58,23 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();
     }
 
+    // Typing animation for the hero title (h1)
+    function typeHeroTitle(text) {
+        let index = 0;
+
+        function typeNextChar() {
+            if (index < text.length) {
+                heroTitle.textContent += text.charAt(index);
+                index++;
+                const delay = Math.floor(Math.random() * 60) + 20; // Same delay as bot messages
+                setTimeout(typeNextChar, delay);
+            }
+        }
+
+        typeNextChar();
+    }
+
+    // Display the welcome message in the terminal
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -152,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Typing animation for bot typing indicator
     function displayBotTyping() {
         const typing = document.createElement('div');
         typing.classList.add('bot', 'typing');
@@ -159,6 +162,11 @@ document.addEventListener('DOMContentLoaded', function () {
         output.appendChild(typing);
         output.scrollTop = output.scrollHeight;
         return typing;
+    }
+
+    // Initialize typing animation for the hero title
+    if (heroTitle) {
+        typeHeroTitle('Welcome to Alexandra\'s Portfolio');
     }
 
     displayWelcomeMessage();
