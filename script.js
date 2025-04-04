@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // If the user is asking for your name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true; // Flag to capture their next input
-            return "I'm PortfolioBot — but what's *your* name?";
+            return "I'm Alexandra's bot — what's *your* name?";
         }
 
         // If we're expecting the user's name
