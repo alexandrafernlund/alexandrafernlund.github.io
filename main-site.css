@@ -1,76 +1,99 @@
-/* Terminal styling */
-body, html {
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
+body {
     margin: 0;
     padding: 0;
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #0a0a0a;
-    color: #00ff00; /* Green text color */
+    font-family: 'VT323', monospace;
+    background-color: #000;
+    color: #fff;
+    line-height: 1.6;
 }
 
-/* Terminal container */
-#chat-terminal {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+h1, h2, h3 {
+    color: #fff;
+    margin-bottom: 0.5em;
 }
 
-.terminal {
-    width: 80%;
-    max-width: 800px;
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-    overflow-y: auto;
-    height: 70vh;
+a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+    a:hover {
+        color: #fff;
+    }
+
+section {
+    padding: 4em 2em;
+    max-width: 85%;
+    margin: auto;
+}
+
+.hero {
+    text-align: center;
+    padding: 6em 2em 4em;
+}
+
+    #hero-title h1 {
+        font-size: 4rem;
+        margin: 0;
+        color: #fff;
+        font-family: "Orbitron", monospace;
+        display: inline-block;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        color: #fff;
+    }
+
+.about, .portfolio {
+    margin-top: 3em;
+}
+
+.project-list {
     display: flex;
     flex-direction: column;
+    gap: 2em;
 }
 
-/* Output text (user and bot) */
-#output {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-bottom: 10px;
+.project {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1em;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
 }
 
-/* User and bot message styles */
-.user {
-    color: #00ff00; /* Green for user messages */
-}
-
-.bot {
-    color: #ffffff; /* White for bot messages */
-}
-
-    /* Typing animation */
-    .bot.typing::after {
-        content: "|";
-        animation: blink 0.75s step-end infinite;
+    .project h3 {
+        margin-top: 0;
     }
 
-@keyframes blink {
-    50% {
-        opacity: 0;
+@media (min-width: 768px) {
+    .project-list {
+        flex-direction: row;
+    }
+
+    .project {
+        flex: 1;
     }
 }
 
-/* Input field */
-#userInput {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #1e1e1e;
-    color: #00ff00;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    outline: none;
+.contact {
+    margin-top: 3em;
+    padding-bottom: 5em;
 }
 
-    #userInput::placeholder {
-        color: #00ff00;
+    .contact a {
+        color: #fff;
+        font-weight: bold;
     }
+
+        .contact a:hover {
+            color: #fff;
+        }
+
+
+
+
+

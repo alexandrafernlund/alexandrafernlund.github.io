@@ -84,9 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
         input = input.toLowerCase();
 
         if (input === "exit terminal") {
-            showMainSite();  // Show the main site
-            displayMessage("Exiting terminal... Welcome to the main site!", 'bot');  // Direct response without typing animation
-            return;  // No need to trigger the typing animation after this
+            showMainSite();
+            return "Exiting terminal... Welcome to the main site!";
         }
 
         if (Object.keys(responses).length === 0) {
@@ -121,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return responses.unknown.text;
     }
-
 
     // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
