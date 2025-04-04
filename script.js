@@ -60,19 +60,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Typing animation for the hero title (h1)
     function typeHeroTitle(text) {
+        heroTitle.textContent = '';  // Clear any existing text content first
         let index = 0;
 
         function typeNextChar() {
             if (index < text.length) {
+                // Append a single character at a time to textContent
                 heroTitle.textContent += text.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20; // Random delay to mimic typing
-                setTimeout(typeNextChar, delay);
+                const delay = Math.floor(Math.random() * 60) + 20; // Random typing delay
+                setTimeout(typeNextChar, delay);  // Continue typing the next character
             }
         }
 
-        typeNextChar();
+        typeNextChar();  // Start typing the first character
     }
+
 
     // Display the welcome message in the terminal
     function displayWelcomeMessage() {
