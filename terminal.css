@@ -153,7 +153,7 @@ html, body {
 }
 
 #output::-webkit-scrollbar-track {
-    background: #111; 
+    background: #000; 
 }
 
 #output::-webkit-scrollbar-thumb {
@@ -168,7 +168,7 @@ html, body {
 
 /* Applies to Firefox */
 #output {
-    scrollbar-width: thin; /* makes the scrollbar thinner */
+    scrollbar-width: thin;
     scrollbar-color: #444 #111; /* thumb color, track color */
 }
 
