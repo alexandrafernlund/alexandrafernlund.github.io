@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
-        output.scrollTop = output.scrollHeight;
+        scrollToBottom(); // Initial scroll for empty container
 
         let index = 0;
 
@@ -43,12 +43,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                const delay = Math.floor(Math.random() * 60) + 20;  // Random delay for typing animation
-                setTimeout(typeNextChar, delay); // Calls itself for the next character
+                scrollToBottom(); // Scroll as it types
+                const delay = Math.floor(Math.random() * 60) + 20;
+                setTimeout(typeNextChar, delay);
             }
         }
 
-        typeNextChar(); // Start the typing effect
+        typeNextChar();
     }
 
     // Function to display message in output container
@@ -56,8 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
-        output.scrollTop = output.scrollHeight;
-        typeMessage(message, sender);  // Call to type message character by character
+        scrollToBottom(); // Ensure scroll before typing starts
+        typeMessage(message, sender);
     }
 
     // Display welcome message when the terminal is initialized
@@ -186,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
         typing.classList.add('bot', 'typing');
         typing.textContent = '|';
         output.appendChild(typing);
-        output.scrollTop = output.scrollHeight;
+        scrollToBottom();
         return typing;
     }
 
