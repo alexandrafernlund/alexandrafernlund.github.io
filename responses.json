@@ -56,6 +56,15 @@
     "category": "general"
   },
 
+  "jokes": {
+    "text": [
+      "Why did the developer go broke? Because they used up all their cache.",
+      "I would tell you a UDP joke... but you might not get it.",
+      "There's no place like 127.0.0.1."
+    ],
+    "category": "fun"
+  },
+
   "unknown": {
     "text": [
       "Sorry, I didn’t catch that. Could you try again?",

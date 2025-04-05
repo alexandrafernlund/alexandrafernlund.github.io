@@ -82,53 +82,74 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    function getRandomResponse(responsesArray) {
-        if (Array.isArray(responsesArray)) {
-            return responsesArray[Math.floor(Math.random() * responsesArray.length)];
+
+    // Remember the last response to not give the same one
+    let lastResponseByCategory = {};
+
+    function getRandomResponse(response, category = "general") {
+        if (Array.isArray(response)) {
+            let newResponse;
+
+            // Keep trying until we get a new one (or max 10 tries)
+            for (let i = 0; i < 10; i++) {
+                newResponse = response[Math.floor(Math.random() * response.length)];
+                if (newResponse !== lastResponseByCategory[category]) {
+                    break;
+                }
+            }
+
+            lastResponseByCategory[category] = newResponse;
+            return newResponse;
         }
-        return responsesArray; // If it's not an array, return as is
+
+        return response; // If it's not an array, return as-is
     }
 
-
     function getBotResponse(input) {
-        input = input.toLowerCase().trim();  // Clean up input (case insensitive)
+        input = input.toLowerCase().trim();
 
-        // If no responses have been loaded yet
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
 
-        // Handle specific input patterns
+        // Handle greetings
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
             if (pattern.test(input)) {
-                return getRandomResponse(responses.greeting.text);
+                return getRandomResponse(responses.greeting.text, "greeting");
             }
         }
 
-        // Handle special questions or commands
+        // Handle asking for bot name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true;
-            return responses['your name'].text;
+            return getRandomResponse(responses["your name"].text, "your name");
         }
 
+        // Handle user giving their name
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Capitalize name
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1);
             userContext.awaitingName = false;
             return `Nice to meet you, ${userContext.name}! What would you like to know about Alexandra's work?`;
         }
 
-        // Handle keywords like 'projects', 'portfolio', 'skills', etc.
+        // Handle jokes
+        if (input.includes("joke")) {
+            return getRandomResponse(responses.jokes?.text, "jokes");
+        }
+
+        // Handle keywords like projects, skills, etc.
         const keywords = ['projects', 'portfolio', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
-                const response = responses[keyword] || responses["unknown"];
-                return getRandomResponse(response.text);
+                const category = keyword;
+                const response = responses[category] || responses["unknown"];
+                return getRandomResponse(response.text, category);
             }
         }
 
-        // If no specific response was found, return an unknown response
-        return getRandomResponse(responses.unknown.text);
+        // Fallback to unknown
+        return getRandomResponse(responses.unknown.text, "unknown");
     }
 
     // Event listener for user input
