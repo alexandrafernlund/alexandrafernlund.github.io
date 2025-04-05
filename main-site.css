@@ -93,23 +93,30 @@ section {
         }
 
 /* Applies to WebKit browsers (Chrome, Edge, Safari) */
-#output::-webkit-scrollbar {
-    width: 8px;
+#output {
+    max-height: 400px; /* Define the max height */
+    overflow-y: auto; /* Ensure vertical scrolling */
+    scrollbar-width: thin;
+    scrollbar-color: #444 #111;
 }
 
-#output::-webkit-scrollbar-track {
-    background: #000; 
-}
-
-#output::-webkit-scrollbar-thumb {
-    background-color: #444; 
-    border-radius: 10px; 
-    border: 2px solid #111; 
-}
-
-    #output::-webkit-scrollbar-thumb:hover {
-        background-color: #888;
+    #output::-webkit-scrollbar {
+        width: 8px;
     }
+
+    #output::-webkit-scrollbar-track {
+        background: #222;
+    }
+
+    #output::-webkit-scrollbar-thumb {
+        background-color: #444;
+        border-radius: 10px;
+        border: 2px solid #111;
+    }
+
+        #output::-webkit-scrollbar-thumb:hover {
+            background-color: #888;
+        }
 
 /* Applies to Firefox */
 #output {
