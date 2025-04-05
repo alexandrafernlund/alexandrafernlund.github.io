@@ -82,46 +82,53 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    function getBotResponse(input) {
-        input = input.toLowerCase();
-
-        if (input === "exit terminal") {
-            showMainSite();
-            displayMessage("Exiting terminal... Welcome to the main site!", 'bot'); 
-            return; 
+    function getRandomResponse(responsesArray) {
+        if (Array.isArray(responsesArray)) {
+            return responsesArray[Math.floor(Math.random() * responsesArray.length)];
         }
+        return responsesArray; // If it's not an array, return as is
+    }
 
+
+    function getBotResponse(input) {
+        input = input.toLowerCase().trim();  // Clean up input (case insensitive)
+
+        // If no responses have been loaded yet
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
 
+        // Handle specific input patterns
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
             if (pattern.test(input)) {
-                return responses.greeting.text;
+                return getRandomResponse(responses.greeting.text);
             }
         }
 
+        // Handle special questions or commands
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true;
-            return responses.name.text;
+            return responses['your name'].text;
         }
 
         if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1);
+            userContext.name = input.charAt(0).toUpperCase() + input.slice(1); // Capitalize name
             userContext.awaitingName = false;
-            return `Nice to meet you, ${userContext.name}! Let me know if you want to hear about Alexandra's work or projects.`;
+            return `Nice to meet you, ${userContext.name}! What would you like to know about Alexandra's work?`;
         }
 
+        // Handle keywords like 'projects', 'portfolio', 'skills', etc.
         const keywords = ['projects', 'portfolio', 'skills', 'work'];
         for (let keyword of keywords) {
             if (input.includes(keyword)) {
                 const response = responses[keyword] || responses["unknown"];
-                return response.text.replace("{{name}}", userContext.name || "friend");
+                return getRandomResponse(response.text);
             }
         }
 
-        return responses.unknown.text;
+        // If no specific response was found, return an unknown response
+        return getRandomResponse(responses.unknown.text);
     }
 
     // Event listener for user input
@@ -129,16 +136,26 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
 
+            // Display user message
             displayMessage(`> ${userMessage}`, 'user');
+
+            // Clear the input field
             userInput.value = '';
 
+            // Show typing indicator
             const typingIndicator = displayBotTyping();
 
             setTimeout(() => {
                 typingIndicator.remove();
+
+                // Get bot's response
                 const botMessage = getBotResponse(userMessage);
-                displayMessage(botMessage, 'bot');  // Display bot response with typing effect
-            }, 800);
+
+                // If bot message exists, display it
+                if (botMessage) {
+                    displayMessage(botMessage, 'bot');
+                }
+            }, 800); // Simulate typing delay
         }
     });
 
