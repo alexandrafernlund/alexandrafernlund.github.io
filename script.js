@@ -195,4 +195,9 @@ document.addEventListener('DOMContentLoaded', function () {
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
+
+    function scrollToBottom() {
+        output.scrollTop = output.scrollHeight;
+    }
+
 });
