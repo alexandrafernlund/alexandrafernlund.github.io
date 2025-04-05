@@ -109,6 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
 
+        if (input === "exit terminal" || input === "exit") {
+            showMainSite(); // Hides terminal, shows main site
+            return "Exiting terminal... Welcome back to the main site!";
+        }
+
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
