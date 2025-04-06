@@ -45,7 +45,7 @@
   "what's her name?": {
     "text": "Alexandra Fernlund. What's your name?",
     "setAwaitingName": true,
-    "description": "Let's you ask about her name'."
+    "description": "Let's you ask about Alexandra's full name'."
   },
 
   "thank you": {
