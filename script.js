@@ -118,15 +118,19 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
-        // Show command list when user asks for help or commands
+        // Handle 'help' or 'commands' input
         if (input === "help" || input === "commands") {
             let commandList = "Here are the available commands:\n";
+
+            // Iterate over all responses and show those that have a description (we assume they are commands)
             Object.keys(responses).forEach(key => {
                 const response = responses[key];
-                if (response.category === "commands") {
-                    commandList += `- ${key}: ${response.description}\n`;
+                // Only show responses that have a description
+                if (response.description) {
+                    commandList += `- ${key}: ${response.description}\n`; // Display the command name and its description
                 }
             });
+
             return commandList;
         }
 
