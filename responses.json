@@ -1,7 +1,6 @@
 {
   "help": {
     "text": [ "Displays this command list." ],
-    "description": "Displays this command list.",
     "category": "commands"
   },
 
@@ -67,7 +66,7 @@
     "category": "general"
   },
 
-  "jokes": {
+  "joke": {
     "text": [
       "Why did the developer go broke? Because they used up all their cache.",
       "I would tell you a UDP joke... but you might not get it.",
