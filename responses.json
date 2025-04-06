@@ -1,4 +1,10 @@
 {
+  "help": {
+    "text": [ "Displays this command list." ],
+    "description": "Displays this command list.",
+    "category": "commands"
+  },
+
   "greeting": {
     "text": [
       "Hello! How can I help you today?",
@@ -6,6 +12,7 @@
       "Hi!",
       "Welcome aboard the terminal express!"
     ],
+    "description": "Greets the user.",
     "category": "general"
   },
 

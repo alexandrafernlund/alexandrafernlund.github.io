@@ -118,6 +118,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
+        const keywords = ['help', 'command'];
+        if (keywords.some(k => input.toLowerCase().includes(k))) {
+            showHelp(responses);
+        }
+
         // Handle greetings
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
@@ -156,6 +161,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Fallback to unknown
         return getRandomResponse(responses.unknown.text, "unknown");
+    }
+
+    function showHelp(responses) {
+        const commandEntries = Object.entries(responses).filter(([key, value]) => {
+            return value.category === "commands";
+        });
+
+        if (commandEntries.length === 0) {
+            console.log("No available commands.");
+            return;
+        }
+
+        console.log("Available commands:");
+        commandEntries.forEach(([key, value]) => {
+            const description = value.description || "No description provided.";
+            console.log(`- ${key}: ${description}`);
+        });
     }
 
     // Event listener for user input
