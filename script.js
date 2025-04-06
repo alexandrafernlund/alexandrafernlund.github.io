@@ -18,12 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('main-site').style.display = 'block';
     };
 
+    // Load responses from JSON file
     async function loadResponses() {
         try {
             console.log("Loading responses...");
             const response = await fetch('responses.json');
             responses = await response.json();
             console.log("Bot responses loaded successfully.");
+            // After loading the responses, display the welcome message
+            displayWelcomeMessage(); // Ensure this runs after the responses are loaded
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
@@ -83,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-
     // Remember the last response to not give the same one
     let lastResponseByCategory = {};
 
@@ -121,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const keywords = ['help', 'command'];
         if (keywords.some(k => input.toLowerCase().includes(k))) {
             showHelp(responses);
+            return ''; // Don't return anything to avoid conflicting message output
         }
 
         // Handle greetings
@@ -169,15 +172,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (commandEntries.length === 0) {
-            console.log("No available commands.");
+            displayMessage("No available commands.", 'bot');
             return;
         }
 
-        console.log("Available commands:");
+        let helpText = "Available commands:\n";
         commandEntries.forEach(([key, value]) => {
             const description = value.description || "No description provided.";
-            console.log(`- ${key}: ${description}`);
+            helpText += `- ${key}: ${description}\n`;
         });
+
+        // Display the help text in the terminal
+        displayMessage(helpText, 'bot');
     }
 
     // Event listener for user input
@@ -218,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return typing;
     }
 
-    displayWelcomeMessage();
+    // Initialize and load the responses
     loadResponses().then(() => {
         console.log("Responses are ready to be used.");
     });
@@ -226,5 +232,4 @@ document.addEventListener('DOMContentLoaded', function () {
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
     }
-
 });
