@@ -36,7 +36,7 @@ html, body {
     color: #fff;
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 5px;
     overflow: hidden;
     overflow-x: hidden;
 }
