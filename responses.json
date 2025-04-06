@@ -36,13 +36,13 @@
     "category": "portfolio"
   },
 
-  "What's your name?": {
+  "what's your name?": {
     "text": "I'm Alexandra's bot. I don't have a name yet. What's up with that... What's your name?",
     "setAwaitingName": true,
     "description": "Let's you ask about the bot's name."
   },
 
-  "What's her name?": {
+  "what's her name?": {
     "text": "Alexandra Fernlund. What's your name?",
     "setAwaitingName": true,
     "description": "Let's you ask about her name'."
@@ -74,6 +74,11 @@
     ],
     "description": "Gives you a random joke.",
     "category": "fun"
+  },
+
+  "exit terminal": {
+    "description": "Allows you to see the GUI site.",
+    "category": "exit"
   },
 
   "unknown": {
