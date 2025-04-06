@@ -118,6 +118,18 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Responses are still loading... Please try again in a moment.";
         }
 
+        // Show command list when user asks for help or commands
+        if (input === "help" || input === "commands") {
+            let commandList = "Here are the available commands:\n";
+            Object.keys(responses).forEach(key => {
+                const response = responses[key];
+                if (response.category === "commands") {
+                    commandList += `- ${key}: ${response.description}\n`;
+                }
+            });
+            return commandList;
+        }
+
         // Handle greetings
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
