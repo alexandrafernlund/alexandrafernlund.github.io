@@ -12,7 +12,6 @@
       "Hi!",
       "Welcome aboard the terminal express!"
     ],
-    "description": "Greets the user.",
     "category": "general"
   },
 
@@ -22,27 +21,32 @@
       "Want to see sci-fi web magic? Check out the Projects section!",
       "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
     ],
+    "description": "Shows Alexandra's projects",
     "category": "portfolio"
   },
 
   "skills": {
     "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
+    "description": "Shows a list of her technical skillset.",
     "category": "technical"
   },
 
   "work": {
     "text": "She has worked on multiple projects, from personal websites to complex AI applications. Let me know if you'd like to explore any specific ones!",
+    "description": "Shows her previous work experiences.",
     "category": "portfolio"
   },
 
   "your name": {
     "text": "I'm Alexandra's bot. I don't have a name yet. What's up with that... What's your name?",
-    "setAwaitingName": true
+    "setAwaitingName": true,
+    "description": "Let's you ask about the bot's name."
   },
 
   "her name": {
     "text": "Alexandra Fernlund. What's your name?",
-    "setAwaitingName": true
+    "setAwaitingName": true,
+    "description": "Let's you ask about her name'."
   },
 
   "thank you": {
@@ -69,6 +73,7 @@
       "I would tell you a UDP joke... but you might not get it.",
       "There's no place like 127.0.0.1."
     ],
+    "description": "Gives you a random joke.",
     "category": "fun"
   },
 
