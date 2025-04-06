@@ -36,13 +36,13 @@
     "category": "portfolio"
   },
 
-  "your name": {
+  "What's your name?": {
     "text": "I'm Alexandra's bot. I don't have a name yet. What's up with that... What's your name?",
     "setAwaitingName": true,
     "description": "Let's you ask about the bot's name."
   },
 
-  "her name": {
+  "What's her name?": {
     "text": "Alexandra Fernlund. What's your name?",
     "setAwaitingName": true,
     "description": "Let's you ask about her name'."
