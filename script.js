@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Handle jokes
         if (input.includes("joke")) {
-            return getRandomResponse(responses.jokes?.text, "jokes");
+            return getRandomResponse(responses.jokes?.text, "joke");
         }
 
         // Handle keywords like projects, skills, etc.
