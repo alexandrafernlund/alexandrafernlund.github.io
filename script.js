@@ -2,25 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
     let responses = {};
-    let fuseCommands = []; // To store commands and their aliases
     let fuse = null;
 
-    // Sample response loader function
+    // Load responses from JSON
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
 
-            // Prepare Fuse.js commands with aliases
-            fuseCommands = Object.keys(responses).map(cmd => ({
-                key: cmd,
-                aliases: responses[cmd].aliases || [cmd]
-            }));
-
-            // Initialize Fuse.js for fuzzy matching
-            fuse = new Fuse(fuseCommands, {
-                keys: ['aliases'],
-                threshold: 0.3,  // Low threshold for fuzziness
+            // Initialize Fuse.js with response keys
+            fuse = new Fuse(Object.keys(responses), {
+                threshold: 0.3,  // Low threshold for fuzzy matching
                 includeScore: true
             });
 
@@ -31,18 +23,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to process user input and detect intents using NLP
-    function getIntentFromNLP(input) {
-        let doc = nlp(input);  // Process the input text
+    // Function to process user input and get the best matching response
+    function getBotResponse(input) {
+        input = input.toLowerCase().trim();
 
-        // Check for known intents using compromise.js and Fuse.js
+        // Use Fuse.js to search for the best fuzzy match from the keys of responses
         const results = fuse.search(input);
         if (results.length > 0) {
-            return results[0].item.key;  // Return the best matching response
+            const bestMatchKey = results[0].item; // Best matching key from Fuse.js
+            const response = responses[bestMatchKey] || responses.unknown; // Fallback to "unknown" if no match
+            return getRandomResponse(response.text, bestMatchKey);
         }
 
-        // If no match is found in Fuse.js, fall back to "unknown"
-        return 'unknown';
+        // If no match found, fall back to unknown response
+        return getRandomResponse(responses.unknown.text, "unknown");
+    }
+
+    // Get a random response from an array or return the text if not an array
+    function getRandomResponse(response, category = "general") {
+        if (Array.isArray(response)) {
+            let randomResponse;
+            do {
+                randomResponse = response[Math.floor(Math.random() * response.length)];
+            } while (randomResponse === lastResponseByCategory[category]); // Avoid repeating last response
+
+            lastResponseByCategory[category] = randomResponse;
+            return randomResponse;
+        }
+        return response; // Return as-is if it's not an array
     }
 
     // Function to display messages (simulate typing effect)
@@ -71,15 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeMessage(message, sender);
     }
 
-    // Get the response based on the user input
-    function getBotResponse(input) {
-        const intent = getIntentFromNLP(input);
-
-        // Return the appropriate response based on the matched intent
-        const response = responses[intent] || responses.unknown;
-        return response.text;
-    }
-
     // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
@@ -96,5 +95,4 @@ document.addEventListener('DOMContentLoaded', function () {
     loadResponses().then(() => {
         console.log("Responses loaded and ready.");
     });
-
 });
