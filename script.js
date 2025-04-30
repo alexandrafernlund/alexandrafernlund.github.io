@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const output = document.getElementById('output');
     let responses = {};
     let userContext = {};
+    let fuse = null;
+    let fuseCommands = []; // This will hold our command keys and aliases
 
     // Global function to show the terminal and hide the site
     window.showTerminal = function () {
@@ -20,15 +22,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadResponses() {
         try {
-            console.log("Loading responses...");
             const response = await fetch('responses.json');
             responses = await response.json();
-            console.log("Bot responses loaded successfully.");
+    
+            // Prepare Fuse index
+            fuseCommands = Object.keys(responses).map(cmd => ({
+                key: cmd,
+                aliases: responses[cmd].aliases || [cmd]
+            }));
+    
+            fuse = new Fuse(fuseCommands, {
+                keys: ['aliases'],
+                threshold: 0.4 // Fuzzy sensitivity — lower = stricter
+            });
+    
+            console.log("Bot responses loaded and Fuse initialized.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
-    }
+    }    
 
     // Function to display message (character by character)
     function typeMessage(message, sender) {
@@ -85,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-
     // Remember the last response to not give the same one
     let lastResponseByCategory = {};
 
@@ -110,69 +122,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
-
+    
+        // Handle exit
         if (input === "exit terminal" || input === "exit") {
             showMainSite(); // Hides terminal, shows main site
             return "Exiting terminal... Welcome back to the main site!";
         }
-
+    
+        // Responses not ready
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
-
-        // Handle 'help' or 'commands' input
+    
+        // Help/commands
         if (input === "help" || input === "commands") {
             let commandList = "Here are the available commands:\n";
-
-            // Iterate over all responses and show those that have a description (we assume they are commands)
+    
             Object.keys(responses).forEach(key => {
                 const response = responses[key];
-                // Only show responses that have a description
                 if (response.description) {
-                    commandList += `- ${key}: ${response.description}\n`; // Display the command name and its description
+                    commandList += `- ${key}: ${response.description}\n`;
                 }
             });
-
+    
             return commandList;
         }
-
-        // Handle greetings
+    
+        // Greetings
         const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
         for (let pattern of greetingPatterns) {
             if (pattern.test(input)) {
                 return getRandomResponse(responses.greeting.text, "greeting");
             }
         }
-
-        // Handle asking for bot name
+    
+        // Ask for bot name
         if (/what('?s| is) your name\??/.test(input)) {
             userContext.awaitingName = true;
             return getRandomResponse(responses["your name"].text, "your name");
         }
-
-        // Handle user giving their name
+    
+        // User gives their name
         if (userContext.awaitingName) {
             userContext.name = input.charAt(0).toUpperCase() + input.slice(1);
             userContext.awaitingName = false;
             return `Nice to meet you, ${userContext.name}! What would you like to know about Alexandra's work?`;
         }
-
-        // Handle jokes
+    
+        // Joke
         if (input.includes("joke")) {
             return getRandomResponse(responses.joke?.text, "joke");
         }
-
-        // Handle keywords like projects, skills, etc.
-        const keywords = ['projects', 'portfolio', 'skills', 'work'];
-        for (let keyword of keywords) {
-            if (input.includes(keyword)) {
-                const category = keyword;
-                const response = responses[category] || responses["unknown"];
-                return getRandomResponse(response.text, category);
+    
+        // 🔍 Fuse.js fuzzy logic match
+        if (fuse) {
+            const fuseResult = fuse.search(input);
+            if (fuseResult.length > 0) {
+                const bestMatchKey = fuseResult[0].item.key;
+                const response = responses[bestMatchKey] || responses["unknown"];
+                return getRandomResponse(response.text, bestMatchKey);
             }
         }
-
-        // Fallback to unknown
+    
+        // Fallback
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
