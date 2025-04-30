@@ -4,6 +4,20 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
 
+    // Function to toggle between terminal and GUI
+    function toggleView() {
+        const terminal = document.getElementById('chat-terminal');
+        const guiSite = document.getElementById('main-site');
+        
+        if (terminal.style.display === 'none') {
+            terminal.style.display = 'block';
+            guiSite.style.display = 'none';
+        } else {
+            terminal.style.display = 'none';
+            guiSite.style.display = 'block';
+        }
+    }
+
     // Load responses from JSON
     async function loadResponses() {
         try {
@@ -74,7 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (doc.has('exit') || doc.has('goodbye')) {
-            return getRandomResponse(responses.goodbye.text, "general");
+            toggleView();  // Toggle view (hide terminal, show GUI)
+            return;  // Return nothing since we're toggling
         }
 
         if (doc.has('help')) {
@@ -147,7 +162,9 @@ document.addEventListener('DOMContentLoaded', function () {
             userInput.value = '';  // Clear input field
 
             const botMessage = getBotResponse(userMessage);
-            displayMessage(botMessage, 'bot');
+            if (botMessage) {
+                displayMessage(botMessage, 'bot');
+            }
         }
     });
 
