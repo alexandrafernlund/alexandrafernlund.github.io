@@ -3,7 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
     userInput.focus();
     const output = document.getElementById('output');
     let responses = {};
-    let fuse;
+    let fuseCommands = []; // This will hold our command keys
+    let fuse = new Fuse([], {
+        threshold: 0.3, // Low threshold to allow for fuzzy matching (you can tweak this)
+        includeScore: true
+    });
 
     // Global function to show the terminal and hide the site
     window.showTerminal = function () {
@@ -18,30 +22,25 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('main-site').style.display = 'block';
     };
 
-    // Load responses and initialize Fuse
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
+    
+            // Prepare Fuse index using only the command keys (no aliases)
+            fuseCommands = Object.keys(responses);
 
-            // Prepare Fuse index with keys and aliases
-            const fuseCommands = Object.keys(responses).map(cmd => ({
-                key: cmd,
-                aliases: responses[cmd].aliases || [cmd] // Add aliases here
-            }));
-
-            // Initialize Fuse with fuseCommands (contains both keys and aliases)
             fuse = new Fuse(fuseCommands, {
-                keys: ['aliases'], // Searching within aliases
-                threshold: 0.3 // Adjust threshold for fuzziness
+                threshold: 0.3, // Fuzzy sensitivity — lower = stricter
+                includeScore: true
             });
-
+    
             console.log("Bot responses loaded and Fuse initialized.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
-    }
+    }    
 
     // Function to display message (character by character)
     function typeMessage(message, sender) {
@@ -134,9 +133,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Use Fuse.js to search for the best fuzzy match
         const results = fuse.search(input);
+        console.log("Fuse search results:", results); // Debugging log
+
         if (results.length > 0) {
             // Get the best match based on Fuse.js score (lowest score is the best match)
-            const bestMatchKey = results[0].item.key;
+            const bestMatchKey = results[0].item;
             const response = responses[bestMatchKey] || responses["unknown"];
             return getRandomResponse(response.text, bestMatchKey);
         }
