@@ -5,10 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let userContext = {};
     let fuseCommands = []; // This will hold our command keys and aliases
-    let fuse = new Fuse(Object.keys(responses), {
-        threshold: 0.3, // Low threshold to allow for fuzzy matching (you can tweak this)
-        includeScore: true
-    });
+    let fuse;
 
     // Global function to show the terminal and hide the site
     window.showTerminal = function () {
@@ -27,24 +24,25 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
-    
-            // Prepare Fuse index
+
+            // Prepare Fuse index with aliases
             fuseCommands = Object.keys(responses).map(cmd => ({
                 key: cmd,
-                aliases: responses[cmd].aliases || [cmd]
+                aliases: responses[cmd].aliases || [cmd] // Ensure we use aliases or the key itself
             }));
-    
+
+            // Initialize Fuse with the commands and aliases
             fuse = new Fuse(fuseCommands, {
                 keys: ['aliases'],
-                threshold: 0.4 // Fuzzy sensitivity — lower = stricter
+                threshold: 0.3 // Adjust threshold as needed for fuzziness
             });
-    
+
             console.log("Bot responses loaded and Fuse initialized.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
-    }    
+    }
 
     // Function to display message (character by character)
     function typeMessage(message, sender) {
@@ -86,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
             "Hi! I'm Alexandra's bot.",
             "For a list of available commands, type 'help'",
             "You can ask me about her projects, technical skills, or any personal questions you're curious about."
-            
         ];
         let index = 0;
 
@@ -125,26 +122,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
-    
+
         // Handle exit commands
         if (input === "exit terminal" || input === "exit") {
             showMainSite(); // Hides terminal, shows main site
             return "Exiting terminal... Welcome back to the main site!";
         }
-    
+
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
-    
+
         // Use Fuse.js to search for the best fuzzy match
         const results = fuse.search(input);
         if (results.length > 0) {
             // Get the best match based on Fuse.js score (lowest score is the best match)
-            const bestMatchKey = results[0].item;
+            const bestMatchKey = results[0].item.key;
             const response = responses[bestMatchKey] || responses["unknown"];
             return getRandomResponse(response.text, bestMatchKey);
         }
-    
+
         // If no match found, fall back to unknown
         return getRandomResponse(responses.unknown.text, "unknown");
     }
@@ -195,5 +192,4 @@ document.addEventListener('DOMContentLoaded', function () {
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
     }
-
 });
