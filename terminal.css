@@ -23,6 +23,11 @@ html, body {
     width: 100%;
 }
 
+#hero-title {
+    font-size: 1.5em;
+    text-transform: uppercase;
+}
+
 /* Chatbot Terminal Section */
 #chat-terminal {
     position: fixed;
@@ -47,10 +52,9 @@ html, body {
 }
 
     #hero-terminal-title {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         color: #fff;
         font-family: "Press Start 2P", monospace;
-        text-transform: capitalize;
         display: inline-block;
     }
 
