@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     userInput.focus();
     const output = document.getElementById('output');
     let responses = {};
-    let userContext = {};
-    let fuseCommands = []; // This will hold our command keys and aliases
     let fuse;
 
     // Global function to show the terminal and hide the site
@@ -20,21 +18,22 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('main-site').style.display = 'block';
     };
 
+    // Load responses and initialize Fuse
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
 
-            // Prepare Fuse index with aliases
-            fuseCommands = Object.keys(responses).map(cmd => ({
+            // Prepare Fuse index with keys and aliases
+            const fuseCommands = Object.keys(responses).map(cmd => ({
                 key: cmd,
-                aliases: responses[cmd].aliases || [cmd] // Ensure we use aliases or the key itself
+                aliases: responses[cmd].aliases || [cmd] // Add aliases here
             }));
 
-            // Initialize Fuse with the commands and aliases
+            // Initialize Fuse with fuseCommands (contains both keys and aliases)
             fuse = new Fuse(fuseCommands, {
-                keys: ['aliases'],
-                threshold: 0.3 // Adjust threshold as needed for fuzziness
+                keys: ['aliases'], // Searching within aliases
+                threshold: 0.3 // Adjust threshold for fuzziness
             });
 
             console.log("Bot responses loaded and Fuse initialized.");
