@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const output = document.getElementById('output');
     let responses = {};
     let userContext = {};
-    let fuse = null;
     let fuseCommands = []; // This will hold our command keys and aliases
+    let fuse = new Fuse(Object.keys(responses), {
+        threshold: 0.3, // Low threshold to allow for fuzzy matching (you can tweak this)
+        includeScore: true
+    });
 
     // Global function to show the terminal and hide the site
     window.showTerminal = function () {
@@ -123,68 +126,26 @@ document.addEventListener('DOMContentLoaded', function () {
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
     
-        // Handle exit
+        // Handle exit commands
         if (input === "exit terminal" || input === "exit") {
             showMainSite(); // Hides terminal, shows main site
             return "Exiting terminal... Welcome back to the main site!";
         }
     
-        // Responses not ready
         if (Object.keys(responses).length === 0) {
             return "Responses are still loading... Please try again in a moment.";
         }
     
-        // Help/commands
-        if (input === "help" || input === "commands") {
-            let commandList = "Here are the available commands:\n";
-    
-            Object.keys(responses).forEach(key => {
-                const response = responses[key];
-                if (response.description) {
-                    commandList += `- ${key}: ${response.description}\n`;
-                }
-            });
-    
-            return commandList;
+        // Use Fuse.js to search for the best fuzzy match
+        const results = fuse.search(input);
+        if (results.length > 0) {
+            // Get the best match based on Fuse.js score (lowest score is the best match)
+            const bestMatchKey = results[0].item;
+            const response = responses[bestMatchKey] || responses["unknown"];
+            return getRandomResponse(response.text, bestMatchKey);
         }
     
-        // Greetings
-        const greetingPatterns = [/hi\b/, /hello\b/, /hey\b/, /greetings\b/];
-        for (let pattern of greetingPatterns) {
-            if (pattern.test(input)) {
-                return getRandomResponse(responses.greeting.text, "greeting");
-            }
-        }
-    
-        // Ask for bot name
-        if (/what('?s| is) your name\??/.test(input)) {
-            userContext.awaitingName = true;
-            return getRandomResponse(responses["your name"].text, "your name");
-        }
-    
-        // User gives their name
-        if (userContext.awaitingName) {
-            userContext.name = input.charAt(0).toUpperCase() + input.slice(1);
-            userContext.awaitingName = false;
-            return `Nice to meet you, ${userContext.name}! What would you like to know about Alexandra's work?`;
-        }
-    
-        // Joke
-        if (input.includes("joke")) {
-            return getRandomResponse(responses.joke?.text, "joke");
-        }
-    
-        // 🔍 Fuse.js fuzzy logic match
-        if (fuse) {
-            const fuseResult = fuse.search(input);
-            if (fuseResult.length > 0) {
-                const bestMatchKey = fuseResult[0].item.key;
-                const response = responses[bestMatchKey] || responses["unknown"];
-                return getRandomResponse(response.text, bestMatchKey);
-            }
-        }
-    
-        // Fallback
+        // If no match found, fall back to unknown
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
