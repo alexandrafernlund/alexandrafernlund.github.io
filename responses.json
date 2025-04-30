@@ -42,12 +42,6 @@
     "description": "Let's you ask about the bot's name."
   },
 
-  "what's her name?": {
-    "text": "Alexandra Fernlund. What's your name?",
-    "setAwaitingName": true,
-    "description": "Let's you ask about Alexandra's full name'."
-  },
-
   "thank you": {
     "text": [
       "You're welcome, space traveler!",
