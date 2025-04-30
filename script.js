@@ -1,79 +1,22 @@
 document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
-    userInput.focus();
     const output = document.getElementById('output');
     let responses = {};
-    let fuseCommands = []; // This will hold our command keys
-    let fuse = new Fuse([], {
-        threshold: 0.3, // Low threshold to allow for fuzzy matching (you can tweak this)
-        includeScore: true
-    });
+    let lastResponseByCategory = {};
 
-    // Global function to show the terminal and hide the site
-    window.showTerminal = function () {
-        document.getElementById('chat-terminal').style.display = 'block';
-        document.getElementById('main-site').style.display = 'none';
-        userInput.focus();
-    };
-
-    // Global function to show the main site and hide the terminal
-    window.showMainSite = function () {
-        document.getElementById('chat-terminal').style.display = 'none';
-        document.getElementById('main-site').style.display = 'block';
-    };
-
+    // Load responses from JSON
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
-    
-            // Prepare Fuse index using only the command keys (no aliases)
-            fuseCommands = Object.keys(responses);
-
-            fuse = new Fuse(fuseCommands, {
-                threshold: 0.3, // Fuzzy sensitivity — lower = stricter
-                includeScore: true
-            });
-    
-            console.log("Bot responses loaded and Fuse initialized.");
+            displayWelcomeMessage(); // Ensure welcome messages are displayed once responses are loaded
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
-    }    
-
-    // Function to display message (character by character)
-    function typeMessage(message, sender) {
-        const div = document.createElement('div');
-        div.classList.add(sender);
-        output.appendChild(div);
-        scrollToBottom(); // Initial scroll for empty container
-
-        let index = 0;
-
-        function typeNextChar() {
-            if (index < message.length) {
-                div.textContent += message.charAt(index);
-                index++;
-                scrollToBottom(); // Scroll as it types
-                const delay = Math.floor(Math.random() * 60) + 20;
-                setTimeout(typeNextChar, delay);
-            }
-        }
-
-        typeNextChar();
     }
 
-    // Function to display message in output container
-    function displayMessage(message, sender) {
-        const div = document.createElement('div');
-        div.classList.add(sender);
-        output.appendChild(div);
-        scrollToBottom(); // Ensure scroll before typing starts
-        typeMessage(message, sender);
-    }
-
-    // Display welcome message when the terminal is initialized
+    // Function to display welcome messages when the terminal is initialized
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -83,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
             "For a list of available commands, type 'help'",
             "You can ask me about her projects, technical skills, or any personal questions you're curious about."
         ];
+
         let index = 0;
 
         function showNextMessage() {
@@ -96,100 +40,91 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Remember the last response to not give the same one
-    let lastResponseByCategory = {};
+    // Initialize compromise NLP library
+    const nlp = window.nlp;
 
-    function getRandomResponse(response, category = "general") {
-        if (Array.isArray(response)) {
-            let newResponse;
-
-            // Keep trying until we get a new one (or max 10 tries)
-            for (let i = 0; i < 10; i++) {
-                newResponse = response[Math.floor(Math.random() * response.length)];
-                if (newResponse !== lastResponseByCategory[category]) {
-                    break;
-                }
-            }
-
-            lastResponseByCategory[category] = newResponse;
-            return newResponse;
-        }
-
-        return response; // If it's not an array, return as-is
-    }
-
+    // Function to process user input and get the best matching response
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
 
-        // Handle exit commands
-        if (input === "exit terminal" || input === "exit") {
-            showMainSite(); // Hides terminal, shows main site
-            return "Exiting terminal... Welcome back to the main site!";
+        // Use compromise to process the input and detect intents
+        let doc = nlp(input);
+
+        // Simple checks for specific keywords using compromise patterns
+        if (doc.has('joke') || doc.has('funny') || doc.has('laugh')) {
+            return getRandomResponse(responses.joke.text, "fun");
         }
 
-        if (Object.keys(responses).length === 0) {
-            return "Responses are still loading... Please try again in a moment.";
+        if (doc.has('name') || doc.has('who are you')) {
+            return getRandomResponse(responses["what's your name?"].text, "general");
         }
 
-        // Use Fuse.js to search for the best fuzzy match
-        const results = fuse.search(input);
-        console.log("Fuse search results:", results); // Debugging log
-
-        if (results.length > 0) {
-            // Get the best match based on Fuse.js score (lowest score is the best match)
-            const bestMatchKey = results[0].item;
-            const response = responses[bestMatchKey] || responses["unknown"];
-            return getRandomResponse(response.text, bestMatchKey);
+        if (doc.has('exit') || doc.has('goodbye')) {
+            return getRandomResponse(responses.goodbye.text, "general");
         }
 
-        // If no match found, fall back to unknown
+        if (doc.has('help')) {
+            return getRandomResponse(responses.help.text, "commands");
+        }
+
+        // Fallback to unknown if no intent matches
         return getRandomResponse(responses.unknown.text, "unknown");
+    }
+
+    // Get a random response from an array or return the text if not an array
+    function getRandomResponse(response, category = "general") {
+        if (Array.isArray(response)) {
+            let randomResponse;
+            do {
+                randomResponse = response[Math.floor(Math.random() * response.length)];
+            } while (randomResponse === lastResponseByCategory[category]); // Avoid repeating last response
+
+            lastResponseByCategory[category] = randomResponse;
+            return randomResponse;
+        }
+        return response; // Return as-is if it's not an array
+    }
+
+    // Function to display messages (simulate typing effect)
+    function typeMessage(message, sender) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
+        let index = 0;
+
+        function typeNextChar() {
+            if (index < message.length) {
+                div.textContent += message.charAt(index);
+                index++;
+                setTimeout(typeNextChar, Math.random() * 100 + 50);
+            }
+        }
+
+        typeNextChar();
+    }
+
+    // Function to display messages
+    function displayMessage(message, sender) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
+        typeMessage(message, sender);
     }
 
     // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
-
-            // Display user message
             displayMessage(`> ${userMessage}`, 'user');
+            userInput.value = '';  // Clear input field
 
-            // Clear the input field
-            userInput.value = '';
-
-            // Show typing indicator
-            const typingIndicator = displayBotTyping();
-
-            setTimeout(() => {
-                typingIndicator.remove();
-
-                // Get bot's response
-                const botMessage = getBotResponse(userMessage);
-
-                // If bot message exists, display it
-                if (botMessage) {
-                    displayMessage(botMessage, 'bot');
-                }
-            }, 800); // Simulate typing delay
+            const botMessage = getBotResponse(userMessage);
+            displayMessage(botMessage, 'bot');
         }
     });
 
-    // Display bot typing indicator
-    function displayBotTyping() {
-        const typing = document.createElement('div');
-        typing.classList.add('bot', 'typing');
-        typing.textContent = '|';
-        output.appendChild(typing);
-        scrollToBottom();
-        return typing;
-    }
-
-    displayWelcomeMessage();
+    // Load responses and initialize the chatbot
     loadResponses().then(() => {
-        console.log("Responses are ready to be used.");
+        console.log("Responses loaded and ready.");
     });
-
-    function scrollToBottom() {
-        output.scrollTop = output.scrollHeight;
-    }
 });
