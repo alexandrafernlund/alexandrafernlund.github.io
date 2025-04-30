@@ -131,6 +131,12 @@ document.addEventListener('DOMContentLoaded', function () {
         div.classList.add(sender);
         output.appendChild(div);
         typeMessage(message, sender);
+        scrollToBottom(); // Auto-scroll when a message is added
+    }
+
+    // Auto-scroll function
+    function scrollToBottom() {
+        output.scrollTop = output.scrollHeight;
     }
 
     // Event listener for user input
