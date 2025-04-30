@@ -43,6 +43,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize compromise NLP library
     const nlp = window.nlp;
 
+    // Fuse.js setup for fuzzy searching (this will help with spelling mistakes)
+    let fuse;
+    function initializeFuse() {
+        let fuseCommands = Object.keys(responses).map(cmd => ({
+            key: cmd,
+            aliases: [cmd] // You can add more aliases here if you like
+        }));
+
+        fuse = new Fuse(fuseCommands, {
+            keys: ['aliases'],
+            threshold: 0.3 // Low threshold for fuzzy matching
+        });
+    }
+
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
@@ -50,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Use compromise to process the input and detect intents
         let doc = nlp(input);
 
-        // Simple checks for specific keywords using compromise patterns
+        // Check for specific intents using compromise patterns
         if (doc.has('joke') || doc.has('funny') || doc.has('laugh')) {
             return getRandomResponse(responses.joke.text, "fun");
         }
@@ -67,7 +81,15 @@ document.addEventListener('DOMContentLoaded', function () {
             return getRandomResponse(responses.help.text, "commands");
         }
 
-        // Fallback to unknown if no intent matches
+        // Fuzzy search for best match if NLP didn't detect a clear intent
+        const results = fuse.search(input);
+        if (results.length > 0) {
+            const bestMatchKey = results[0].item.key;
+            const response = responses[bestMatchKey] || responses["unknown"];
+            return getRandomResponse(response.text, bestMatchKey);
+        }
+
+        // Fallback to unknown if no match found
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
@@ -126,5 +148,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load responses and initialize the chatbot
     loadResponses().then(() => {
         console.log("Responses loaded and ready.");
+        initializeFuse();  // Initialize Fuse.js after responses are loaded
     });
 });
