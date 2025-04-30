@@ -2,40 +2,47 @@ document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
     let responses = {};
-    let fuse = null;
+    let lastResponseByCategory = {};
 
     // Load responses from JSON
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
-
-            // Initialize Fuse.js with response keys
-            fuse = new Fuse(Object.keys(responses), {
-                threshold: 0.3,  // Low threshold for fuzzy matching
-                includeScore: true
-            });
-
-            console.log("Bot responses loaded and Fuse initialized.");
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
     }
 
+    // Initialize compromise NLP library
+    const nlp = window.nlp;
+
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
 
-        // Use Fuse.js to search for the best fuzzy match from the keys of responses
-        const results = fuse.search(input);
-        if (results.length > 0) {
-            const bestMatchKey = results[0].item; // Best matching key from Fuse.js
-            const response = responses[bestMatchKey] || responses.unknown; // Fallback to "unknown" if no match
-            return getRandomResponse(response.text, bestMatchKey);
+        // Use compromise to process the input and detect intents
+        let doc = nlp(input);
+
+        // Check for specific intents using compromise patterns
+        if (doc.has('joke') || doc.has('funny') || doc.has('laugh')) {
+            return getRandomResponse(responses.joke.text, "fun");
         }
 
-        // If no match found, fall back to unknown response
+        if (doc.has('name') || doc.has('who are you')) {
+            return getRandomResponse(responses["what's your name?"].text, "general");
+        }
+
+        if (doc.has('exit') || doc.has('goodbye')) {
+            return getRandomResponse(responses.goodbye.text, "general");
+        }
+
+        if (doc.has('help')) {
+            return getRandomResponse(responses.help.text, "commands");
+        }
+
+        // Fallback to unknown if no intent matches
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
