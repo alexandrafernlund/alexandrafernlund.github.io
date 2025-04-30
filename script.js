@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Use compromise to process the input and detect intents
         let doc = nlp(input);
 
-        // Check for joke-related requests with multiple variations
-        if (doc.has('joke') || doc.has('funny') || doc.has('laugh') || doc.has('humor') || doc.has('tell me a joke')) {
+        // Check if the input is related to humor or asking for a joke
+        if (doc.has('funny') || doc.has('laugh') || doc.has('humor') || doc.has('joke') || input.includes('be funny')) {
             return getRandomResponse(responses.joke.text, "fun");
         }
 
