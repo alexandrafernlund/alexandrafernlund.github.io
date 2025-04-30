@@ -88,9 +88,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (doc.has('exit') || doc.has('goodbye')) {
-            toggleView();  // Toggle view (hide terminal, show GUI)
-            return;  // Return nothing since we're toggling
-        }
+            const goodbyeMsg = getRandomResponse(responses.goodbye.text, "general");
+            displayMessage(goodbyeMsg, 'bot', () => {
+                toggleView(); // Now runs after typing finishes
+            });
+            return; // Don't proceed to default response logic
+        }        
 
         if (doc.has('help')) {
             return getRandomResponse(responses.help.text, "commands");
@@ -123,31 +126,33 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to display messages (simulate typing effect)
-    function typeMessage(message, sender) {
+    function typeMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
         let index = 0;
-
+    
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
                 setTimeout(typeNextChar, Math.random() * 100 + 50);
+            } else if (callback) {
+                callback(); // Call the callback after typing is done
             }
         }
-
+    
         typeNextChar();
-    }
+    }    
 
     // Function to display messages
-    function displayMessage(message, sender) {
+    function displayMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
-        typeMessage(message, sender);
-        scrollToBottom(); // Auto-scroll when a message is added
-    }
+        typeMessage(message, sender, callback);
+        scrollToBottom();
+    }    
 
     // Auto-scroll function
     function scrollToBottom() {
