@@ -23,11 +23,6 @@ html, body {
     width: 100%;
 }
 
-#main-site-title {
-    font-size: 18px;
-    text-transform: uppercase;
-}
-
 /* Chatbot Terminal Section */
 #chat-terminal {
     position: fixed;
