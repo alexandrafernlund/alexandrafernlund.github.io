@@ -34,7 +34,7 @@ section {
     padding: 6em 2em 4em;
 }
 
-    #hero h1 {
+    .hero h1 {
         font-size: 5rem;
         margin: 0;
         text-align: left;
