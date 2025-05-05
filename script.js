@@ -4,20 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
 
-    // Function to toggle between terminal and GUI
-    function toggleView() {
-        const terminal = document.getElementById('chat-terminal');
-        const guiSite = document.getElementById('main-site');
-        
-        if (terminal.style.display === 'none') {
-            terminal.style.display = 'block';
-            guiSite.style.display = 'none';
-        } else {
-            terminal.style.display = 'none';
-            guiSite.style.display = 'block';
-        }
-    }
-
     // Load responses from JSON
     async function loadResponses() {
         try {
@@ -54,9 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Initialize compromise NLP library
-    const nlp = window.nlp;
-
     // Fuse.js setup for fuzzy searching (this will help with spelling mistakes)
     let fuse;
     function initializeFuse() {
@@ -69,21 +52,40 @@ document.addEventListener('DOMContentLoaded', function () {
             keys: ['aliases'],
             threshold: 0.4 // Slightly forgiving for fuzziness
         });
-    }    
+    }
 
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
-    
+
+        // First, check against all intent patterns
+        const responseKey = matchIntent(input);
+
+        if (responseKey) {
+            return getRandomResponse(responses[responseKey].text, responseKey);
+        }
+
+        // Fallback to fuzzy matching
         const results = fuse.search(input);
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
-            const response = responses[bestMatchKey] || responses["unknown"];
+            const response = responses[bestMatchKey] || responses.unknown;
             return getRandomResponse(response.text, bestMatchKey);
         }
-    
+
         return getRandomResponse(responses.unknown.text, "unknown");
-    }    
+    }
+
+    // Match input to intent
+    function matchIntent(input) {
+        for (const key in responses) {
+            const aliases = responses[key].aliases || [key];
+            if (aliases.some(alias => input.includes(alias.toLowerCase()))) {
+                return key;
+            }
+        }
+        return null;
+    }
 
     // Get a random response from an array or return the text if not an array
     function getRandomResponse(response, category = "general") {
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     
         typeNextChar();
-    }    
+    }
 
     // Function to display messages
     function displayMessage(message, sender, callback) {
@@ -126,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         output.appendChild(div);
         typeMessage(message, sender, callback);
         scrollToBottom();
-    }    
+    }
 
     // Auto-scroll function
     function scrollToBottom() {

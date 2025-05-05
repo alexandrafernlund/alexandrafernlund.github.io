@@ -1,10 +1,10 @@
 {
   "help": {
     "text": ["Displays this command list."],
+    "aliases": ["help", "commands", "what can you do", "how do i use this", "show help", "what are the commands"],
     "category": "commands",
-    "aliases": ["help", "commands", "what can you do", "how do i use this", "show commands"]
+    "description": "Shows a list of available commands."
   },
-
   "greeting": {
     "text": [
       "Hello! How can I help you today?",
@@ -12,83 +12,46 @@
       "Hi!",
       "Welcome aboard the terminal express!"
     ],
+    "aliases": ["hello", "hi", "hey", "yo", "howdy", "greetings", "what's up"],
     "category": "general",
-    "aliases": ["hi", "hello", "hey", "greetings", "yo", "sup"]
+    "description": "Greets the user and offers help."
   },
-
   "projects": {
     "text": [
       "Alexandra's got a Galactic Chatbot and a Terminal Portfolio — ask to learn more!",
       "Want to see sci-fi web magic? Check out the Projects section!",
       "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
     ],
-    "description": "Shows Alexandra's projects",
-    "category": "portfolio",
-    "aliases": ["projects", "what have you built", "show projects", "portfolio", "cool stuff", "work examples"]
+    "description": "Shows Alexandra's projects.",
+    "aliases": ["project", "portfolio", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
+    "category": "portfolio"
   },
-
   "skills": {
     "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
     "description": "Shows a list of her technical skillset.",
-    "category": "technical",
-    "aliases": ["skills", "technical skills", "tech stack", "what do you know", "languages", "tools"]
+    "aliases": ["skills", "tech", "stack", "technologies", "what do you know", "tools", "languages", "experience with"],
+    "category": "technical"
   },
-
   "work": {
     "text": "She has worked on multiple projects, from personal websites to complex AI applications. Let me know if you'd like to explore any specific ones!",
     "description": "Shows her previous work experiences.",
-    "category": "portfolio",
-    "aliases": ["work", "experience", "where have you worked", "job history", "career"]
+    "aliases": ["work", "jobs", "experience", "previous work", "work history", "career", "where have you worked"],
+    "category": "portfolio"
   },
-
-  "what's your name?": {
-    "text": "I'm Alexandra's bot. I don't have a name yet. What's up with that... What's your name?",
-    "setAwaitingName": true,
-    "description": "Let's you ask about the bot's name.",
-    "aliases": ["what's your name", "who are you", "your name", "tell me your name", "bot name"]
-  },
-
-  "thank you": {
-    "text": [
-      "You're welcome, space traveler!",
-      "No prob, I'm just ones and zeros.",
-      "Anytime, friend."
-    ],
-    "category": "general",
-    "aliases": ["thank you", "thanks", "cheers", "thx", "much appreciated"]
-  },
-
   "goodbye": {
     "text": [
       "Warping out! See you soon!",
       "Logging off... Until next time!",
       "Farewell, traveler. Safe journeys!"
     ],
-    "category": "general",
-    "aliases": ["goodbye", "bye", "see you", "exit", "log off", "leave", "quit"]
+    "aliases": ["bye", "goodbye", "exit", "see you", "quit", "leave"],
+    "category": "general"
   },
-
-  "joke": {
-    "text": [
-      "Why did the developer go broke? Because they used up all their cache.",
-      "I would tell you a UDP joke... but you might not get it.",
-      "There's no place like 127.0.0.1."
-    ],
-    "description": "Gives you a random joke.",
-    "category": "fun",
-    "aliases": ["joke", "tell me a joke", "make me laugh", "funny", "say something funny"]
-  },
-
-  "exit terminal": {
-    "description": "Allows you to see the GUI site.",
-    "category": "exit",
-    "aliases": ["exit terminal", "switch to gui", "go to website", "leave terminal", "show site", "exit"]
-  },
-
   "unknown": {
     "text": [
       "Sorry, I didn’t catch that. Could you try again?",
-      "System error: I'm not that smart. Try talking to me like I'm five."
+      "System error: I'm not that smart. Try talking to me like I'm five.",
+      "Oops! Looks like I need more practice. Can you rephrase that?"
     ]
   }
 }
