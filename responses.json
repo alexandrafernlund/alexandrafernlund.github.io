@@ -5,6 +5,7 @@
     "category": "commands",
     "description": "Shows a list of available commands."
   },
+
   "greeting": {
     "text": [
       "Hello! How can I help you today?",
@@ -16,6 +17,7 @@
     "category": "general",
     "description": "Greets the user and offers help."
   },
+
   "projects": {
     "text": [
       "Alexandra's got a Galactic Chatbot and a Terminal Portfolio — ask to learn more!",
@@ -26,18 +28,32 @@
     "aliases": ["project", "portfolio", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
     "category": "portfolio"
   },
+
   "skills": {
     "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
     "description": "Shows a list of her technical skillset.",
     "aliases": ["skills", "tech", "stack", "technologies", "what do you know", "tools", "languages", "experience with"],
     "category": "technical"
   },
+
   "work": {
     "text": "She has worked on multiple projects, from personal websites to complex AI applications. Let me know if you'd like to explore any specific ones!",
     "description": "Shows her previous work experiences.",
     "aliases": ["work", "jobs", "experience", "previous work", "work history", "career", "where have you worked"],
     "category": "portfolio"
   },
+
+  "joke": {
+  "text": [
+    "How many programmers does it take to change a lightbulb? None, that's a hardware problem!",
+    "I told my computer I needed a break, and now it won't stop sending me Kit-Kats.",
+    "What's the object-oriented way to become rich? Inherit!",
+    ""
+  ],
+  "aliases": ["tell joke", "make me laugh", "tell me a joke", "joke time"],
+  "category": "funny"
+},
+
   "goodbye": {
     "text": [
       "Warping out! See you soon!",
@@ -47,6 +63,7 @@
     "aliases": ["bye", "goodbye", "exit", "see you", "quit", "leave"],
     "category": "general"
   },
+
   "unknown": {
     "text": [
       "Sorry, I didn’t catch that. Could you try again?",

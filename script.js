@@ -50,31 +50,36 @@ document.addEventListener('DOMContentLoaded', function () {
     
         fuse = new Fuse(fuseCommands, {
             keys: ['aliases'],
-            threshold: 0.4 // Slightly forgiving for fuzziness
+            threshold: 0.2 // Slightly forgiving for fuzziness
         });
     }
 
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
+        console.log('User input:', input); // Log user input
         input = input.toLowerCase().trim();
-
+    
         // First, check against all intent patterns
         const responseKey = matchIntent(input);
-
+        console.log('Matched responseKey:', responseKey); // Log matched response
+    
         if (responseKey) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
-
+    
         // Fallback to fuzzy matching
         const results = fuse.search(input);
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
             const response = responses[bestMatchKey] || responses.unknown;
+            console.log('Fuzzy match response:', bestMatchKey);
             return getRandomResponse(response.text, bestMatchKey);
         }
-
+    
+        console.log('No match, using unknown response');
         return getRandomResponse(responses.unknown.text, "unknown");
     }
+    
 
     // Match input to intent
     function matchIntent(input) {
