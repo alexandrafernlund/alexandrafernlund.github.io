@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         fuse = new Fuse(fuseCommands, {
             keys: ['aliases'],
-            threshold: 0.2 // Slightly forgiving for fuzziness
+            threshold: 0.4
         });
     }
 
