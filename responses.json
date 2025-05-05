@@ -44,15 +44,14 @@
   },
 
   "joke": {
-  "text": [
-    "How many programmers does it take to change a lightbulb? None, that's a hardware problem!",
-    "I told my computer I needed a break, and now it won't stop sending me Kit-Kats.",
-    "What's the object-oriented way to become rich? Inherit!",
-    ""
-  ],
-  "aliases": ["tell joke", "make me laugh", "tell me a joke", "joke time"],
-  "category": "funny"
-},
+    "text": [
+      "How many programmers does it take to change a lightbulb? None, that's a hardware problem!",
+      "I told my computer I needed a break, and now it won't stop sending me Kit-Kats.",
+      "What's the object-oriented way to become rich? Inherit!"
+    ],
+    "aliases": ["tell joke", "make me laugh", "tell me a joke", "joke time"],
+    "category": "funny"
+  },
 
   "goodbye": {
     "text": [
