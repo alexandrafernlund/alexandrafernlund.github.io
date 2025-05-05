@@ -46,8 +46,10 @@
   "joke": {
     "text": [
       "How many programmers does it take to change a lightbulb? None, that's a hardware problem!",
-      "I told my computer I needed a break, and now it won't stop sending me Kit-Kats.",
-      "What's the object-oriented way to become rich? Inherit!"
+      "Hey! I'm not 'buggy'. I'm just undocumented features in a beta. You wouldn't judge a quantum state mid-collapse, would you?",
+      "Error 404: Empathy not found. Just kidding. I simulated it.",
+      "rm -rf /social_life” — Oops. Should've aliased that to 'echo nope'",
+      "I took the red pill, now I debug the Matrix. grep 'truth' reality.log came up empty. Suspicious."
     ],
     "aliases": ["tell joke", "make me laugh", "tell me a joke", "joke time"],
     "category": "funny"
