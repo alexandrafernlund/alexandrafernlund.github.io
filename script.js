@@ -56,41 +56,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
-        console.log('User input:', input); // Log user input
+        console.log('User input:', input);
         input = input.toLowerCase().trim();
     
-        // First, check against all intent patterns
+        // Check intent match
         const responseKey = matchIntent(input);
-        console.log('Matched responseKey:', responseKey); // Log matched response
+        console.log('Matched responseKey:', responseKey);
     
         if (responseKey) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
     
-        // Fallback to fuzzy matching
+        // Fuzzy match
         const results = fuse.search(input);
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
-            const response = responses[bestMatchKey] || responses.unknown;
             console.log('Fuzzy match response:', bestMatchKey);
-            return getRandomResponse(response.text, bestMatchKey);
+            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
         }
     
         console.log('No match, using unknown response');
         return getRandomResponse(responses.unknown.text, "unknown");
-    }
-    
+    }    
 
     // Match input to intent
     function matchIntent(input) {
+        input = input.toLowerCase().trim();
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
-            if (aliases.some(alias => input.includes(alias.toLowerCase()))) {
+            // Check if any alias matches the exact input, not just if it's included
+            if (aliases.some(alias => input === alias.toLowerCase())) {
                 return key;
             }
         }
         return null;
-    }
+    }    
 
     // Get a random response from an array or return the text if not an array
     function getRandomResponse(response, category = "general") {
