@@ -60,56 +60,30 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fuse.js setup for fuzzy searching (this will help with spelling mistakes)
     let fuse;
     function initializeFuse() {
-        let fuseCommands = Object.keys(responses).map(cmd => ({
-            key: cmd,
-            aliases: [cmd] // You can add more aliases here if you like
+        let fuseCommands = Object.entries(responses).map(([key, value]) => ({
+            key,
+            aliases: value.aliases || [key]
         }));
-
+    
         fuse = new Fuse(fuseCommands, {
             keys: ['aliases'],
-            threshold: 0.3 // Low threshold for fuzzy matching
+            threshold: 0.4 // Slightly forgiving for fuzziness
         });
-    }
+    }    
 
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
         input = input.toLowerCase().trim();
-
-        // Use compromise to process the input and detect intents
-        let doc = nlp(input);
-
-        // Check if the input is related to humor or asking for a joke
-        if (doc.has('funny') || doc.has('laugh') || doc.has('humor') || doc.has('joke') || input.includes('be funny')) {
-            return getRandomResponse(responses.joke.text, "fun");
-        }
-
-        if (doc.has('name') || doc.has('who are you')) {
-            return getRandomResponse(responses["what's your name?"].text, "general");
-        }
-
-        if (doc.has('exit') || doc.has('goodbye')) {
-            const goodbyeMsg = getRandomResponse(responses.goodbye.text, "general");
-            displayMessage(goodbyeMsg, 'bot', () => {
-                toggleView(); // Now runs after typing finishes
-            });
-            return; // Don't proceed to default response logic
-        }        
-
-        if (doc.has('help')) {
-            return getRandomResponse(responses.help.text, "commands");
-        }
-
-        // Fuzzy search for best match if NLP didn't detect a clear intent
+    
         const results = fuse.search(input);
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
             const response = responses[bestMatchKey] || responses["unknown"];
             return getRandomResponse(response.text, bestMatchKey);
         }
-
-        // Fallback to unknown if no match found
+    
         return getRandomResponse(responses.unknown.text, "unknown");
-    }
+    }    
 
     // Get a random response from an array or return the text if not an array
     function getRandomResponse(response, category = "general") {

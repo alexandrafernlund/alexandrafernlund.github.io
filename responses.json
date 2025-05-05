@@ -1,7 +1,8 @@
 {
   "help": {
-    "text": [ "Displays this command list." ],
-    "category": "commands"
+    "text": ["Displays this command list."],
+    "category": "commands",
+    "aliases": ["help", "commands", "what can you do", "how do i use this", "show commands"]
   },
 
   "greeting": {
@@ -11,7 +12,8 @@
       "Hi!",
       "Welcome aboard the terminal express!"
     ],
-    "category": "general"
+    "category": "general",
+    "aliases": ["hi", "hello", "hey", "greetings", "yo", "sup"]
   },
 
   "projects": {
@@ -21,25 +23,29 @@
       "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
     ],
     "description": "Shows Alexandra's projects",
-    "category": "portfolio"
+    "category": "portfolio",
+    "aliases": ["projects", "what have you built", "show projects", "portfolio", "cool stuff", "work examples"]
   },
 
   "skills": {
     "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
     "description": "Shows a list of her technical skillset.",
-    "category": "technical"
+    "category": "technical",
+    "aliases": ["skills", "technical skills", "tech stack", "what do you know", "languages", "tools"]
   },
 
   "work": {
     "text": "She has worked on multiple projects, from personal websites to complex AI applications. Let me know if you'd like to explore any specific ones!",
     "description": "Shows her previous work experiences.",
-    "category": "portfolio"
+    "category": "portfolio",
+    "aliases": ["work", "experience", "where have you worked", "job history", "career"]
   },
 
   "what's your name?": {
     "text": "I'm Alexandra's bot. I don't have a name yet. What's up with that... What's your name?",
     "setAwaitingName": true,
-    "description": "Let's you ask about the bot's name."
+    "description": "Let's you ask about the bot's name.",
+    "aliases": ["what's your name", "who are you", "your name", "tell me your name", "bot name"]
   },
 
   "thank you": {
@@ -48,7 +54,8 @@
       "No prob, I'm just ones and zeros.",
       "Anytime, friend."
     ],
-    "category": "general"
+    "category": "general",
+    "aliases": ["thank you", "thanks", "cheers", "thx", "much appreciated"]
   },
 
   "goodbye": {
@@ -57,7 +64,8 @@
       "Logging off... Until next time!",
       "Farewell, traveler. Safe journeys!"
     ],
-    "category": "general"
+    "category": "general",
+    "aliases": ["goodbye", "bye", "see you", "exit", "log off", "leave", "quit"]
   },
 
   "joke": {
@@ -67,12 +75,14 @@
       "There's no place like 127.0.0.1."
     ],
     "description": "Gives you a random joke.",
-    "category": "fun"
+    "category": "fun",
+    "aliases": ["joke", "tell me a joke", "make me laugh", "funny", "say something funny"]
   },
 
   "exit terminal": {
     "description": "Allows you to see the GUI site.",
-    "category": "exit"
+    "category": "exit",
+    "aliases": ["exit terminal", "switch to gui", "go to website", "leave terminal", "show site", "exit"]
   },
 
   "unknown": {
