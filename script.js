@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastResponseByCategory = {};
 
     // Toggle between terminal and GUI views
-function toggleView() {
-    const terminal = document.getElementById('chat-terminal');
-    const guiSite = document.getElementById('main-site');
+    function toggleView() {
+        const terminal = document.getElementById('chat-terminal');
+        const guiSite = document.getElementById('main-site');
 
     if (terminal && guiSite) {
         terminal.style.display = 'none';
