@@ -183,4 +183,10 @@ function toggleView() {
         console.log("Responses loaded and ready.");
         initializeFuse();  // Initialize Fuse.js after responses are loaded
     });
+
+    function showTerminal() {
+        document.getElementById('main-site').style.display = 'none';
+        document.getElementById('chat-terminal').style.display = 'block';
+    }
+    
 });
