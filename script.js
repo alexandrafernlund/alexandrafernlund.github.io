@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const response = await fetch('responses.json');
             responses = await response.json();
-            displayWelcomeMessage(); // Ensure welcome messages are displayed once responses are loaded
+            console.log("Loaded responses:", responses);  // Log the loaded responses for debugging
+            displayWelcomeMessage();  // Ensure welcome messages are displayed once responses are loaded
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
@@ -52,16 +53,17 @@ document.addEventListener('DOMContentLoaded', function () {
             keys: ['aliases'],
             threshold: 0.4
         });
+        console.log('Fuse.js initialized:', fuse);  // Log Fuse.js initialization for debugging
     }
 
     // Function to process user input and get the best matching response
     function getBotResponse(input) {
-        console.log('User input:', input);
+        console.log('User input:', input);  // Log the user input for debugging
         input = input.toLowerCase().trim();
     
         // Check intent match
         const responseKey = matchIntent(input);
-        console.log('Matched responseKey:', responseKey);
+        console.log('Matched responseKey:', responseKey);  // Log the matched response key
     
         if (responseKey) {
             return getRandomResponse(responses[responseKey].text, responseKey);
@@ -69,28 +71,28 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Fuzzy match
         const results = fuse.search(input);
+        console.log("Fuse search results:", results);  // Log the fuzzy search results for debugging
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
-            console.log('Fuzzy match response:', bestMatchKey);
+            console.log('Fuzzy match response:', bestMatchKey);  // Log the best match
             return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
         }
     
         console.log('No match, using unknown response');
         return getRandomResponse(responses.unknown.text, "unknown");
-    }    
+    }
 
     // Match input to intent
     function matchIntent(input) {
-        input = input.toLowerCase().trim();
+        input = input.trim().toLowerCase();  // Trim and lower case first
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
-            // Check if any alias matches the exact input, not just if it's included
-            if (aliases.some(alias => input === alias.toLowerCase())) {
+            if (aliases.some(alias => input === alias.trim().toLowerCase())) {  // Ensure trimming and lowercasing
                 return key;
             }
         }
         return null;
-    }    
+    }
 
     // Get a random response from an array or return the text if not an array
     function getRandomResponse(response, category = "general") {
@@ -144,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
+            console.log('User message:', userMessage);  // Log the input message
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';  // Clear input field
 
