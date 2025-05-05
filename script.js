@@ -145,6 +145,18 @@ document.addEventListener('DOMContentLoaded', function () {
             return responseText;
         }
 
+        if (responseKey === 'help') {
+            let helpMessage = "Here are the available commands:\n\n";
+            for (const key in responses) {
+                const aliases = responses[key].aliases ? ` (aliases: ${responses[key].aliases.join(', ')})` : '';
+                const description = Array.isArray(responses[key].text)
+                    ? responses[key].text[0]
+                    : responses[key].text;
+                helpMessage += `• ${key}${aliases}: ${description}\n`;
+            }
+            return helpMessage;
+        }        
+
         // Fuzzy match
         const results = fuse.search(input);
         if (results.length > 0) {
