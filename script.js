@@ -4,6 +4,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
 
+    // Toggle between terminal and GUI views
+function toggleView() {
+    const terminal = document.getElementById('chat-terminal');
+    const guiSite = document.getElementById('main-site');
+
+    if (terminal && guiSite) {
+        terminal.style.display = 'none';
+        guiSite.style.display = 'block';
+    }
+}
+
     // Load responses from JSON
     async function loadResponses() {
         try {
@@ -66,8 +77,18 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Matched responseKey:', responseKey);  // Log the matched response key
     
         if (responseKey) {
-            return getRandomResponse(responses[responseKey].text, responseKey);
-        }
+            const responseText = getRandomResponse(responses[responseKey].text, responseKey);
+            
+            // If user typed 'goodbye' or 'exit', trigger toggle after typing
+            if (responseKey === 'goodbye' || responseKey === 'exit') {
+                displayMessage(responseText, 'bot', () => {
+                    toggleView();
+                });
+                return null; // Don't display again later
+            }
+        
+            return responseText;
+        }        
     
         // Fuzzy match
         const results = fuse.search(input);
@@ -151,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
             userInput.value = '';  // Clear input field
 
             const botMessage = getBotResponse(userMessage);
-            if (botMessage) {
+            if (typeof botMessage === 'string') {
                 displayMessage(botMessage, 'bot');
-            }
+            }            
         }
     });
 
