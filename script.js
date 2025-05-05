@@ -3,12 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const output = document.getElementById('output');
     let responses = {};
     let lastResponseByCategory = {};
+    let fuse;
 
     // Toggle between terminal and GUI views
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
-
         if (terminal && guiSite) {
             terminal.style.display = 'none';
             guiSite.style.display = 'block';
@@ -22,13 +22,14 @@ document.addEventListener('DOMContentLoaded', function () {
             responses = await response.json();
             console.log("Loaded responses:", responses);
             displayWelcomeMessage();
+            initializeFuse();
         } catch (error) {
             console.error("Error loading responses.json:", error);
             responses = {};
         }
     }
 
-    // Welcome messages
+    // Show welcome message on boot
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -51,9 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Fuse.js setup
-    let fuse;
     function initializeFuse() {
-        let fuseCommands = Object.entries(responses).map(([key, value]) => ({
+        const fuseCommands = Object.entries(responses).map(([key, value]) => ({
             key,
             aliases: value.aliases || [key]
         }));
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Fuse.js initialized:', fuse);
     }
 
-    // Match exact aliases
+    // Match exact command aliases
     function matchIntent(input) {
         input = input.trim().toLowerCase();
         for (const key in responses) {
@@ -77,21 +77,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Random response picker
+    // Avoid repeating last response
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
             do {
                 randomResponse = response[Math.floor(Math.random() * response.length)];
             } while (randomResponse === lastResponseByCategory[category]);
-
             lastResponseByCategory[category] = randomResponse;
             return randomResponse;
         }
         return response;
     }
 
-    // Typing animation
+    // Display typing effect
     function typeMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -111,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();
     }
 
-    // Display message with typing effect
     function displayMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -120,19 +118,29 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     }
 
-    // Auto-scroll
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Core logic to get bot response
     function getBotResponse(input) {
         console.log('User input:', input);
         input = input.toLowerCase().trim();
 
-        // Exact match
         const responseKey = matchIntent(input);
         console.log('Matched responseKey:', responseKey);
+
+        // Special handling for help
+        if (responseKey === 'help') {
+            let helpMessage = "Here are the available commands:\n\n";
+            for (const key in responses) {
+                const aliases = responses[key].aliases ? ` (aliases: ${responses[key].aliases.join(', ')})` : '';
+                const description = Array.isArray(responses[key].text)
+                    ? responses[key].text[0]
+                    : responses[key].text;
+                helpMessage += `• ${key}${aliases}: ${description}\n`;
+            }
+            return helpMessage;
+        }
 
         if (responseKey) {
             const responseText = getRandomResponse(responses[responseKey].text, responseKey);
@@ -145,19 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return responseText;
         }
 
-        if (responseKey === 'help') {
-            let helpMessage = "Here are the available commands:\n\n";
-            for (const key in responses) {
-                const aliases = responses[key].aliases ? ` (aliases: ${responses[key].aliases.join(', ')})` : '';
-                const description = Array.isArray(responses[key].text)
-                    ? responses[key].text[0]
-                    : responses[key].text;
-                helpMessage += `• ${key}${aliases}: ${description}\n`;
-            }
-            return helpMessage;
-        }        
-
-        // Fuzzy match
         const results = fuse.search(input);
         if (results.length > 0) {
             const bestMatchKey = results[0].item.key;
@@ -174,11 +169,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return "I'm not sure how to respond to that.";
     }
 
-    // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
-            console.log('User message:', userMessage);
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
 
@@ -189,13 +182,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Start bot
-    loadResponses().then(() => {
-        console.log("Responses loaded and ready.");
-        initializeFuse();
-    });
+    // Initialize
+    loadResponses();
 
-    // GUI toggle function (if used elsewhere)
+    // Optional: show terminal manually
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
