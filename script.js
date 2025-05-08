@@ -161,10 +161,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
-        // Handle exact match for goodbye/exit
+        // Handle exit or goodbye
         if (responseKey === 'goodbye' || responseKey === 'exit') {
             const responseText = getRandomResponse(responses[responseKey].text, responseKey);
-            displayMessage(responseText, 'bot', () => toggleView());
+            displayMessage(responseText, 'bot', () => {
+                // After the exit message, switch to the GUI
+                toggleView();  // Hide the terminal, show the GUI
+            });
             return null;
         }
 
