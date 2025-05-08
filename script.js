@@ -9,16 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
-    
-        if (terminal.style.display === 'none') {
-            // Show terminal, hide GUI
-            terminal.style.display = 'block';
-            guiSite.style.display = 'none';
-        } else {
-            // Show GUI, hide terminal
-            terminal.style.display = 'none';
-            guiSite.style.display = 'block';
-        }
+
     }    
 
     // Load responses
