@@ -34,7 +34,7 @@ html, body {
     height: 100vh;
     background-color: #000;
     color: #fff;
-    display: none;
+    display: block;
     transition: opacity 0.3s ease-out;
     flex-direction: column;
     padding: 15px;
@@ -45,6 +45,10 @@ html, body {
 #chat-terminal.active {
     display: block;
     opacity: 1;
+}
+
+#chat-terminal:not(.active) {
+    display: none;
 }
 
 .hero-terminal {

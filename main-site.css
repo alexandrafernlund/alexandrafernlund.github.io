@@ -32,11 +32,12 @@ section {
 #main-site {
     overflow: hidden;
     height: 0;
-    visibility: hidden;
+    display: none;
 }
+
 #main-site.active {
     height: auto;
-    visibility: visible;
+    display: block;
 }
 
 
