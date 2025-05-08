@@ -135,6 +135,14 @@ document.addEventListener('DOMContentLoaded', function () {
             verbs = nouns = [];
             isQuestion = false;
         }
+
+        console.log("NLP output:", {
+            normalized,
+            verbs,
+            nouns,
+            isQuestion
+        });        
+
         // Try matching using normalized input, fall back to cleaned input
         let responseKey = matchIntent(normalized);
         if (!responseKey) {
