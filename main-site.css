@@ -29,6 +29,17 @@ section {
     margin: auto;
 }
 
+#main-site {
+    overflow: hidden;
+    height: 0;
+    visibility: hidden;
+}
+#main-site.active {
+    height: auto;
+    visibility: visible;
+}
+
+
 .hero {
     text-align: left;
     padding: 6em 2em 4em;

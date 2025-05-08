@@ -7,14 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Toggle between terminal and GUI views
     function toggleView() {
-        const terminal = document.getElementById('chat-terminal');
-        const guiSite = document.getElementById('main-site');
-        if (terminal && guiSite) {
-            terminal.style.display = 'none';
-            guiSite.style.display = 'block';
-        }
-    }
+    const terminal = document.getElementById('chat-terminal');
+    const guiSite = document.getElementById('main-site');
 
+    if (terminal && guiSite) {
+        // Add 'active' to #main-site to show it
+        guiSite.classList.toggle('active');
+        
+        // Remove 'active' from #chat-terminal to hide it
+        terminal.classList.toggle('active');
+    }
+}
     // Load responses
     async function loadResponses() {
         try {
@@ -118,49 +121,70 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Generate response
     function getBotResponse(input) {
-        const cleanedInput = input.toLowerCase().trim();
+    const cleanedInput = input.toLowerCase().trim();
 
-        // Check exact match first
-        const responseKey = matchIntent(cleanedInput);
-        if (responseKey === 'goodbye' || responseKey === 'exit') {
-            const responseText = getRandomResponse(responses[responseKey].text, responseKey);
+    // Apply NLP to input
+    let normalized, verbs, nouns, isQuestion;
+    try {
+        const doc = nlp(input);
+        normalized = doc.normalize().out('text');
+        verbs = doc.verbs().out('array');
+        nouns = doc.nouns().out('array');
+        isQuestion = doc.questions().length > 0;
+    } catch (err) {
+        console.error("NLP error:", err);
+        normalized = input;
+        verbs = nouns = [];
+        isQuestion = false;
+    }
+    // Try matching using normalized input, fall back to cleaned input
+    let responseKey = matchIntent(normalized);
+    if (!responseKey) {
+        responseKey = matchIntent(cleanedInput);
+    }
+    console.log('Matched responseKey:', responseKey);
+
+    // Fuzzy results (used for help fallback or when no exact match found)
+    const fuzzyResults = fuse.search(cleanedInput);
+    const fuzzyKey = fuzzyResults[0]?.item.key;
+
+    // Special case: help command (exact or fuzzy)
+    if (responseKey === 'help' || fuzzyKey === 'help') {
+        let helpMessage = "Here are the available commands:\n\n";
+        for (const key in responses) {
+            const description = responses[key].description || "No description provided.";
+            helpMessage += `• ${key}: ${description}\n`;
+        }
+        return helpMessage;
+    }
+
+    // Handle exact match for goodbye/exit
+    if (responseKey === 'goodbye' || responseKey === 'exit') {
+        const responseText = getRandomResponse(responses[responseKey].text, responseKey);
+        displayMessage(responseText, 'bot', () => toggleView());
+        return null;
+    }
+
+    // If exact match found
+    if (responseKey) {
+        return getRandomResponse(responses[responseKey].text, responseKey);
+    }
+
+    // Fuzzy fallback
+    if (fuzzyResults.length > 0) {
+        const bestMatchKey = fuzzyResults[0].item.key;
+        const responseText = getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
+
+        if (bestMatchKey === 'goodbye' || bestMatchKey === 'exit') {
             displayMessage(responseText, 'bot', () => toggleView());
             return null;
         }
 
-        // Special help handler — exact or fuzzy match
-        if (
-            responseKey === 'help' ||
-            fuse.search(cleanedInput)[0]?.item.key === 'help'
-        ) {
-            let helpMessage = "Here are the available commands:\n\n";
-            for (const key in responses) {
-                const description = responses[key].description || "No description provided.";
-                helpMessage += `• ${key}: ${description}\n`;
-            }
-            return helpMessage;
-        }
+        return responseText;
+    }
 
-        // If found via exact alias match
-        if (responseKey) {
-            return getRandomResponse(responses[responseKey].text, responseKey);
-        }
-
-        // Fuzzy fallback
-        const results = fuse.search(cleanedInput);
-        if (results.length > 0) {
-            const bestMatchKey = results[0].item.key;
-            const responseText = getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-
-            if (bestMatchKey === 'goodbye' || bestMatchKey === 'exit') {
-                displayMessage(responseText, 'bot', () => toggleView());
-                return null;
-            }
-
-            return responseText;
-        }
-
-        return "I'm not sure how to respond to that.";
+    // Default response if no match found
+    return "I'm not sure how to respond to that.";
     }
 
     // Listen for Enter key
