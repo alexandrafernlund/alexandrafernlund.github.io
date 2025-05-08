@@ -31,8 +31,9 @@ section {
 
 #main-site {
     overflow: hidden;
-    height: 0;
-    display: none;
+    display: block;
+    position: relative;
+    z-index: 1;
 }
 
 #main-site.active {

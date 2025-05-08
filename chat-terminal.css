@@ -40,6 +40,7 @@ html, body {
     padding: 15px;
     overflow: hidden;
     overflow-x: hidden;
+    z-index: 2;
 }
 
 #chat-terminal.active {
