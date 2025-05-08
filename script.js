@@ -10,14 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
 
-        // If the terminal is visible, hide it and show the GUI
-        if (terminal.style.display !== 'none') {
+        if (terminal && guiSite) {
             terminal.style.display = 'none';
             guiSite.style.display = 'block';
-        } else {
-            // If the terminal is hidden, show it and hide the GUI
-            terminal.style.display = 'block';
-            guiSite.style.display = 'none';
         }
     }    
 
