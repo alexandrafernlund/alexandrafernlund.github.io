@@ -9,15 +9,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
-
-        if (terminal && guiSite) {
-            // Add 'active' to #main-site to show it
-            guiSite.classList.toggle('active');
-            
-            // Remove 'active' from #chat-terminal to hide it
-            terminal.classList.toggle('active');
+    
+        if (terminal.style.display === 'none') {
+            // Show terminal, hide GUI
+            terminal.style.display = 'block';
+            guiSite.style.display = 'none';
+        } else {
+            // Show GUI, hide terminal
+            terminal.style.display = 'none';
+            guiSite.style.display = 'block';
         }
-    }
+    }    
 
     // Load responses
     async function loadResponses() {
