@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const terminal = document.getElementById('chat-terminal');
     const guiSite = document.getElementById('main-site');
 
-    if (terminal && guiSite) {
-        // Add 'active' to #main-site to show it
-        guiSite.classList.toggle('active');
-        
-        // Remove 'active' from #chat-terminal to hide it
-        terminal.classList.toggle('active');
+        if (terminal && guiSite) {
+            // Add 'active' to #main-site to show it
+            guiSite.classList.toggle('active');
+            
+            // Remove 'active' from #chat-terminal to hide it
+            terminal.classList.toggle('active');
+        }
     }
-}
     // Load responses
     async function loadResponses() {
         try {
