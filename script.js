@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
-
+    
         // Apply NLP to input
         let normalized, verbs, nouns, isQuestion;
         try {
@@ -135,26 +135,32 @@ document.addEventListener('DOMContentLoaded', function () {
             verbs = nouns = [];
             isQuestion = false;
         }
-
-        console.log("NLP output:", {
-            normalized,
-            verbs,
-            nouns,
-            isQuestion
-        });        
-
-        // Try matching using normalized input, fall back to cleaned input
+    
+        // First, try exact alias match
         let responseKey = matchIntent(normalized);
         if (!responseKey) {
             responseKey = matchIntent(cleanedInput);
         }
-        console.log('Matched responseKey:', responseKey);
-
+    
+        // If still no responseKey, try to dynamically match based on extracted nouns and verbs
+        if (!responseKey) {
+            for (const key in responses) {
+                const aliases = responses[key].aliases || [key];
+                // Check if any noun or verb in the input matches any of the response aliases
+                if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
+                    responseKey = key;
+                    break; // Stop once we find a match
+                }
+            }
+        }
+    
+        console.log("Response Key (after NLP):", responseKey);
+    
         // Fuzzy results (used for help fallback or when no exact match found)
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
-
-        // Special case: help command (exact or fuzzy)
+    
+        // Handle special cases like "help"
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -163,38 +169,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return helpMessage;
         }
-
-        // Handle exit or goodbye
-        if (responseKey === 'goodbye' || responseKey === 'exit') {
-            const responseText = getRandomResponse(responses[responseKey].text, responseKey);
-            displayMessage(responseText, 'bot', () => {
-                // After the exit message, switch to the GUI
-                toggleView();  // Hide the terminal, show the GUI
-            });
-            return null;
-        }
-
-        // If exact match found
-        if (responseKey) {
-            return getRandomResponse(responses[responseKey].text, responseKey);
-        }
-
-        // Fuzzy fallback
-        if (fuzzyResults.length > 0) {
+    
+        // If no match found, use fuzzy logic (helpful for partial matches)
+        if (!responseKey && fuzzyResults.length > 0) {
             const bestMatchKey = fuzzyResults[0].item.key;
-            const responseText = getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-
-            if (bestMatchKey === 'goodbye' || bestMatchKey === 'exit') {
-                displayMessage(responseText, 'bot', () => toggleView());
-                return null;
-            }
-
-            return responseText;
+            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
         }
-
-        // Default response if no match found
-        return "I'm not sure how to respond to that.";
-    }
+    
+        // Default response if no match
+        return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
+    }    
 
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
