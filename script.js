@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const fuseCommands = [];
         for (const [key, value] of Object.entries(responses)) {
             const aliases = value.aliases || [];
-            for (const alias of aliases) {
+            aliases.forEach(alias => {
                 fuseCommands.push({
                     key: key,
                     alias: alias.toLowerCase()
                 });
-            }
+            });
         }
         console.log("Fuse commands initialized:", fuseCommands); // Debug log
         fuse = new Fuse(fuseCommands, {
