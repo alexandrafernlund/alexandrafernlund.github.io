@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastResponseByCategory = {};
     let fuse;
 
-    // Toggle between terminal and GUI views
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Load responses
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
@@ -27,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Welcome messages
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -48,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Fuse.js fuzzy matching setup
     function initializeFuse() {
         const fuseCommands = [];
         for (const [key, value] of Object.entries(responses)) {
@@ -68,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Exact alias match
     function matchIntent(input) {
         input = input.trim().toLowerCase();
         for (const key in responses) {
@@ -80,32 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Noun/verb match
-    function matchByNounsAndVerbs(nouns, verbs) {
-        for (const key in responses) {
-            const aliases = responses[key].aliases || [key];
-            if (
-                nouns.some(noun => aliases.includes(noun.toLowerCase())) ||
-                verbs.some(verb => aliases.includes(verb.toLowerCase()))
-            ) {
-                return key;
-            }
-        }
-        return null;
-    }
-
-    // Fuzzy fallback
-    function getFuzzyResponse(input) {
-        const fuzzyResults = fuse.search(input);
-        if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
-            const bestMatch = fuzzyResults[0];
-            const bestMatchKey = bestMatch.item.key;
-            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-        }
-        return null;
-    }
-
-    // Get random (non-repeating) response
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
@@ -118,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return response;
     }
 
-    // Display message with typewriter effect
     function typeMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -128,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                setTimeout(typeNextChar, Math.random() * 50 + 20);
+                setTimeout(typeNextChar, Math.random() * 100 + 50);
             } else if (callback) {
                 callback();
             }
@@ -148,69 +116,98 @@ document.addEventListener('DOMContentLoaded', function () {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Generate bot response
     function getBotResponse(input) {
-        const cleanedInput = input.toLowerCase().trim();
+        const rawInput = input.trim().toLowerCase();
 
-        // Handle exit
-        const exitAliases = responses['goodbye']?.aliases?.map(a => a.toLowerCase()) || [];
-        if (exitAliases.some(alias => cleanedInput === alias || cleanedInput.includes(alias))) {
-            displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                toggleView();
-            });
-            return;
-        }
-
-        // NLP handling
-        let normalized, verbs = [], nouns = [], isQuestion = false;
-        try {
-            const doc = nlp(input);
-            normalized = doc.normalize().out('text');
-            verbs = doc.verbs().out('array');
-            nouns = doc.nouns().out('array');
-            isQuestion = doc.questions().length > 0;
-        } catch (err) {
-            console.warn("NLP error:", err);
-            normalized = input;
-        }
-
-        // Match in order
-        let responseKey = matchIntent(normalized)
-            || matchIntent(cleanedInput)
-            || matchByNounsAndVerbs(nouns, verbs);
-
-        // Fuzzy fallback
-        if (!responseKey) {
-            const fuzzy = getFuzzyResponse(normalized);
-            if (fuzzy) return fuzzy;
-        }
-
-        // Final response
+        let responseKey = matchIntent(rawInput);
         if (responseKey && responses[responseKey]) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
 
-        return "I'm not sure how to respond to that.";
+        let normalized, nouns = [], verbs = [], isQuestion = false;
+        try {
+            const doc = nlp(input);
+            normalized = doc.normalize().out('text').toLowerCase();
+            nouns = doc.nouns().out('array').map(n => n.toLowerCase());
+            verbs = doc.verbs().out('array').map(v => v.toLowerCase());
+            isQuestion = doc.questions().length > 0;
+        } catch (err) {
+            console.warn("NLP error:", err);
+        }
+
+        responseKey = matchIntent(normalized);
+        if (responseKey && responses[responseKey]) {
+            return getRandomResponse(responses[responseKey].text, responseKey);
+        }
+
+        responseKey = matchByNounsAndVerbs(nouns, verbs);
+        if (responseKey && responses[responseKey]) {
+            return getRandomResponse(responses[responseKey].text, responseKey);
+        }
+
+        const fuzzy = getFuzzyResponse(rawInput);
+        if (fuzzy) return fuzzy;
+
+        return getRandomResponse(responses.unknown.text, "unknown");
     }
 
-    // Listen for Enter key
+    function matchByNounsAndVerbs(nouns, verbs) {
+        for (const key in responses) {
+            const aliases = responses[key].aliases || [key];
+            if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    function getFuzzyResponse(input) {
+        const fuzzyResults = fuse.search(input);
+        if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
+            const bestMatch = fuzzyResults[0];
+            const bestMatchKey = bestMatch.item.key;
+            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
+        }
+        return null;
+    }
+
+    function generateHelpMessage() {
+        let helpMessage = "Here are the available commands:\n\n";
+        for (const key in responses) {
+            const description = responses[key].description || "No description provided.";
+            helpMessage += `• ${key}: ${description}\n`;
+        }
+        return helpMessage;
+    }
+
+    function handleExitCommand(input) {
+        const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
+        const normalizedInput = input.toLowerCase().trim();
+
+        if (exitAliases.some(alias => normalizedInput === alias || normalizedInput.includes(alias))) {
+            displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
+                toggleView();
+            });
+            return true;
+        }
+        return false;
+    }
+
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
 
+            if (handleExitCommand(userMessage)) return;
+
             const botMessage = getBotResponse(userMessage);
-            if (botMessage) {
-                displayMessage(botMessage, 'bot');
-            }
+            displayMessage(botMessage, 'bot');
         }
     });
 
-    // Start
     loadResponses();
 
-    // External toggle
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
