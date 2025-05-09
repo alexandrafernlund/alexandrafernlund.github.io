@@ -32,7 +32,7 @@
   "skills": {
     "text": "She is skilled in web development (React, Node.js), Python (AI and ML), and more. What would you like to know?",
     "description": "Shows a list of her technical skillset.",
-    "aliases": ["skills", "tech", "stack", "technologies", "what do you know", "tools", "languages", "experience with"],
+    "aliases": ["skills", "skill", "tech", "stack", "technologies", "what do you know", "tools", "languages", "experience with"],
     "category": "technical"
   },
 

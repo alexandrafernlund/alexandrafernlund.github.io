@@ -128,6 +128,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
 
+        // Check if it's an exit command and handle it
+        const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
+        if (exitAliases.some(alias => cleanedInput === alias || cleanedInput.includes(alias))) {
+            // If it's an exit command, prevent further processing
+            handleExitCommand(cleanedInput);
+            return;  // Return early, so no fallback response is triggered
+        }
+
         // Apply NLP to input (improved error handling)
         let normalized, verbs, nouns, isQuestion;
         try {
@@ -165,6 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Default fallback if no match found
         return "I'm not sure how to respond to that.";
     }
+
 
     // Helper function for noun/verb matching
     function matchByNounsAndVerbs(nouns, verbs) {
