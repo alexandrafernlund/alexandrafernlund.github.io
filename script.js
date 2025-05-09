@@ -171,8 +171,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     
         // If no match found, use fuzzy logic (helpful for partial matches)
+        // If no match found, suggest fuzzy alias before responding
         if (!responseKey && fuzzyResults.length > 0) {
-            const bestMatchKey = fuzzyResults[0].item.key;
+            const bestMatch = fuzzyResults[0];
+            const bestMatchKey = bestMatch.item.key;
+            const bestAlias = bestMatch.item.aliases?.[0] || bestMatchKey;
+
+            // If the score is decent, show a helpful suggestion
+            if (bestMatch.score < 0.4) {
+                return `Did you mean "${bestAlias}"?`;
+            }
+
             return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
         }
     
