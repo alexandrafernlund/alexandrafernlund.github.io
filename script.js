@@ -66,10 +66,12 @@ document.addEventListener('DOMContentLoaded', function () {
     
         fuse = new Fuse(fuseCommands, {
             keys: ['alias'],
-            threshold: 0.4,
-            distance: 100
+            threshold: 0.5,      // Slightly more forgiving
+            distance: 200,       // Consider longer differences
+            includeScore: true,  // So we can debug scores
         });
-    }    
+    }
+        
     
     // Exact alias match
     function matchIntent(input) {
@@ -190,15 +192,19 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!responseKey && fuzzyResults.length > 0) {
             const bestMatch = fuzzyResults[0];
             const bestMatchKey = bestMatch.item.key;
-            const bestAlias = bestMatch.item.alias; // Since we store individual aliases now
+            const bestAlias = bestMatch.item.alias;
+            const score = bestMatch.score;
         
-            // If the match is pretty good, suggest it instead of giving a random response
-            if (bestMatch.score < 0.4) {
-                return `Did you mean "${bestAlias}"?`;
+            console.log(`Fuzzy match: input="${input}", matched="${bestAlias}", key="${bestMatchKey}", score=${score}`);
+        
+            // You can tweak this number depending on how forgiving you want it
+            if (score <= 0.5) {
+                return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
             }
         
-            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-        }        
+            return `Did you mean "${bestAlias}"?`;
+        }
+                
     
         // Default response if no match
         return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
