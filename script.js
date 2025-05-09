@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastResponseByCategory = {};
     let fuse;
 
-    // Toggle view between terminal and GUI
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
@@ -15,13 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Load responses from the JSON file
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
-            if (!response.ok) {
-                throw new Error('Failed to load responses.json');
-            }
             responses = await response.json();
             initializeFuse();
             displayWelcomeMessage();
@@ -30,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Display a welcome message
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -51,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Initialize Fuse.js for fuzzy searching
     function initializeFuse() {
         const fuseCommands = [];
         for (const [key, value] of Object.entries(responses)) {
@@ -71,25 +64,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Match input with available commands
     function matchIntent(input) {
         input = input.trim().toLowerCase();
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
-            for (const alias of aliases) {
-                const aliasLower = alias.toLowerCase();
-                if (input === aliasLower) {
-                    return key; // exact match
-                }
-                if (input.includes(aliasLower) || aliasLower.includes(input)) {
-                    return key; // partial/contained match
-                }
+            if (aliases.some(alias => input === alias.toLowerCase())) {
+                return key;
             }
         }
         return null;
     }
 
-    // Get a random response from the selected category
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
@@ -102,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return response;
     }
 
-    // Type out the message on screen
     function typeMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -120,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
         typeNextChar();
     }
 
-    // Display a message with typing effect
     function displayMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -129,12 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     }
 
-    // Scroll to the bottom of the output
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Get bot's response based on user input
     function getBotResponse(input) {
         const rawInput = input.trim().toLowerCase();
 
@@ -170,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
-    // Match based on nouns and verbs
     function matchByNounsAndVerbs(nouns, verbs) {
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
@@ -181,9 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Get fuzzy response based on Fuse.js search
     function getFuzzyResponse(input) {
-        if (!fuse) return null;  // Ensure fuse is initialized
         const fuzzyResults = fuse.search(input);
         if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
             const bestMatch = fuzzyResults[0];
@@ -193,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Generate help message
     function generateHelpMessage() {
         let helpMessage = "Here are the available commands:\n\n";
         for (const key in responses) {
@@ -203,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return helpMessage;
     }
 
-    // Handle exit command (user wants to leave terminal)
     function handleExitCommand(input) {
         const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
         const normalizedInput = input.toLowerCase().trim();
@@ -217,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return false;
     }
 
-    // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
@@ -231,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Load responses and initialize bot
     loadResponses();
 
     window.showTerminal = function () {
