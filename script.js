@@ -188,13 +188,16 @@ document.addEventListener('DOMContentLoaded', function () {
             userInput.value = '';
     
             // Exit command check goes here:
-            if (userMessage.toLowerCase() === 'exit') {
+            const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
+            const normalizedInput = userMessage.toLowerCase().trim();
+
+            if (exitAliases.some(alias => normalizedInput === alias || normalizedInput.includes(alias))) {
                 displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                    toggleView(); // this calls your existing toggle function
+                    toggleView();
                 });
-                return; // stop further processing
+                return;
             }
-    
+
             const botMessage = getBotResponse(userMessage);
 
             if (typeof botMessage === 'string') {
