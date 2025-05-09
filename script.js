@@ -52,16 +52,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fuse.js fuzzy matching setup
     function initializeFuse() {
-        const fuseCommands = Object.entries(responses).map(([key, value]) => ({
-            key,
-            aliases: value.aliases || [key]
-        }));
+        const fuseCommands = [];
+    
+        for (const [key, value] of Object.entries(responses)) {
+            const aliases = value.aliases || [];
+            for (const alias of aliases) {
+                fuseCommands.push({
+                    alias: alias.toLowerCase(),
+                    key: key
+                });
+            }
+        }
+    
         fuse = new Fuse(fuseCommands, {
-            keys: ['aliases'],
-            threshold: 0.4
+            keys: ['alias'],
+            threshold: 0.4,
+            distance: 100
         });
-    }
-
+    }    
+    
     // Exact alias match
     function matchIntent(input) {
         input = input.trim().toLowerCase();
@@ -158,8 +167,14 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Fuzzy results (used for help fallback or when no exact match found)
         const fuzzyResults = fuse.search(cleanedInput);
-        const fuzzyKey = fuzzyResults[0]?.item.key;
-    
+        let fuzzyKey = null;
+        let fuzzyAlias = null;
+
+        if (fuzzyResults.length > 0) {
+            fuzzyKey = fuzzyResults[0].item.key;
+            fuzzyAlias = fuzzyResults[0].item.alias;
+        }
+
         // Handle special cases like "help"
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
@@ -175,15 +190,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!responseKey && fuzzyResults.length > 0) {
             const bestMatch = fuzzyResults[0];
             const bestMatchKey = bestMatch.item.key;
-            const bestAlias = bestMatch.item.aliases?.[0] || bestMatchKey;
-
-            // If the score is decent, show a helpful suggestion
+            const bestAlias = bestMatch.item.alias; // Since we store individual aliases now
+        
+            // If the match is pretty good, suggest it instead of giving a random response
             if (bestMatch.score < 0.4) {
                 return `Did you mean "${bestAlias}"?`;
             }
-
+        
             return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-        }
+        }        
     
         // Default response if no match
         return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
