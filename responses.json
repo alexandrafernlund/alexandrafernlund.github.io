@@ -62,7 +62,8 @@
       "Farewell, traveler. Safe journeys!"
     ],
     "aliases": ["bye", "goodbye", "exit", "see you", "quit", "leave"],
-    "category": "general"
+    "category": "general",
+    "description": "Exit the terminal view and go back to the main GUI."
   },
 
   "unknown": {

@@ -186,12 +186,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const userMessage = userInput.value.trim();
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
+    
+            // Exit command check goes here:
+            if (userMessage.toLowerCase() === 'exit') {
+                displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
+                    toggleView(); // this calls your existing toggle function
+                });
+                return; // stop further processing
+            }
+    
             const botMessage = getBotResponse(userMessage);
             if (typeof botMessage === 'string') {
                 displayMessage(botMessage, 'bot');
             }
         }
     });
+    
 
     // Start bot
     loadResponses();
