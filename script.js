@@ -172,9 +172,11 @@ document.addEventListener('DOMContentLoaded', function () {
         let fuzzyAlias = null;
 
         if (fuzzyResults.length > 0) {
-            fuzzyKey = fuzzyResults[0].item.key;
-            fuzzyAlias = fuzzyResults[0].item.alias;
+            const bestMatch = fuzzyResults[0];
+            const bestMatchKey = bestMatch.item.key;
+            return `I think you meant "${bestMatch.item.aliases?.[0] || bestMatchKey}".`;
         }
+        
 
         // Handle special cases like "help"
         if (responseKey === 'help' || fuzzyKey === 'help') {
@@ -211,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
                 
         // Default response if no match
-        return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
+        return "I'm not sure how to respond to that.";
     }    
 
     // Listen for Enter key
