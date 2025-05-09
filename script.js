@@ -58,20 +58,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const aliases = value.aliases || [];
             for (const alias of aliases) {
                 fuseCommands.push({
-                    alias: alias.toLowerCase(),
-                    key: key
+                    key: key,
+                    alias: alias.toLowerCase()
                 });
             }
         }
     
         fuse = new Fuse(fuseCommands, {
-            keys: ['alias'],
-            threshold: 0.5,      // Slightly more forgiving
-            distance: 200,       // Consider longer differences
-            includeScore: true,  // So we can debug scores
+            keys: ['alias', 'key'],  // now matches both
+            threshold: 0.5,
+            distance: 200,
+            includeScore: true
         });
-    }
-        
+    }      
     
     // Exact alias match
     function matchIntent(input) {
@@ -168,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Response Key (after NLP):", responseKey);
     
         // Fuzzy results (used for help fallback or when no exact match found)
-        const fuzzyResults = fuse.search(cleanedInput);
+        const fuzzyResults = fuse.search(normalized || cleanedInput);
         let fuzzyKey = null;
         let fuzzyAlias = null;
 
@@ -189,23 +188,28 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // If no match found, use fuzzy logic (helpful for partial matches)
         // If no match found, suggest fuzzy alias before responding
-        if (!responseKey && fuzzyResults.length > 0) {
-            const bestMatch = fuzzyResults[0];
-            const bestMatchKey = bestMatch.item.key;
-            const bestAlias = bestMatch.item.alias;
-            const score = bestMatch.score;
-        
-            console.log(`Fuzzy match: input="${input}", matched="${bestAlias}", key="${bestMatchKey}", score=${score}`);
-        
-            // You can tweak this number depending on how forgiving you want it
-            if (score <= 0.5) {
+        // If no match found, use fuzzy logic (full input)
+        if (!responseKey) {
+            const fuzzyResults = fuse.search(normalized || cleanedInput);
+            if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
+                const bestMatch = fuzzyResults[0];
+                const bestMatchKey = bestMatch.item.key;
                 return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
             }
-        
-            return `Did you mean "${bestAlias}"?`;
+
+            // Token-by-token fuzzy fallback using compromise terms
+            const terms = nlp(input).terms().out('array');
+            for (let term of terms) {
+                const termResults = fuse.search(term);
+                if (termResults.length && termResults[0].score < 0.4) {
+                    const bestTermMatch = termResults[0];
+                    const bestMatchKey = bestTermMatch.item.key;
+                    return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
+                }
+            }
         }
+  
                 
-    
         // Default response if no match
         return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
     }    
