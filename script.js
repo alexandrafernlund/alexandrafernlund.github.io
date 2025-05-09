@@ -66,15 +66,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function matchIntent(input) {
         input = input.trim().toLowerCase();
+    
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
+    
             for (const alias of aliases) {
-                if (input === alias.toLowerCase()) return key; // exact
-                if (input.includes(alias.toLowerCase())) return key; // partial
+                const aliasLower = alias.toLowerCase();
+                if (input === aliasLower) {
+                    return key; // exact match
+                }
+                if (input.includes(aliasLower) || aliasLower.includes(input)) {
+                    return key; // partial/contained match
+                }
             }
         }
+    
         return null;
-    }    
+    }        
 
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
