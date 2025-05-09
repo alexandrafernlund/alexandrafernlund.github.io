@@ -66,23 +66,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function matchIntent(input) {
         input = input.trim().toLowerCase();
+        const inputWords = input.split(/\s+/);
     
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
     
             for (const alias of aliases) {
                 const aliasLower = alias.toLowerCase();
-                if (input === aliasLower) {
-                    return key; // exact match
-                }
-                if (input.includes(aliasLower) || aliasLower.includes(input)) {
-                    return key; // partial/contained match
+    
+                // Exact match
+                if (input === aliasLower) return key;
+    
+                // Whole phrase match
+                if (input.includes(aliasLower)) return key;
+    
+                // Word-by-word match to avoid "yo" in "you"
+                const aliasWords = aliasLower.split(/\s+/);
+                if (aliasWords.some(word => inputWords.includes(word))) {
+                    return key;
                 }
             }
         }
     
         return null;
-    }        
+    }            
 
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
