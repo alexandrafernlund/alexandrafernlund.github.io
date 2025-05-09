@@ -61,9 +61,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
         }
+        console.log("Fuse commands initialized:", fuseCommands); // Debug log
         fuse = new Fuse(fuseCommands, {
             keys: ['alias', 'key'],
-            threshold: 0.5,
+            threshold: 0.4,
             distance: 200,
             includeScore: true
         });
@@ -180,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Helper function for fuzzy response
     function getFuzzyResponse(input) {
         const fuzzyResults = fuse.search(input);
+        console.log("Fuzzy search results:", fuzzyResults); // Debug log
         if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
             const bestMatch = fuzzyResults[0];
             const bestMatchKey = bestMatch.item.key;
