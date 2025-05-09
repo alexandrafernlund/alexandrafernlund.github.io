@@ -9,11 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
+
         if (terminal && guiSite) {
             terminal.style.display = 'none';
             guiSite.style.display = 'block';
         }
-    }
+    }    
 
     // Load responses
     async function loadResponses() {
@@ -51,21 +52,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fuse.js fuzzy matching setup
     function initializeFuse() {
-        const fuseCommands = [];
-        for (const [key, value] of Object.entries(responses)) {
-            const aliases = value.aliases || [];
-            for (const alias of aliases) {
-                fuseCommands.push({
-                    key: key,
-                    alias: alias.toLowerCase()
-                });
-            }
-        }
+        const fuseCommands = Object.entries(responses).map(([key, value]) => ({
+            key,
+            aliases: value.aliases || [key]
+        }));
         fuse = new Fuse(fuseCommands, {
-            keys: ['alias', 'key'],
-            threshold: 0.5,
-            distance: 200,
-            includeScore: true
+            keys: ['aliases'],
+            threshold: 0.4
         });
     }
 
@@ -81,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Handle random responses with repeat protection
+    // Random response with repeat protection
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
@@ -124,14 +117,14 @@ document.addEventListener('DOMContentLoaded', function () {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Generate response (improved)
+    // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
-
-        // Apply NLP to input (improved error handling)
+    
+        // Apply NLP to input
         let normalized, verbs, nouns, isQuestion;
         try {
-            const doc = nlp(input);
+            const doc = nlp(input); // Assuming the nlp library is included
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
@@ -142,61 +135,50 @@ document.addEventListener('DOMContentLoaded', function () {
             verbs = nouns = [];
             isQuestion = false;
         }
-
-        // Try exact match
-        let responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
-
-        // Dynamic matching with extracted nouns/verbs if no exact match
+    
+        // First, try exact alias match
+        let responseKey = matchIntent(normalized);
         if (!responseKey) {
-            responseKey = matchByNounsAndVerbs(nouns, verbs);
+            responseKey = matchIntent(cleanedInput);
         }
-
-        // Handle fuzzy matching fallback
+    
+        // If still no responseKey, try to dynamically match based on extracted nouns and verbs
         if (!responseKey) {
-            const fuzzyResponse = getFuzzyResponse(normalized);
-            if (fuzzyResponse) return fuzzyResponse;
-        }
-
-        // Handle special cases (e.g., "help")
-        if (responseKey === 'help') {
-            return generateHelpMessage();
-        }
-
-        // Default fallback if no match found
-        return "I'm not sure how to respond to that.";
-    }
-
-    // Helper function for noun/verb matching
-    function matchByNounsAndVerbs(nouns, verbs) {
-        for (const key in responses) {
-            const aliases = responses[key].aliases || [key];
-            if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
-                return key;
+            for (const key in responses) {
+                const aliases = responses[key].aliases || [key];
+                // Check if any noun or verb in the input matches any of the response aliases
+                if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
+                    responseKey = key;
+                    break; // Stop once we find a match
+                }
             }
         }
-        return null;
-    }
-
-    // Helper function for fuzzy response
-    function getFuzzyResponse(input) {
-        const fuzzyResults = fuse.search(input);
-        if (fuzzyResults.length > 0 && fuzzyResults[0].score < 0.4) {
-            const bestMatch = fuzzyResults[0];
-            const bestMatchKey = bestMatch.item.key;
+    
+        console.log("Response Key (after NLP):", responseKey);
+    
+        // Fuzzy results (used for help fallback or when no exact match found)
+        const fuzzyResults = fuse.search(cleanedInput);
+        const fuzzyKey = fuzzyResults[0]?.item.key;
+    
+        // Handle special cases like "help"
+        if (responseKey === 'help' || fuzzyKey === 'help') {
+            let helpMessage = "Here are the available commands:\n\n";
+            for (const key in responses) {
+                const description = responses[key].description || "No description provided.";
+                helpMessage += `• ${key}: ${description}\n`;
+            }
+            return helpMessage;
+        }
+    
+        // If no match found, use fuzzy logic (helpful for partial matches)
+        if (!responseKey && fuzzyResults.length > 0) {
+            const bestMatchKey = fuzzyResults[0].item.key;
             return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
         }
-        return null;
-    }
-
-    // Generate help message
-    function generateHelpMessage() {
-        let helpMessage = "Here are the available commands:\n\n";
-        for (const key in responses) {
-            const description = responses[key].description || "No description provided.";
-            helpMessage += `• ${key}: ${description}\n`;
-        }
-        return helpMessage;
-    }
+    
+        // Default response if no match
+        return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
+    }    
 
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
@@ -204,32 +186,35 @@ document.addEventListener('DOMContentLoaded', function () {
             const userMessage = userInput.value.trim();
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
-
-            // Exit command check
-            handleExitCommand(userMessage);
-
-            // Generate and display bot response
-            try {
-                const botMessage = getBotResponse(userMessage);
-                displayMessage(botMessage, 'bot');
-            } catch (err) {
-                console.error("Bot crashed:", err);
-                displayMessage("Oops, something went wrong while processing your request.", 'bot');
+    
+            // Exit command check goes here:
+            if (userMessage.toLowerCase() === 'exit') {
+                displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
+                    toggleView(); // this calls your existing toggle function
+                });
+                return; // stop further processing
             }
+    
+            const botMessage = getBotResponse(userMessage);
+
+            if (typeof botMessage === 'string') {
+                displayMessage(botMessage, 'bot', () => {
+                    const exitAliases = responses['goodbye']?.aliases || [];
+                    const normalizedInput = userMessage.toLowerCase().trim();
+                    
+                    // Check for exact alias match or response key === 'goodbye'
+                    if (
+                        matchIntent(normalizedInput) === 'goodbye' ||
+                        exitAliases.some(alias => normalizedInput.includes(alias))
+                    ) {
+                        setTimeout(() => toggleView(), 1500); // Delay for natural UX
+                    }
+                });
+            }
+
         }
     });
-
-    // Handle exit command logic
-    function handleExitCommand(input) {
-        const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
-        const normalizedInput = input.toLowerCase().trim();
-
-        if (exitAliases.some(alias => normalizedInput === alias || normalizedInput.includes(alias))) {
-            displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                toggleView();
-            });
-        }
-    }
+    
 
     // Start bot
     loadResponses();
