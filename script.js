@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
     let fuse;
+    let isBotTyping = false; // Prevent typing before finishing current message
 
-    // Toggle view between terminal and GUI
+    // A function to toggle between terminal and the GUI view
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Load responses from the JSON file
+    // Load the response data asynchronously
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Display a welcome message
+    // Display the welcome message after loading responses
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -51,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Initialize Fuse.js for fuzzy searching
+    // Initialize Fuse for fuzzy searching commands
     function initializeFuse() {
         const fuseCommands = [];
         for (const [key, value] of Object.entries(responses)) {
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Match input with available commands
+    // Matching input with predefined intents
     function matchIntent(input) {
         input = input.trim().toLowerCase();
         for (const key in responses) {
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Get a random response from the selected category
+    // Get a random response
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
@@ -102,25 +103,31 @@ document.addEventListener('DOMContentLoaded', function () {
         return response;
     }
 
-    // Type out the message on screen
+    // Function to type messages out with a delay
     function typeMessage(message, sender, callback) {
+        if (isBotTyping) return; // Prevent typing if bot is already typing
+
+        isBotTyping = true; // Set flag when typing begins
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
+
         let index = 0;
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
                 setTimeout(typeNextChar, Math.random() * 100 + 50);
-            } else if (callback) {
-                callback();
+            } else {
+                isBotTyping = false; // Reset flag when typing finishes
+                if (callback) callback();
             }
         }
+
         typeNextChar();
     }
 
-    // Display a message with typing effect
+    // Display the message in the output
     function displayMessage(message, sender, callback) {
         const div = document.createElement('div');
         div.classList.add(sender);
@@ -129,20 +136,22 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
     }
 
-    // Scroll to the bottom of the output
+    // Scroll to the bottom of the output for the latest message
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Get bot's response based on user input
+    // Get the bot's response based on the input
     function getBotResponse(input) {
         const rawInput = input.trim().toLowerCase();
 
+        // Attempt to match intent directly
         let responseKey = matchIntent(rawInput);
         if (responseKey && responses[responseKey]) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
 
+        // Try NLP parsing (fallback)
         let normalized, nouns = [], verbs = [], isQuestion = false;
         try {
             const doc = nlp(input);
@@ -154,23 +163,26 @@ document.addEventListener('DOMContentLoaded', function () {
             console.warn("NLP error:", err);
         }
 
+        // Attempt to match again after NLP processing
         responseKey = matchIntent(normalized);
         if (responseKey && responses[responseKey]) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
 
+        // Try to match by nouns/verbs
         responseKey = matchByNounsAndVerbs(nouns, verbs);
         if (responseKey && responses[responseKey]) {
             return getRandomResponse(responses[responseKey].text, responseKey);
         }
 
+        // Fallback to fuzzy search if needed
         const fuzzy = getFuzzyResponse(rawInput);
         if (fuzzy) return fuzzy;
 
         return getRandomResponse(responses.unknown.text, "unknown");
     }
 
-    // Match based on nouns and verbs
+    // Match based on noun/verb presence
     function matchByNounsAndVerbs(nouns, verbs) {
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
@@ -181,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Get fuzzy response based on Fuse.js search
+    // Fuzzy search response
     function getFuzzyResponse(input) {
         if (!fuse) return null;  // Ensure fuse is initialized
         const fuzzyResults = fuse.search(input);
@@ -193,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Generate help message
+    // Handle "help" command for list of available commands
     function generateHelpMessage() {
         let helpMessage = "Here are the available commands:\n\n";
         for (const key in responses) {
@@ -203,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return helpMessage;
     }
 
-    // Handle exit command (user wants to leave terminal)
+    // Handle the "exit" command
     function handleExitCommand(input) {
         const exitAliases = responses['goodbye']?.aliases.map(a => a.toLowerCase()) || [];
         const normalizedInput = input.toLowerCase().trim();
@@ -220,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener for user input
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
+            if (isBotTyping) return; // Prevent input while bot is typing
+
             const userMessage = userInput.value.trim();
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
@@ -231,9 +245,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Load responses and initialize bot
+    // Initialize the bot when the page is ready
     loadResponses();
 
+    // Show the terminal view
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
