@@ -68,12 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
         input = input.trim().toLowerCase();
         for (const key in responses) {
             const aliases = responses[key].aliases || [key];
-            if (aliases.some(alias => input === alias.toLowerCase())) {
-                return key;
+            for (const alias of aliases) {
+                if (input === alias.toLowerCase()) return key; // exact
+                if (input.includes(alias.toLowerCase())) return key; // partial
             }
         }
         return null;
-    }
+    }    
 
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
