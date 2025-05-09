@@ -56,11 +56,6 @@
   },
 
   "goodbye": {
-    "text": [
-      "Warping out! See you soon!",
-      "Logging off... Until next time!",
-      "Farewell, traveler. Safe journeys!"
-    ],
     "aliases": ["bye", "goodbye", "exit", "see you", "quit", "leave"],
     "category": "general",
     "description": "Exit the terminal view and go back to the main GUI."

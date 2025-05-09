@@ -196,9 +196,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
     
             const botMessage = getBotResponse(userMessage);
+
             if (typeof botMessage === 'string') {
-                displayMessage(botMessage, 'bot');
+                displayMessage(botMessage, 'bot', () => {
+                    const exitAliases = responses['goodbye']?.aliases || [];
+                    const normalizedInput = userMessage.toLowerCase().trim();
+                    
+                    // Check for exact alias match or response key === 'goodbye'
+                    if (
+                        matchIntent(normalizedInput) === 'goodbye' ||
+                        exitAliases.some(alias => normalizedInput.includes(alias))
+                    ) {
+                        setTimeout(() => toggleView(), 1500); // Delay for natural UX
+                    }
+                });
             }
+
         }
     });
     
