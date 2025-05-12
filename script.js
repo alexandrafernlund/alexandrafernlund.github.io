@@ -136,9 +136,37 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
     }
 
-    // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
+
+        // Simple keyword-based date queries handled first
+        if (cleanedInput.includes("tomorrow")) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
+        }
+
+        if (cleanedInput.includes("yesterday")) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Yesterday was ${yesterday.toLocaleDateString(undefined, options)}.`;
+        }
+
+        if (
+            cleanedInput.includes("what's the date") ||
+            cleanedInput.includes("what is the date") ||
+            cleanedInput.includes("today's date") ||
+            cleanedInput.includes("what day is it") ||
+            cleanedInput.includes("today")
+        ) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
+        }
+
+        // Now process with compromise.js
         let doc, normalized, verbs, nouns, dates;
 
         try {
@@ -154,52 +182,16 @@ document.addEventListener('DOMContentLoaded', function () {
             dates = [];
         }
 
-        // Special Case: Handling dynamic date queries like "What is the date in 100 days?"
+        // Handle dynamic date queries like "what is the date in 100 days"
         if (dates.length > 0) {
             const extractedDates = dates.map(d => d.text);
             const parsedDate = nlp(dates[0].text).dates().get(0);
 
             if (parsedDate && parsedDate.isValid()) {
-                const futureDate = parsedDate.date();  // This will calculate the future date
+                const futureDate = parsedDate.date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString(undefined, options)}.`;
             }
-        }
-
-        // Special Case: Detect questions about today's date
-        const lower = cleanedInput.toLowerCase();
-
-        if (lower.includes("tomorrow")) {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
-        }
-
-        if (lower.includes("yesterday")) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Yesterday was ${yesterday.toLocaleDateString(undefined, options)}.`;
-        }
-
-        if (
-            lower.includes("what's the date") ||
-            lower.includes("what is the date") ||
-            lower.includes("today's date") ||
-            lower.includes("what day is it") ||
-            lower.includes("today")
-        ) {
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
-        }
-
-
-        if (askingForDate) {
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
         }
 
         // Fallback: Try matching by NLP + aliases
@@ -244,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
             ? getRandomResponse(responses[responseKey].text, responseKey)
             : "I'm not sure how to respond to that.";
     }
-
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
