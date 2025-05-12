@@ -155,11 +155,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Special Case: Detect questions about today's date
-        const askingForDate = /what('?s| is)? the date|what day is it|today('?s)? date/i.test(cleanedInput);
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-        if (askingForDate) {
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        if (/tomorrow('?s)? date/i.test(cleanedInput)) {
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
+        } else if (/what('?s| is)? the date|what day is it|today('?s)? date/i.test(cleanedInput)) {
             return `Today is ${today.toLocaleDateString(undefined, options)}.`;
         }
 
