@@ -144,14 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
+            return `Tomorrow is ${tomorrow.toLocaleDateString('en-US', options)}.`;
         }
 
         if (cleanedInput.includes("yesterday")) {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Yesterday was ${yesterday.toLocaleDateString(undefined, options)}.`;
+            return `Yesterday was ${yesterday.toLocaleDateString('en-US', options)}.`;
         }
 
         if (
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ) {
             const today = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
+            return `Today is ${today.toLocaleDateString('en-US', options)}.`;
         }
 
         // Now process with compromise.js
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (parsedDate && parsedDate.isValid()) {
                 const futureDate = parsedDate.date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString(undefined, options)}.`;
+                return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString('en-US', options)}.`;
             }
         }
 
