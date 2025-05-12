@@ -117,50 +117,62 @@ document.addEventListener('DOMContentLoaded', function () {
         output.scrollTop = output.scrollHeight;
     }
 
+    // Use compromise.js to dynamically match against JSON alias lists
+    function matchIntentFromDoc(doc, responses) {
+    for (const key in responses) {
+        const entry = responses[key];
+        const aliases = entry.aliases || [];
+
+        for (const alias of aliases) {
+            // Check if the document contains the full alias as a phrase
+            if (doc.has(alias) || doc.match(alias).found) {
+                return key;
+            }
+        }
+    }
+    return null;
+    }
+
     // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
-    
-        // Apply NLP to input
-        let normalized, verbs, nouns, isQuestion;
+        let doc, normalized, verbs, nouns;
+
         try {
-            const doc = nlp(input); // Assuming the nlp library is included
+            doc = nlp(cleanedInput);
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
-            isQuestion = doc.questions().length > 0;
         } catch (err) {
             console.error("NLP error:", err);
-            normalized = input;
+            normalized = cleanedInput;
             verbs = nouns = [];
-            isQuestion = false;
         }
-    
-        // First, try exact alias match
-        let responseKey = matchIntent(normalized);
+
+        // Try matching by NLP alias first
+        let responseKey = matchIntentFromDoc(doc, responses);
+
+        // Fallback: exact match
         if (!responseKey) {
-            responseKey = matchIntent(cleanedInput);
+            responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
         }
-    
-        // If still no responseKey, try to dynamically match based on extracted nouns and verbs
+
+        // Fallback: simple keyword in nouns/verbs
         if (!responseKey) {
             for (const key in responses) {
                 const aliases = responses[key].aliases || [key];
-                // Check if any noun or verb in the input matches any of the response aliases
                 if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
                     responseKey = key;
-                    break; // Stop once we find a match
+                    break;
                 }
             }
         }
-    
-        console.log("Response Key (after NLP):", responseKey);
-    
-        // Fuzzy results (used for help fallback or when no exact match found)
+
+        // Fuzzy match
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
-    
-        // Handle special cases like "help"
+
+        // Help special case
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -169,17 +181,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return helpMessage;
         }
-    
-        // If no match found, use fuzzy logic (helpful for partial matches)
-        if (!responseKey && fuzzyResults.length > 0) {
-            const bestMatchKey = fuzzyResults[0].item.key;
-            return getRandomResponse(responses[bestMatchKey].text, bestMatchKey);
-        }
-    
-        // Default response if no match
-        return responseKey ? getRandomResponse(responses[responseKey].text, responseKey) : "I'm not sure how to respond to that.";
-    }    
 
+        // Final response decision
+        if (!responseKey && fuzzyResults.length > 0) {
+            return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
+        }
+
+        return responseKey
+            ? getRandomResponse(responses[responseKey].text, responseKey)
+            : "I'm not sure how to respond to that.";
+    }
+    
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
@@ -214,7 +226,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
     });
-    
 
     // Start bot
     loadResponses();
