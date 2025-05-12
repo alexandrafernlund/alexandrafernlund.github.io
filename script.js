@@ -155,13 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Special Case: Detect questions about today's date
-        const askingForDate = (
-            cleanedInput.includes("what's the date") ||
-            cleanedInput.includes("what day is it") ||
-            cleanedInput.includes("today's date") ||
-            doc.has('what is the date') ||
-            doc.has('today')
-        );
+        const askingForDate = /what('?s| is)? the date|what day is it|today('?s)? date/i.test(cleanedInput);
 
         if (askingForDate) {
             const today = new Date();
