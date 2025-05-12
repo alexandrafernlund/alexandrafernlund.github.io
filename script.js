@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
-            dates = doc.dates().json(); // extract date-related info
+            dates = doc.dates().json(); // Extract date-related info
         } catch (err) {
             console.error("NLP error:", err);
             normalized = cleanedInput;
@@ -155,21 +155,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Special Case: Detect questions about today's date
-        const today = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const askingForDate = (
+            cleanedInput.includes("what's the date") ||
+            cleanedInput.includes("what day is it") ||
+            cleanedInput.includes("today's date") ||
+            doc.has('what is the date') ||
+            doc.has('today')
+        );
 
-        if (/tomorrow('?s)? date/i.test(cleanedInput)) {
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
-        } else if (/what('?s| is)? the date|what day is it|today('?s)? date/i.test(cleanedInput)) {
+        if (askingForDate) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             return `Today is ${today.toLocaleDateString(undefined, options)}.`;
         }
 
-        // Special Case: Detected natural language dates (e.g., "next week", "on Tuesday")
+        // Special Case: Handling dynamic date queries like "What is the date in 100 days?"
         if (dates.length > 0) {
-            const extracted = dates.map(d => d.text).join(', ');
-            return `You mentioned a date: ${extracted}. What would you like to do with it?`;
+            const extractedDates = dates.map(d => d.text);
+            const parsedDate = nlp(dates[0].text).dates().get(0);
+
+            if (parsedDate && parsedDate.isValid()) {
+                const futureDate = parsedDate.date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString(undefined, options)}.`;
+            }
         }
 
         // Try matching by NLP + aliases
@@ -205,6 +214,18 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
+        // Special Case: Handle specific future dates (e.g., "in 100 days")
+        if (dates.length > 0) {
+            const extractedDates = dates.map(d => d.text);
+            const parsedDate = nlp(dates[0].text).dates().get(0);
+
+            if (parsedDate && parsedDate.isValid()) {
+                const futureDate = parsedDate.date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString(undefined, options)}.`;
+            }
+        }
+
         // Final response selection
         if (!responseKey && fuzzyResults.length > 0) {
             return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
@@ -214,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ? getRandomResponse(responses[responseKey].text, responseKey)
             : "I'm not sure how to respond to that.";
     }
+
 
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
