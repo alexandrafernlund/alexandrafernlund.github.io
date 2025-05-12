@@ -139,20 +139,43 @@ document.addEventListener('DOMContentLoaded', function () {
     // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
-        let doc, normalized, verbs, nouns;
+        let doc, normalized, verbs, nouns, dates;
 
         try {
             doc = nlp(cleanedInput);
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
+            dates = doc.dates().json(); // extract date-related info
         } catch (err) {
             console.error("NLP error:", err);
             normalized = cleanedInput;
             verbs = nouns = [];
+            dates = [];
         }
 
-        // Try matching by NLP alias first
+        // Special Case: Detect questions about today's date
+        const askingForDate = (
+            cleanedInput.includes("what's the date") ||
+            cleanedInput.includes("what day is it") ||
+            cleanedInput.includes("today's date") ||
+            doc.has('what is the date') ||
+            doc.has('today')
+        );
+
+        if (askingForDate) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
+        }
+
+        // Special Case: Detected natural language dates (e.g., "next week", "on Tuesday")
+        if (dates.length > 0) {
+            const extracted = dates.map(d => d.text).join(', ');
+            return `You mentioned a date: ${extracted}. What would you like to do with it?`;
+        }
+
+        // Try matching by NLP + aliases
         let responseKey = matchIntentFromDoc(doc, responses);
 
         // Fallback: exact match
@@ -160,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
             responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
         }
 
-        // Fallback: simple keyword in nouns/verbs
+        // Fallback: keyword in nouns/verbs
         if (!responseKey) {
             for (const key in responses) {
                 const aliases = responses[key].aliases || [key];
@@ -175,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 
-        // Help special case
+        // Special case: help
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -185,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
-        // Final response decision
+        // Final response selection
         if (!responseKey && fuzzyResults.length > 0) {
             return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
         }
@@ -194,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ? getRandomResponse(responses[responseKey].text, responseKey)
             : "I'm not sure how to respond to that.";
     }
-    
+
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
