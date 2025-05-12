@@ -167,13 +167,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Special Case: Detect questions about today's date
-        const askingForDate = (
-            cleanedInput.includes("what's the date") ||
-            cleanedInput.includes("what day is it") ||
-            cleanedInput.includes("today's date") ||
-            doc.has('what is the date') ||
-            doc.has('today')
-        );
+        const lower = cleanedInput.toLowerCase();
+
+        if (lower.includes("tomorrow")) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Tomorrow is ${tomorrow.toLocaleDateString(undefined, options)}.`;
+        }
+
+        if (lower.includes("yesterday")) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Yesterday was ${yesterday.toLocaleDateString(undefined, options)}.`;
+        }
+
+        if (
+            lower.includes("what's the date") ||
+            lower.includes("what is the date") ||
+            lower.includes("today's date") ||
+            lower.includes("what day is it") ||
+            lower.includes("today")
+        ) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return `Today is ${today.toLocaleDateString(undefined, options)}.`;
+        }
+
 
         if (askingForDate) {
             const today = new Date();
