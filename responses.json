@@ -51,7 +51,7 @@
       "rm -rf /social_life” — Oops. Should've aliased that to 'echo nope'",
       "I took the red pill, now I debug the Matrix. grep 'truth' reality.log came up empty. Suspicious."
     ],
-    "aliases": ["tell joke", "make me laugh", "tell me a joke", "joke time"],
+    "aliases": ["tell joke", "make me laugh", "be funny", "tell me a joke", "joke time"],
     "category": "funny"
   },
 
