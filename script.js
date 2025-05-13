@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
+            dates = doc.dates().json();
 
             const dateObj = doc.dates().get(0); // Get the *updated* date info
             if (dateObj && dateObj.isValid()) {
