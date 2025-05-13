@@ -122,18 +122,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Use compromise.js to dynamically match against JSON alias lists
     function matchIntentFromDoc(doc, responses) {
-    for (const key in responses) {
-        const entry = responses[key];
-        const aliases = entry.aliases || [];
+        for (const key in responses) {
+            const entry = responses[key];
+            const aliases = entry.aliases || [];
 
-        for (const alias of aliases) {
-            // Check if the document contains the full alias as a phrase
-            if (doc.has(alias) || doc.match(alias).found) {
+            // Check if any alias matches the input doc using Compromise
+            if (aliases.some(alias => doc.has(alias))) {
+                return key;
+            }
+
+            // Check for nouns and verbs in doc matching the response category
+            const responseKeywords = [entry.category, entry.text].join(' ').toLowerCase();
+            const matchesNouns = nouns.some(noun => responseKeywords.includes(noun));
+            const matchesVerbs = verbs.some(verb => responseKeywords.includes(verb));
+
+            if (matchesNouns || matchesVerbs) {
                 return key;
             }
         }
-    }
-    return null;
+        return null;
     }
 
         // Generate response
@@ -170,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let doc, normalized, verbs, nouns;
 
         try {
-            doc = nlp(cleanedInput);
+            doc = nlp(cleanedInput).normalize();
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
