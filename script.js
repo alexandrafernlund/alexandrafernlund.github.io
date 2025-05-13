@@ -136,41 +136,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
     }
 
-        // Generate response
-        function getBotResponse(input) {
+    // Generate response
+    function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
-
-        // Date-based hardcoded responses
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
-        if (cleanedInput.includes("tomorrow")) {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            return `Tomorrow is ${tomorrow.toLocaleDateString('en-US', options)}.`;
-        }
-
-        if (cleanedInput.includes("yesterday")) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            return `Yesterday was ${yesterday.toLocaleDateString('en-US', options)}.`;
-        }
-
-        if (
-            cleanedInput.includes("what's the date") ||
-            cleanedInput.includes("what is the date") ||
-            cleanedInput.includes("today's date") ||
-            cleanedInput.includes("what day is it") ||
-            cleanedInput.includes("today")
-        ) {
-            const today = new Date();
-            return `Today is ${today.toLocaleDateString('en-US', options)}.`;
-        }
-
-        // NLP fallback
         let doc, normalized, verbs, nouns;
 
         try {
-            doc = nlp(cleanedInput).normalize();
+            doc = nlp(cleanedInput);
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
@@ -180,15 +152,15 @@ document.addEventListener('DOMContentLoaded', function () {
             verbs = nouns = [];
         }
 
-        // Alias match using compromise
+        // Try matching by NLP alias first
         let responseKey = matchIntentFromDoc(doc, responses);
 
-        // Exact match
+        // Fallback: exact match
         if (!responseKey) {
             responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
         }
 
-        // Noun/verb keyword match
+        // Fallback: simple keyword in nouns/verbs
         if (!responseKey) {
             for (const key in responses) {
                 const aliases = responses[key].aliases || [key];
@@ -203,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 
-        // Special case: help command
+        // Help special case
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -213,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
-        // Return final response
+        // Final response decision
         if (!responseKey && fuzzyResults.length > 0) {
             return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
         }
