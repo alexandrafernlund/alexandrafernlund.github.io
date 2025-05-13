@@ -171,17 +171,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             doc = nlp(cleanedInput);
+            doc.numbers().toNumber(); // Convert "a hundred" to "100" BEFORE extracting dates
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
-            doc.numbers().toNumber();
-            dates = doc.dates().json(); // Extract date-related info
+
+            const dateObj = doc.dates().get(0); // Get the *updated* date info
+            if (dateObj && dateObj.isValid()) {
+                const futureDate = dateObj.date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return `That will be ${futureDate.toLocaleDateString('en-US', options)}.`;
+            }
         } catch (err) {
             console.error("NLP error:", err);
             normalized = cleanedInput;
             verbs = nouns = [];
-            dates = [];
         }
+
 
         // Handle dynamic date queries like "what is the date in 100 days"
         if (dates.length > 0) {
