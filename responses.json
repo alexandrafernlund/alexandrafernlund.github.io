@@ -25,7 +25,7 @@
       "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
     ],
     "description": "Shows Alexandra's projects.",
-    "aliases": ["project", "portfolio", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
+    "aliases": ["projects", "portfolio", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
     "category": "portfolio"
   },
 
