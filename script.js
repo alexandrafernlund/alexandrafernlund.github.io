@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
+            doc.numbers().toNumber();
             dates = doc.dates().json(); // Extract date-related info
         } catch (err) {
             console.error("NLP error:", err);
@@ -185,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Handle dynamic date queries like "what is the date in 100 days"
         if (dates.length > 0) {
             const extractedDates = dates.map(d => d.text);
-            const parsedDate = nlp(dates[0].text).dates().get(0);
+            const parsedDate = doc.dates().get(0);
 
             if (parsedDate && parsedDate.isValid()) {
                 const futureDate = parsedDate.date();
