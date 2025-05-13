@@ -20,12 +20,22 @@
 
   "projects": {
     "text": [
-      "Alexandra's got a Galactic Chatbot and a Terminal Portfolio — ask to learn more!",
-      "Want to see sci-fi web magic? Check out the Projects section!",
-      "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
+        "Alexandra's got a Galactic Chatbot and a Terminal Portfolio — ask to learn more!",
+        "Want to see sci-fi web magic? Check out the Projects section!",
+        "There's a retro-futuristic portfolio and a chatbot with Easter eggs. Which one sparks your curiosity?"
     ],
     "description": "Shows Alexandra's projects.",
-    "aliases": ["project", "portfolio", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
+    "aliases": ["projects", "what have you built", "things you made", "show your work", "cool stuff", "see your work"],
+    "category": "portfolio"
+  },
+
+  "portfolio": {
+    "text": [
+        "Want to see sci-fi web magic? Check out the Projects section!",
+        "Want to see the portfolio? Check out her sci-fi projects!"
+    ],
+    "description": "Shows Alexandra's portfolio.",
+    "aliases": ["portfolio", "show portfolio", "view portfolio", "see the portfolio", "explore portfolio"],
     "category": "portfolio"
   },
 
