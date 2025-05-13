@@ -136,21 +136,22 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
     }
 
-    function getBotResponse(input) {
+        // Generate response
+        function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
 
-        // Simple keyword-based date queries handled first
+        // Date-based hardcoded responses
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
         if (cleanedInput.includes("tomorrow")) {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             return `Tomorrow is ${tomorrow.toLocaleDateString('en-US', options)}.`;
         }
 
         if (cleanedInput.includes("yesterday")) {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             return `Yesterday was ${yesterday.toLocaleDateString('en-US', options)}.`;
         }
 
@@ -162,55 +163,32 @@ document.addEventListener('DOMContentLoaded', function () {
             cleanedInput.includes("today")
         ) {
             const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             return `Today is ${today.toLocaleDateString('en-US', options)}.`;
         }
 
-        // Now process with compromise.js
-        let doc, normalized, verbs, nouns, dates;
+        // NLP fallback
+        let doc, normalized, verbs, nouns;
 
         try {
             doc = nlp(cleanedInput);
-            doc.numbers().toNumber(); // Convert "a hundred" to "100" BEFORE extracting dates
             normalized = doc.normalize().out('text');
             verbs = doc.verbs().out('array');
             nouns = doc.nouns().out('array');
-            dates = doc.dates().json();
-
-            const dateObj = doc.dates().get(0); // Get the *updated* date info
-            if (dateObj && dateObj.isValid()) {
-                const futureDate = dateObj.date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return `That will be ${futureDate.toLocaleDateString('en-US', options)}.`;
-            }
         } catch (err) {
             console.error("NLP error:", err);
             normalized = cleanedInput;
             verbs = nouns = [];
         }
 
-
-        // Handle dynamic date queries like "what is the date in 100 days"
-        if (dates.length > 0) {
-            const extractedDates = dates.map(d => d.text);
-            const parsedDate = doc.dates().get(0);
-
-            if (parsedDate && parsedDate.isValid()) {
-                const futureDate = parsedDate.date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return `The date in ${extractedDates.join(", ")} is ${futureDate.toLocaleDateString('en-US', options)}.`;
-            }
-        }
-
-        // Fallback: Try matching by NLP + aliases
+        // Alias match using compromise
         let responseKey = matchIntentFromDoc(doc, responses);
 
-        // Fallback: exact match
+        // Exact match
         if (!responseKey) {
             responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
         }
 
-        // Fallback: keyword in nouns/verbs
+        // Noun/verb keyword match
         if (!responseKey) {
             for (const key in responses) {
                 const aliases = responses[key].aliases || [key];
@@ -225,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 
-        // Special case: help
+        // Special case: help command
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -235,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
-        // Final response selection
+        // Return final response
         if (!responseKey && fuzzyResults.length > 0) {
             return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
         }
@@ -244,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ? getRandomResponse(responses[responseKey].text, responseKey)
             : "I'm not sure how to respond to that.";
     }
+    
     // Listen for Enter key
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
