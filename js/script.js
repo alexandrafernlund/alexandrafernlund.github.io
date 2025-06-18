@@ -16,16 +16,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function loadResponses() {
-        try {
-            const response = await fetch('responses.json');
-            responses = await response.json();
-            console.log("Loaded responses:", responses);
-            initializeFuse();
-            // ❌ Removed displayWelcomeMessage() from here
-        } catch (error) {
-            console.error("Error loading responses.json:", error);
+    try {
+        const response = await fetch('responses.json');
+        responses = await response.json();
+        console.log("Loaded responses:", responses);
+        initializeFuse();
+
+        if (!welcomeMessageShown) {
+            displayWelcomeMessage();
+            welcomeMessageShown = true;
         }
+    } catch (error) {
+        console.error("Error loading responses.json:", error);
     }
+}
+
 
     function displayWelcomeMessage() {
         const messages = [
