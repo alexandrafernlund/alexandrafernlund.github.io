@@ -65,6 +65,11 @@
     "category": "funny"
   },
 
+  "play chess": {
+    "aliases": ["play chess", "chess", "start chess", "chess start"],
+    "text": "Starting chess game..."
+  },
+
   "goodbye": {
     "aliases": ["bye", "goodbye", "exit", "see you", "quit", "leave"],
     "category": "general",

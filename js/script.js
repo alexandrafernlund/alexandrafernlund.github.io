@@ -217,6 +217,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     const exitAliases = responses['goodbye']?.aliases || [];
                     const normalizedInput = userMessage.toLowerCase().trim();
                     
+                    // Custom command for starting chess
+                    if (normalizedInput === "play chess") {
+                        // Show chess container
+                        if (typeof window.toggleChess === 'function') {
+                            window.toggleChess();
+                        }
+                        // Reset chess game to start fresh
+                        if (typeof window.resetChessGame === 'function') {
+                            window.resetChessGame();
+                        }
+                        return; // stop further processing after this
+                    }
+
                     // Check for exact alias match or response key === 'goodbye'
                     if (
                         matchIntent(normalizedInput) === 'goodbye' ||

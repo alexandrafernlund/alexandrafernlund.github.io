@@ -6,6 +6,12 @@
     <title>Alexandra Fernlund</title>
     <link rel="stylesheet" href="css/chat-terminal.css">
     <link rel="stylesheet" href="css/main-site.css">
+    <script src="js/games/chess.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mliebelt/pgn-viewer@3.5.4/lib/chessboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stockfish/stockfish.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mliebelt/pgn-viewer@3.5.4/lib/chessboard.min.css" />
+
 </head>
 <body>
     <!-- Chatbot Terminal Section -->
@@ -16,6 +22,9 @@
             </section> -->
             <div id="output"></div>
             <input type="text" id="userInput" placeholder="Ask me anything..." autofocus>
+        </div>
+        <div id="chess-container" style="display: none; margin-top: 20px;">
+            <div id="board" style="width: 350px; margin: auto;"></div>
         </div>
     </section>
 
