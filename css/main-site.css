@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow-y: auto; /* allow scrolling */
+  overflow-x: hidden;
 }
 
 body {
@@ -17,7 +22,7 @@ body {
     height: 100%;
 }
 
-h1 h2, h3 {
+h1, h2, h3 {
     color: #fff;
     margin-bottom: 0.5em;
 }
@@ -42,7 +47,6 @@ section {
     display: block;
     position: relative;
     z-index: 1;
-    height: 100%;
 }
 
 #main-site.active {
