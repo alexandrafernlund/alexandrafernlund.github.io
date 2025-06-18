@@ -30,7 +30,7 @@ section {
 }
 
 #main-site {
-    overflow: hidden;
+    overflow: auto;
     display: block;
     position: relative;
     z-index: 1;
