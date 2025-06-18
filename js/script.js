@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const output = document.getElementById('output');
     let responses = {};
@@ -21,8 +21,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             responses = await response.json();
             console.log("Loaded responses:", responses);
             initializeFuse();
+
+            if (!welcomeMessageShown) {
+                displayWelcomeMessage();
+                welcomeMessageShown = true;
+            }
         } catch (error) {
             console.error("Error loading responses.json:", error);
+            // Even if loading fails, show welcome message
+            if (!welcomeMessageShown) {
+                displayWelcomeMessage();
+                welcomeMessageShown = true;
+            }
         }
     }
 
@@ -38,9 +48,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         let index = 0;
         function showNextMessage() {
             if (index < messages.length) {
-                displayMessage(messages[index], 'bot');
-                index++;
-                setTimeout(showNextMessage, 800);
+                displayMessage(messages[index], 'bot', () => {
+                    index++;
+                    setTimeout(showNextMessage, 400);
+                });
             }
         }
         showNextMessage();
@@ -211,18 +222,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    // Show terminal and hide main GUI immediately on page load so welcome shows
-    document.getElementById('chat-terminal').style.display = 'block';
-    document.getElementById('main-site').style.display = 'none';
+    loadResponses();
 
-    // Load responses and then show welcome message
-    await loadResponses();
-    if (!welcomeMessageShown) {
-        displayWelcomeMessage();
-        welcomeMessageShown = true;
-    }
-
-    // Expose showTerminal if you still want to toggle later
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
