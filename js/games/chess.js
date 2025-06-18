@@ -37,20 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  function resetChessGame() {
-  game.reset();
-  board.start();  // Reset board to start position
-
-
-    window.resetChessGame = function() {
+  // ✅ Define once
+  window.resetChessGame = function() {
     game.reset();
     board.start();
-    };
+  };
 
-    // Activate Chess from terminal command
-    window.toggleChess = function() {
-        const container = document.getElementById("chess-container");
-        container.style.display = container.style.display === "none" ? "block" : "none";
-    }
-}
+  window.toggleChess = function() {
+    const container = document.getElementById("chess-container");
+    container.style.display = container.style.display === "none" ? "block" : "none";
+  };
 });
