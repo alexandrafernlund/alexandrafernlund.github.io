@@ -43,7 +43,6 @@ section {
 }
 
 #main-site {
-    overflow: auto;
     display: block;
     position: relative;
     z-index: 1;

@@ -75,7 +75,6 @@ html, body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 100%;
 }
 
 /* Output section */
@@ -115,6 +114,7 @@ html, body {
     padding: 10px;
     font-family: 'Courier New', monospace;
     position: relative;
+    flex-shrink: 0;
 }
 
     /* Cursor animation */
