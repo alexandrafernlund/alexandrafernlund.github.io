@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
     let fuse;
+    let welcomeMessageShown = false;
 
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
             responses = await response.json();
             console.log("Loaded responses:", responses);
             initializeFuse();
-            displayWelcomeMessage();
+            // ❌ Removed displayWelcomeMessage() from here
         } catch (error) {
             console.error("Error loading responses.json:", error);
         }
@@ -81,27 +82,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function typeMessage(message, div, callback) {
-    let index = 0;
-    function typeNextChar() {
-        if (index < message.length) {
-            div.textContent += message.charAt(index);
-            index++;
-            scrollToBottom(); 
-            setTimeout(typeNextChar, Math.random() * 100 + 50);
-        } else if (callback) {
-            callback();
+        let index = 0;
+        function typeNextChar() {
+            if (index < message.length) {
+                div.textContent += message.charAt(index);
+                index++;
+                scrollToBottom(); 
+                setTimeout(typeNextChar, Math.random() * 100 + 50);
+            } else if (callback) {
+                callback();
+            }
         }
+        typeNextChar();
     }
-    typeNextChar();
-}
 
     function displayMessage(message, sender, callback) {
-    const div = document.createElement('div');
-    div.classList.add(sender); // 'user' or 'bot'
-    output.appendChild(div);
-    typeMessage(message, div, callback);
-    scrollToBottom();
-}
+        const div = document.createElement('div');
+        div.classList.add(sender); // 'user' or 'bot'
+        output.appendChild(div);
+        typeMessage(message, div, callback);
+        scrollToBottom();
+    }
 
     function scrollToBottom() {
         output.scrollTop = output.scrollHeight;
@@ -173,51 +174,53 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     userInput.addEventListener('keydown', function (event) {
-    if (event.key === 'Enter' && userInput.value.trim() !== '') {
-        const userMessage = userInput.value.trim();
-        displayMessage(`> ${userMessage}`, 'user');
-        userInput.value = '';
+        if (event.key === 'Enter' && userInput.value.trim() !== '') {
+            const userMessage = userInput.value.trim();
+            displayMessage(`> ${userMessage}`, 'user');
+            userInput.value = '';
 
-        const normalizedInput = userMessage.toLowerCase().trim();
-        const intent = matchIntent(normalizedInput);
-        const exitAliases = responses['goodbye']?.aliases || [];
+            const normalizedInput = userMessage.toLowerCase().trim();
+            const intent = matchIntent(normalizedInput);
+            const exitAliases = responses['goodbye']?.aliases || [];
 
-        // 🎯 Special case: Exit command
-        if (normalizedInput === 'exit' || intent === 'goodbye' || exitAliases.some(alias => normalizedInput.includes(alias))) {
-            displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                setTimeout(() => toggleView(), 1500);
-            });
-            return;
-        }
-
-        // 🎯 Special case: Chess command
-        if (
-            ['play chess', 'start chess', 'chess'].includes(normalizedInput) ||
-            intent === 'chess'
-        ) {
-            displayMessage("Opening the chess board...", 'bot');
-            if (typeof window.toggleChess === 'function') {
-                window.toggleChess();
+            if (normalizedInput === 'exit' || intent === 'goodbye' || exitAliases.some(alias => normalizedInput.includes(alias))) {
+                displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
+                    setTimeout(() => toggleView(), 1500);
+                });
+                return;
             }
-            if (typeof window.resetChessGame === 'function') {
-                window.resetChessGame();
+
+            if (
+                ['play chess', 'start chess', 'chess'].includes(normalizedInput) ||
+                intent === 'chess'
+            ) {
+                displayMessage("Opening the chess board...", 'bot');
+                if (typeof window.toggleChess === 'function') {
+                    window.toggleChess();
+                }
+                if (typeof window.resetChessGame === 'function') {
+                    window.resetChessGame();
+                }
+                return;
             }
-            return;
-        }
 
-        // 🧠 Default bot response
-        const botMessage = getBotResponse(userMessage);
+            const botMessage = getBotResponse(userMessage);
 
-        if (typeof botMessage === 'string') {
-            displayMessage(botMessage, 'bot');
+            if (typeof botMessage === 'string') {
+                displayMessage(botMessage, 'bot');
+            }
         }
-    }
-});
+    });
 
     loadResponses();
 
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
+
+        if (!welcomeMessageShown) {
+            displayWelcomeMessage();
+            welcomeMessageShown = true;
+        }
     };
 });
