@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Scope all styles inside #chat-terminal */
-#chat-terminal * {
+/* Global Reset */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-#chat-terminal {
+body {
     background-color: #111; /* Terminal dark background */
     color: #fff;
     font-family: 'Courier New', monospace; /* Monospace font for terminal */
@@ -16,18 +16,31 @@
     flex-direction: column;
     height: 100vh;
     padding: 0;
+}
+
+html, body {
     overflow-x: hidden;
     width: 100%;
-    max-width: 100vw;
+}
+
+/* Chatbot Terminal Section */
+#chat-terminal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 2;
+    width: 100%;
+    max-width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
+    display: block;
+    transition: opacity 0.3s ease-out;
+    flex-direction: column;
+    padding: 15px;
     overflow: hidden;
     overflow-x: hidden;
-    padding: 15px;
-    transition: opacity 0.3s ease-out;
+    z-index: 2;
 }
 
 #chat-terminal.active {
@@ -39,25 +52,26 @@
     display: none;
 }
 
-#chat-terminal .hero-terminal {
+.hero-terminal {
     text-align: left;
-    margin: 0;
+    margin: 0px 0px 0px 0px;
 }
 
-#chat-terminal #hero-terminal-title {
-    font-size: 2.5rem;
-    color: #fff;
-    font-family: "Press Start 2P", monospace;
-    display: inline-block;
-}
+    #hero-terminal-title {
+        font-size: 2.5rem;
+        color: #fff;
+        font-family: "Press Start 2P", monospace;
+        display: inline-block;
+    }
 
-#chat-terminal .hero-terminal p {
-    font-size: 1rem;
-    color: #fff;
-}
+    .hero-terminal p {
+        font-size: 1rem;
+        color: #fff;
+    }
+
 
 /* Terminal inner content */
-#chat-terminal .terminal {
+.terminal {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -65,27 +79,27 @@
 }
 
 /* Output section */
-#chat-terminal #output {
+#output {
     flex-grow: 1;
     overflow-y: auto;
     font-size: 16px;
     color: #fff;
     padding-right: 10px;
     margin-bottom: 10px;
-    white-space: pre-wrap; /* Keeps formatting */
+    white-space: pre-wrap; /* Ensures responses are formatted correctly */
     font-family: 'Courier New', monospace;
     scroll-behavior: smooth;
 }
 
 /* User and bot message styling */
-#chat-terminal .user {
-    color: #fff;
+.user {
+    color: #fff; /* Classic white terminal color */
     text-align: right;
     margin-bottom: 10px;
 }
 
-#chat-terminal .bot {
-    color: #fff;
+.bot {
+    color: #fff; /* Classic white terminal color */
     text-align: left;
     margin-bottom: 10px;
 }
@@ -103,9 +117,9 @@
     position: relative;
 }
 
-/* Cursor animation */
+    /* Cursor animation */
 #chat-terminal input::after {
-    content: '|'; /* Simulate cursor */
+    content: '|'; /* Simulate the cursor */
     position: absolute;
     right: 10px;
     top: 50%;
@@ -113,12 +127,12 @@
     animation: blink 1s step-end infinite;
 }
 
-/* Placeholder text styling */
+    /* Placeholder text styling */
 #chat-terminal input::placeholder {
     color: #fff;
 }
 
-/* Focus effect on input */
+    /* Focus effect on input */
 #chat-terminal input:focus {
     border: 1px solid #fff;
     background-color: #000;
@@ -129,6 +143,7 @@
     50% {
         visibility: hidden;
     }
+
     100% {
         visibility: visible;
     }
@@ -141,7 +156,7 @@
     }
 }
 
-#chat-terminal .typing {
+.typing {
     color: #fff;
     font-family: 'Courier New', monospace;
     font-size: 1.2em;
@@ -154,10 +169,15 @@
     0% {
         opacity: 1;
     }
+
     50% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
 }
+
+
+
