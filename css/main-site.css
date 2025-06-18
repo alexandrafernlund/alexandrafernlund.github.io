@@ -7,6 +7,7 @@ body {
     background-color: #000;
     color: #fff;
     line-height: 1.6;
+    height: 100%;
 }
 
 h1 h2, h3 {
@@ -34,11 +35,13 @@ section {
     display: block;
     position: relative;
     z-index: 1;
+    height: 100%;
 }
 
 #main-site.active {
     height: auto;
     display: block;
+    height: 100%;
 }
 
 
