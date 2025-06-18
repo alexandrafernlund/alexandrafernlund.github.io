@@ -19,7 +19,6 @@ body {
     background-color: #000;
     color: #fff;
     line-height: 1.6;
-    height: 100%;
 }
 
 h1, h2, h3 {
@@ -38,7 +37,7 @@ a {
 
 section {
     padding: 4em 2em;
-    max-width: 85%;
+    max-width: 100%;
     margin: auto;
 }
 
