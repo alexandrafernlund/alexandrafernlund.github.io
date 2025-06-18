@@ -5,18 +5,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastResponseByCategory = {};
     let fuse;
 
-    // Toggle between terminal and GUI views
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
-
         if (terminal && guiSite) {
             terminal.style.display = 'none';
             guiSite.style.display = 'block';
         }
-    }    
+    }
 
-    // Load responses
     async function loadResponses() {
         try {
             const response = await fetch('responses.json');
@@ -29,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Welcome messages
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -50,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showNextMessage();
     }
 
-    // Fuse.js fuzzy matching setup
     function initializeFuse() {
         const fuseCommands = Object.entries(responses).map(([key, value]) => ({
             key,
@@ -62,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Exact alias match
     function matchIntent(input) {
         input = input.trim().toLowerCase();
         for (const key in responses) {
@@ -74,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    // Random response with repeat protection
     function getRandomResponse(response, category = "general") {
         if (Array.isArray(response)) {
             let randomResponse;
@@ -87,13 +80,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return response;
     }
 
-    // Typewriter effect
-    function typeMessage(message, sender, callback) {
-        const div = document.createElement('div');
-        div.classList.add(sender);
-        output.appendChild(div);
+    function typeMessage(message, div, callback) {
         let index = 0;
-
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
@@ -104,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 callback();
             }
         }
-
         typeNextChar();
     }
 
@@ -112,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.classList.add(sender);
         output.appendChild(div);
-        typeMessage(message, sender, callback);
+        typeMessage(message, div, callback);
         scrollToBottom();
     }
 
@@ -120,23 +107,19 @@ document.addEventListener('DOMContentLoaded', function () {
         output.scrollTop = output.scrollHeight;
     }
 
-    // Use compromise.js to dynamically match against JSON alias lists
     function matchIntentFromDoc(doc, responses) {
-    for (const key in responses) {
-        const entry = responses[key];
-        const aliases = entry.aliases || [];
-
-        for (const alias of aliases) {
-            // Check if the document contains the full alias as a phrase
-            if (doc.has(alias) || doc.match(alias).found) {
-                return key;
+        for (const key in responses) {
+            const entry = responses[key];
+            const aliases = entry.aliases || [];
+            for (const alias of aliases) {
+                if (doc.has(alias) || doc.match(alias).found) {
+                    return key;
+                }
             }
         }
-    }
-    return null;
+        return null;
     }
 
-    // Generate response
     function getBotResponse(input) {
         const cleanedInput = input.toLowerCase().trim();
         let doc, normalized, verbs, nouns;
@@ -152,15 +135,12 @@ document.addEventListener('DOMContentLoaded', function () {
             verbs = nouns = [];
         }
 
-        // Try matching by NLP alias first
         let responseKey = matchIntentFromDoc(doc, responses);
 
-        // Fallback: exact match
         if (!responseKey) {
             responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
         }
 
-        // Fallback: simple keyword in nouns/verbs
         if (!responseKey) {
             for (const key in responses) {
                 const aliases = responses[key].aliases || [key];
@@ -171,11 +151,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Fuzzy match
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 
-        // Help special case
         if (responseKey === 'help' || fuzzyKey === 'help') {
             let helpMessage = "Here are the available commands:\n\n";
             for (const key in responses) {
@@ -185,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return helpMessage;
         }
 
-        // Final response decision
         if (!responseKey && fuzzyResults.length > 0) {
             return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
         }
@@ -194,59 +171,55 @@ document.addEventListener('DOMContentLoaded', function () {
             ? getRandomResponse(responses[responseKey].text, responseKey)
             : "I'm not sure how to respond to that.";
     }
-    
-    // Listen for Enter key
+
     userInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && userInput.value.trim() !== '') {
             const userMessage = userInput.value.trim();
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
-    
-            // Exit command check goes here:
-            if (userMessage.toLowerCase() === 'exit') {
+
+            const normalizedInput = userMessage.toLowerCase().trim();
+
+            if (normalizedInput === 'exit') {
                 displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                    toggleView(); // this calls your existing toggle function
+                    toggleView();
                 });
-                return; // stop further processing
+                return;
             }
-    
+
             const botMessage = getBotResponse(userMessage);
 
             if (typeof botMessage === 'string') {
                 displayMessage(botMessage, 'bot', () => {
                     const exitAliases = responses['goodbye']?.aliases || [];
-                    const normalizedInput = userMessage.toLowerCase().trim();
-                    
-                    // Custom command for starting chess
-                    if (normalizedInput === "play chess") {
-                        // Show chess container
+
+                    // 🎯 Chess command (supporting multiple aliases)
+                    if (
+                        ['play chess', 'start chess', 'chess'].includes(normalizedInput) ||
+                        matchIntent(normalizedInput) === 'chess'
+                    ) {
                         if (typeof window.toggleChess === 'function') {
                             window.toggleChess();
                         }
-                        // Reset chess game to start fresh
                         if (typeof window.resetChessGame === 'function') {
                             window.resetChessGame();
                         }
-                        return; // stop further processing after this
+                        return;
                     }
 
-                    // Check for exact alias match or response key === 'goodbye'
                     if (
                         matchIntent(normalizedInput) === 'goodbye' ||
                         exitAliases.some(alias => normalizedInput.includes(alias))
                     ) {
-                        setTimeout(() => toggleView(), 1500); // Delay for natural UX
+                        setTimeout(() => toggleView(), 1500);
                     }
                 });
             }
-
         }
     });
 
-    // Start bot
     loadResponses();
 
-    // Global GUI toggle
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
