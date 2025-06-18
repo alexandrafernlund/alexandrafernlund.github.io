@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
     let fuse;
-    let welcomeMessageShown = false;
 
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
         const guiSite = document.getElementById('main-site');
+
         if (terminal && guiSite) {
             terminal.style.display = 'none';
             guiSite.style.display = 'block';
@@ -21,18 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
             responses = await response.json();
             console.log("Loaded responses:", responses);
             initializeFuse();
-
-            if (!welcomeMessageShown) {
-                displayWelcomeMessage();
-                welcomeMessageShown = true;
-            }
+            displayWelcomeMessage();
         } catch (error) {
             console.error("Error loading responses.json:", error);
-            // Even if loading fails, show welcome message
-            if (!welcomeMessageShown) {
-                displayWelcomeMessage();
-                welcomeMessageShown = true;
-            }
         }
     }
 
@@ -48,10 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let index = 0;
         function showNextMessage() {
             if (index < messages.length) {
-                displayMessage(messages[index], 'bot', () => {
-                    index++;
-                    setTimeout(showNextMessage, 400);
-                });
+                displayMessage(messages[index], 'bot');
+                index++;
+                setTimeout(showNextMessage, 800);
             }
         }
         showNextMessage();
@@ -91,8 +81,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return response;
     }
 
-    function typeMessage(message, div, callback) {
+    function typeMessage(message, sender, callback) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
         let index = 0;
+
         function typeNextChar() {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
@@ -103,14 +97,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 callback();
             }
         }
+
         typeNextChar();
     }
 
     function displayMessage(message, sender, callback) {
         const div = document.createElement('div');
-        div.classList.add(sender); // 'user' or 'bot'
+        div.classList.add(sender);
         output.appendChild(div);
-        typeMessage(message, div, callback);
+        typeMessage(message, sender, callback);
         scrollToBottom();
     }
 
@@ -122,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const key in responses) {
             const entry = responses[key];
             const aliases = entry.aliases || [];
+
             for (const alias of aliases) {
                 if (doc.has(alias) || doc.match(alias).found) {
                     return key;
@@ -189,35 +185,27 @@ document.addEventListener('DOMContentLoaded', function () {
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
 
-            const normalizedInput = userMessage.toLowerCase().trim();
-            const intent = matchIntent(normalizedInput);
-            const exitAliases = responses['goodbye']?.aliases || [];
-
-            if (normalizedInput === 'exit' || intent === 'goodbye' || exitAliases.some(alias => normalizedInput.includes(alias))) {
+            if (userMessage.toLowerCase() === 'exit') {
                 displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
-                    setTimeout(() => toggleView(), 1500);
+                    toggleView();
                 });
-                return;
-            }
-
-            if (
-                ['play chess', 'start chess', 'chess'].includes(normalizedInput) ||
-                intent === 'chess'
-            ) {
-                displayMessage("Opening the chess board...", 'bot');
-                if (typeof window.toggleChess === 'function') {
-                    window.toggleChess();
-                }
-                if (typeof window.resetChessGame === 'function') {
-                    window.resetChessGame();
-                }
                 return;
             }
 
             const botMessage = getBotResponse(userMessage);
 
             if (typeof botMessage === 'string') {
-                displayMessage(botMessage, 'bot');
+                displayMessage(botMessage, 'bot', () => {
+                    const exitAliases = responses['goodbye']?.aliases || [];
+                    const normalizedInput = userMessage.toLowerCase().trim();
+
+                    if (
+                        matchIntent(normalizedInput) === 'goodbye' ||
+                        exitAliases.some(alias => normalizedInput.includes(alias))
+                    ) {
+                        setTimeout(() => toggleView(), 1500);
+                    }
+                });
             }
         }
     });
@@ -227,10 +215,5 @@ document.addEventListener('DOMContentLoaded', function () {
     window.showTerminal = function () {
         document.getElementById('main-site').style.display = 'none';
         document.getElementById('chat-terminal').style.display = 'block';
-
-        if (!welcomeMessageShown) {
-            displayWelcomeMessage();
-            welcomeMessageShown = true;
-        }
     };
 });
