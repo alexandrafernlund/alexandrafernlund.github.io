@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index < message.length) {
                 div.textContent += message.charAt(index);
                 index++;
-                scrollToBottom();  // 👈 This is the fix
+                scrollToBottom(); 
                 setTimeout(typeNextChar, Math.random() * 100 + 50);
             } else if (callback) {
                 callback();
