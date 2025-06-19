@@ -4,6 +4,7 @@ let engine = null;
 let boardInitialized = false;
 
 function initChessBoard() {
+  console.log('initChessBoard called');
   if (boardInitialized) return;
 
   board = Chessboard('board', {
@@ -21,10 +22,7 @@ function initChessBoard() {
     console.log("Engine says:", event.data);
   };
 
-  function initChessBoard() {
-  console.log('initChessBoard called');
-  if (boardInitialized) return;
-  }
+  
 
   if (!engine) {
     console.error("Stockfish failed to load.");
