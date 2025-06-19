@@ -47,69 +47,80 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Placed food at', food);
     }
 
-    function moveSnake() {
-        const head = snake[0];
-        const newHead = { x: head.x + direction.x, y: head.y + direction.y };
-
-        if (
-            newHead.x < 0 || newHead.x >= width ||
-            newHead.y < 0 || newHead.y >= height ||
-            snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)
-        ) {
-            endGame();
-            return;
-        }
-
-        snake.unshift(newHead);
-
-        if (newHead.x === food.x && newHead.y === food.y) {
-            placeFood();
-        } else {
-            snake.pop();
-        }
-
-        draw();
-    }
-
     function handleKey(e) {
-        switch (e.key) {
-            case 'ArrowUp':
-                if (direction.y !== 1) direction = { x: 0, y: -1 };
-                break;
-            case 'ArrowDown':
-                if (direction.y !== -1) direction = { x: 0, y: 1 };
-                break;
-            case 'ArrowLeft':
-                if (direction.x !== 1) direction = { x: -1, y: 0 };
-                break;
-            case 'ArrowRight':
-                if (direction.x !== -1) direction = { x: 1, y: 0 };
-                break;
-        }
+    e.preventDefault(); // prevent page from scrolling with arrow keys
+
+    switch (e.key) {
+        case 'ArrowUp':
+            if (direction.y !== 1) direction = { x: 0, y: -1 };
+            break;
+        case 'ArrowDown':
+            if (direction.y !== -1) direction = { x: 0, y: 1 };
+            break;
+        case 'ArrowLeft':
+            if (direction.x !== 1) direction = { x: -1, y: 0 };
+            break;
+        case 'ArrowRight':
+            if (direction.x !== -1) direction = { x: 1, y: 0 };
+            break;
     }
+}
 
     window.startGame = function () {
-        console.log("Starting Snake Game");
+    console.log("Starting Snake Game");
 
-        snake = [
-            { x: 5, y: 5 },
-            { x: 4, y: 5 },
-            { x: 3, y: 5 }
-        ];
-        direction = { x: 1, y: 0 };
-        gameOver = false;
-        window.gameActive = true;
-        terminalInput.disabled = true;
+    // Reset
+    clearInterval(gameInterval);
+    snake = [
+        { x: 5, y: 5 },
+        { x: 4, y: 5 },
+        { x: 3, y: 5 }
+    ];
+    direction = { x: 1, y: 0 };
+    gameOver = false;
+    window.gameActive = true;
+    terminalInput.disabled = true;
 
-        snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
+    // Set grid explicitly now
+    snakeGame.style.display = 'grid';
+    snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+    snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
 
-        draw();
-        placeFood();
-        gameInterval = setInterval(moveSnake, 200);
-        document.addEventListener('keydown', handleKey);
-    };
+    placeFood();
+    draw(); // draw AFTER food and snake are ready
+
+    document.removeEventListener('keydown', handleKey); // avoid multiple bindings
+    document.addEventListener('keydown', handleKey);
+    gameInterval = setInterval(moveSnake, 200);
+};
+
+function moveSnake() {
+    if (gameOver || !snake.length) return;
+
+    const head = snake[0];
+    const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+
+    // Check wall or self collision
+    const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
+    const hitsSelf = snake.some(part => part.x === newHead.x && part.y === newHead.y);
+
+    if (hitsWall || hitsSelf) {
+        console.log("Collision detected. Wall:", hitsWall, "Self:", hitsSelf);
+        endGame();
+        return;
+    }
+
+    snake.unshift(newHead);
+
+    if (newHead.x === food.x && newHead.y === food.y) {
+        placeFood(); // eat and grow
+    } else {
+        snake.pop(); // move forward
+    }
+
+    draw();
+}
+
 
     window.endGame = function () {
         console.log("Game Over");
