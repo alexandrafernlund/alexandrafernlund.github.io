@@ -131,6 +131,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const cleanedInput = input.toLowerCase().trim();
         let doc, normalized, verbs, nouns;
 
+          // Special command to start chess
+        if (cleanedInput === "start chess") {
+            window.toggleChess();      // Show chess container
+            window.resetChessGame();   // Reset/start chess game
+            return "Chess game started! Make your move.";
+        }
+
+        if (cleanedInput === "exit chess") {
+            window.toggleChess();
+            return "Exited chess game. Back to the terminal.";
+            }
+
+
         try {
             doc = nlp(cleanedInput);
             normalized = doc.normalize().out('text');
@@ -157,6 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }
+
+        
 
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
