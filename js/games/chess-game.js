@@ -13,14 +13,23 @@ function initChessBoard() {
   });
 
   game = new Chess();
-  engine = STOCKFISH();
+  engine = typeof STOCKFISH === "function" ? STOCKFISH() : null;
 
-  engine.onmessage = function(event) {
+  if (!engine) {
+    console.error("Stockfish failed to load.");
+    return;
+  }
+
+  engine.onmessage = function (event) {
     console.log("Engine:", event.data);
-    const match = event.data.match(/^bestmove\s(\w{4})/);
+    const match = event.data.match(/^bestmove\s(\w{4,5})/);
     if (match) {
       const move = match[1];
-      game.move({ from: move.substring(0, 2), to: move.substring(2, 4), promotion: 'q' });
+      game.move({
+        from: move.substring(0, 2),
+        to: move.substring(2, 4),
+        promotion: move.length === 5 ? move[4] : 'q'
+      });
       board.position(game.fen());
     }
   };
@@ -47,13 +56,12 @@ function makeEngineMove() {
   engine.postMessage("go depth 12");
 }
 
-// Toggle display + init board
 window.toggleChess = function () {
   const container = document.getElementById("chess-container");
   const nowHidden = container.style.display === "none";
   container.style.display = nowHidden ? "block" : "none";
 
-  if (nowHidden) initChessBoard(); // Init on first show
+  if (nowHidden) initChessBoard();
 };
 
 window.resetChessGame = function () {
