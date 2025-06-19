@@ -1,3 +1,13 @@
+window.resetChessGame = function() {
+    game.reset();
+    board.start();
+  };
+
+  window.toggleChess = function() {
+    const container = document.getElementById("chess-container");
+    container.style.display = container.style.display === "none" ? "block" : "none";
+  };
+
 document.addEventListener('DOMContentLoaded', () => {
   const board = Chessboard('board', {
     position: 'start',
@@ -37,14 +47,5 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // ✅ Define once
-  window.resetChessGame = function() {
-    game.reset();
-    board.start();
-  };
-
-  window.toggleChess = function() {
-    const container = document.getElementById("chess-container");
-    container.style.display = container.style.display === "none" ? "block" : "none";
-  };
 });
+
