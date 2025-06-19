@@ -73,7 +73,6 @@ function makeEngineMove() {
 
 window.toggleChess = function () {
   const container = document.getElementById("chess-container");
-  const nowHidden = container.style.display === "none";
   container.style.display = nowHidden ? "block" : "none";
 
   if (nowHidden) {
