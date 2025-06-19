@@ -81,17 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.gameActive = true;
     terminalInput.disabled = true;
 
-    // Set grid explicitly now
+    // Set grid layout
     snakeGame.style.display = 'grid';
     snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
     snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
 
     placeFood();
-    draw(); // draw AFTER food and snake are ready
+    draw();
 
-    document.removeEventListener('keydown', handleKey); // avoid multiple bindings
+    document.removeEventListener('keydown', handleKey);
     document.addEventListener('keydown', handleKey);
-    gameInterval = setInterval(moveSnake, 200);
+
+    // ✨ Delay first move by 500ms
+    setTimeout(() => {
+        gameInterval = setInterval(moveSnake, 200);
+    }, 500);
 };
 
 function moveSnake() {
