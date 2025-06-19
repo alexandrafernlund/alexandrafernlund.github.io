@@ -3,6 +3,7 @@
 #chess-container {
   position: relative;
   z-index: 1000; /* high enough to be above terminal */
+  visibility: visible;
 }
 
 .clearfix-7da63 {
