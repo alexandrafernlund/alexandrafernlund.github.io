@@ -13,7 +13,7 @@ function initChessBoard() {
   });
 
   game = new Chess();
-  engine = new Worker('https://cdn.jsdelivr.net/npm/stockfish/stockfish.js');
+  engine = new Worker('js/games/stockfish.js');
 
   engine.postMessage('uci');
   engine.onmessage = function(event) {
