@@ -1,5 +1,10 @@
 /*! chessboard.js v@VERSION | (c) 2019 Chris Oakman | MIT License chessboardjs.com/license */
 
+#chess-container {
+  position: relative;
+  z-index: 1000; /* high enough to be above terminal */
+}
+
 .clearfix-7da63 {
   clear: both;
 }
