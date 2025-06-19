@@ -5,29 +5,36 @@ let boardInitialized = false;
 
 function initChessBoard() {
   console.log('initChessBoard called');
+
+  const boardElement = document.getElementById('board');
+  if (!boardElement) {
+    console.error('No #board element found in DOM.');
+    return;
+  }
+
   if (boardInitialized) return;
 
   board = Chessboard('board', {
     position: 'start',
     draggable: true,
     onDrop: onDrop,
-    pieceTheme: '/assets/img/chesspieces/wikipedia/{piece}.png'
+    pieceTheme: 'assets/img/chesspieces/wikipedia/{piece}.png'
   });
+
+  if (!board) {
+    console.error("Chessboard failed to initialize.");
+    return;
+  }
 
   game = new Chess();
   engine = new Worker('js/games/stockfish.js');
-
-  engine.postMessage('uci');
-  engine.onmessage = function(event) {
-    console.log("Engine says:", event.data);
-  };
-
-  
 
   if (!engine) {
     console.error("Stockfish failed to load.");
     return;
   }
+
+  engine.postMessage('uci');
 
   engine.onmessage = function (event) {
     console.log("Engine:", event.data);
@@ -43,7 +50,6 @@ function initChessBoard() {
     }
   };
 
-  engine.postMessage("uci");
   boardInitialized = true;
 }
 
@@ -71,13 +77,9 @@ window.toggleChess = function () {
   container.style.display = nowHidden ? "block" : "none";
 
   if (nowHidden) {
-    // Wait for #board to exist and be visible
     setTimeout(() => {
-      const el = document.getElementById("board");
-      console.log("Checking if #board exists:", el);
-      if (el) initChessBoard();
-      else console.error("#board element missing!");
-    }, 50);
+      if (document.getElementById('board')) initChessBoard();
+    }, 50); // Wait a moment to make sure board is in DOM
   }
 };
 
