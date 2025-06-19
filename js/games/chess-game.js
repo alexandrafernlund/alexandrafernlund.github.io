@@ -9,7 +9,8 @@ function initChessBoard() {
   board = Chessboard('board', {
     position: 'start',
     draggable: true,
-    onDrop: onDrop
+    onDrop: onDrop,
+    pieceTheme: 'assets/img/chesspieces/wikipedia/{piece}.png'
   });
 
   game = new Chess();
