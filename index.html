@@ -7,6 +7,8 @@
 
     <link rel="stylesheet" href="css/chat-terminal.css" />
     <link rel="stylesheet" href="css/main-site.css" />
+
+    <script src="snake.js"></script>
 </head>
 <body>
     <!-- Chatbot Terminal Section -->
@@ -63,12 +65,31 @@
         </section>
     </section>
 
+    <section id="snake">    
+            <div id="snake-game" style="
+            display: none;
+            margin: 1em auto;
+            background: #111;
+            width: fit-content;
+            user-select: none;
+            border-radius: 6px;
+            padding: 10px;
+            grid-template-columns: repeat(20, 20px);
+            grid-template-rows: repeat(10, 20px);
+            gap: 1px;
+            display: grid;
+            max-width: 420px;
+            max-height: 220px;
+            "></div>
+    </section>
+
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <script src="https://unpkg.com/compromise"></script>
     <script src="https://unpkg.com/compromise-dates"></script> <!-- Compromise-dates plugin -->
     <script>
         nlp.extend(window.compromiseDates); 
     </script>
-    <script src="js/script.js"></script> <!-- Your existing chatbot logic -->
+    <script src="js/snake.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

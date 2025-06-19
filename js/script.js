@@ -158,7 +158,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        
+        if (input === 'play snake') {
+            if (!gameActive) {
+                startGame();
+                return "Starting Snake game! Use arrow keys to play.";
+            } else {
+                return "Snake game is already running.";
+            }
+        }
 
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
