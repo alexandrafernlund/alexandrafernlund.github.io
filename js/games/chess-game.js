@@ -13,7 +13,13 @@ function initChessBoard() {
   });
 
   game = new Chess();
-  engine = typeof STOCKFISH === "function" ? STOCKFISH() : null;
+  engine = new Worker('https://cdn.jsdelivr.net/npm/stockfish/stockfish.js');
+
+  engine.postMessage('uci');
+  engine.onmessage = function(event) {
+    console.log("Engine says:", event.data);
+  };
+
 
   if (!engine) {
     console.error("Stockfish failed to load.");
