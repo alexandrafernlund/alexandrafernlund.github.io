@@ -131,18 +131,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const cleanedInput = input.toLowerCase().trim();
         let doc, normalized, verbs, nouns;
 
-          // Special command to start chess
         if (cleanedInput === "start chess") {
-            window.toggleChess();      // Show chess container
-            window.resetChessGame();   // Reset/start chess game
-            return "Chess game started! Make your move.";
+        window.startChessBoard();
+        document.getElementById('chess-container').style.display = 'block';
+        return "Chess game started! Enter moves like 'e2e4'.";
+        }
+
+        if (/^[a-h][1-8][a-h][1-8]$/.test(cleanedInput)) { // move format e2e4
+            const response = window.userMove(cleanedInput);
+            return response;
         }
 
         if (cleanedInput === "exit chess") {
-            window.toggleChess();
+            document.getElementById('chess-container').style.display = 'none';
             return "Exited chess game. Back to the terminal.";
-            }
-
+        }
 
         try {
             doc = nlp(cleanedInput);

@@ -1,90 +1,106 @@
+// chess-game.js
+
 let board = null;
 let game = null;
-let engine = null;
-let boardInitialized = false;
 
-function initChessBoard() {
-  console.log('initChessBoard called');
-
-  const boardElement = document.getElementById('board');
-  if (!boardElement) {
-    console.error('No #board element found in DOM.');
-    return;
+function onDragStart(source, piece, position, orientation) {
+  // Prevent dragging if game over or not player's turn
+  if (game.game_over() || (game.turn() !== 'w')) {
+    return false;
   }
-
-  if (boardInitialized) return;
-
-  board = Chessboard('board', {
-    position: 'start',
-    draggable: true,
-    onDrop: onDrop,
-    pieceTheme: 'assets/img/chesspieces/wikipedia/{piece}.png'
-  });
-
-  if (!board) {
-    console.error("Chessboard failed to initialize.");
-    return;
-  }
-
-  game = new Chess();
-  engine = new Worker('js/games/stockfish.js');
-
-  if (!engine) {
-    console.error("Stockfish failed to load.");
-    return;
-  }
-
-  engine.postMessage('uci');
-
-  engine.onmessage = function (event) {
-    console.log("Engine:", event.data);
-    const match = event.data.match(/^bestmove\s(\w{4,5})/);
-    if (match) {
-      const move = match[1];
-      game.move({
-        from: move.substring(0, 2),
-        to: move.substring(2, 4),
-        promotion: move.length === 5 ? move[4] : 'q'
-      });
-      board.position(game.fen());
-    }
-  };
-
-  boardInitialized = true;
 }
 
 function onDrop(source, target) {
+  // See if the move is legal
   const move = game.move({
     from: source,
     to: target,
-    promotion: 'q'
+    promotion: 'q' // always promote to queen for simplicity
   });
 
-  if (move === null) return 'snapback';
+  if (move === null) {
+    return 'snapback'; // illegal move
+  }
+
+  updateStatus();
+}
+
+function onSnapEnd() {
+  board.position(game.fen());
+}
+
+function updateStatus() {
+  let status = '';
+
+  if (game.in_checkmate()) {
+    status = 'Game over, checkmate.';
+  } else if (game.in_draw()) {
+    status = 'Game over, draw.';
+  } else {
+    status = (game.turn() === 'w' ? 'White' : 'Black') + ' to move';
+
+    if (game.in_check()) {
+      status += ', check!';
+    }
+  }
+
+  // You can display this status in your terminal output or somewhere else
+  console.log(status);
+}
+
+function resetChessGame() {
+  game = new Chess();
+  if (board) {
+    board.position('start');
+  }
+  updateStatus();
+}
+
+function startChessBoard() {
+  const config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd,
+  };
+  board = Chessboard('board', config);
+  resetChessGame();
+}
+
+// Function to handle moves typed by user in terminal input like "e2e4"
+function userMove(moveString) {
+  if (!game) {
+    console.log("Game not started.");
+    return "Start a game first by typing 'start chess'.";
+  }
+
+  // chess.js expects moves like {from: 'e2', to: 'e4'}
+  if (moveString.length !== 4) {
+    return "Invalid move format. Use format like 'e2e4'.";
+  }
+
+  const move = game.move({
+    from: moveString.slice(0, 2),
+    to: moveString.slice(2, 4),
+    promotion: 'q' // always promote to queen
+  });
+
+  if (move === null) {
+    return "Illegal move. Try again.";
+  }
 
   board.position(game.fen());
-  setTimeout(makeEngineMove, 250);
-}
+  updateStatus();
 
-function makeEngineMove() {
-  engine.postMessage(`position fen ${game.fen()}`);
-  engine.postMessage("go depth 12");
-}
-
-window.toggleChess = function () {
-  const container = document.getElementById("chess-container");
-  const nowHidden = container.style.display === "none";
-  container.style.display = nowHidden ? "block" : "none";
-
-  if (nowHidden) {
-    setTimeout(() => {
-      if (document.getElementById('board')) initChessBoard();
-    }, 50); // Wait a moment to make sure board is in DOM
+  if (game.game_over()) {
+    return "Game over. " + (game.in_checkmate() ? "Checkmate!" : "Draw!");
   }
-};
 
-window.resetChessGame = function () {
-  if (!game || !board) return;
-  game.reset();
-  board.start();
-};
+  return "Move accepted: " + move.san;
+}
+
+// Expose functions to global so your main script.js can call them
+window.resetChessGame = resetChessGame;
+window.startChessBoard = startChessBoard;
+window.userMove = userMove;
