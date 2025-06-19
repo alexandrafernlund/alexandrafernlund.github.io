@@ -10,7 +10,7 @@ function initChessBoard() {
     position: 'start',
     draggable: true,
     onDrop: onDrop,
-    pieceTheme: 'assets/img/chesspieces/wikipedia/{piece}.png'
+    pieceTheme: '/assets/img/chesspieces/wikipedia/{piece}.png'
   });
 
   game = new Chess();
