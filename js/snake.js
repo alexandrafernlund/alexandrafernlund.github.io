@@ -3,24 +3,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const terminalInput = document.getElementById('userInput');
 
     if (!snakeGame || !terminalInput) {
-        alert('Missing required elements: #snake-game or #userInput.');
+        console.error('snakeGame or terminalInput not found.');
         return;
     }
 
     const width = 20;
     const height = 10;
-
     let snake = [];
     let food = {};
     let direction = { x: 1, y: 0 };
+    let gameInterval;
     let gameOver = false;
-    let gameInterval = null;
+
     window.gameActive = false;
 
     function draw() {
         if (!snakeGame) return;
-
         snakeGame.innerHTML = '';
+
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const cell = document.createElement('div');
@@ -28,12 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.style.height = '20px';
                 cell.style.backgroundColor = '#222';
 
-                if (snake.some(s => s.x === x && s.y === y)) {
-                    cell.style.backgroundColor = 'green';
-                    cell.style.borderRadius = '4px';
+                if (snake.some(part => part.x === x && part.y === y)) {
+                    cell.style.backgroundColor = 'limegreen';
                 } else if (food.x === x && food.y === y) {
                     cell.style.backgroundColor = 'red';
-                    cell.style.borderRadius = '50%';
                 }
 
                 snakeGame.appendChild(cell);
@@ -42,26 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function placeFood() {
-        let newFood;
-        do {
-            newFood = {
-                x: Math.floor(Math.random() * width),
-                y: Math.floor(Math.random() * height),
-            };
-        } while (snake.some(s => s.x === newFood.x && s.y === newFood.y));
-        food = newFood;
+        food = {
+            x: Math.floor(Math.random() * width),
+            y: Math.floor(Math.random() * height)
+        };
+        console.log('Placed food at', food);
     }
 
     function moveSnake() {
-        if (gameOver) return;
-
         const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
         if (
             newHead.x < 0 || newHead.x >= width ||
             newHead.y < 0 || newHead.y >= height ||
-            snake.some(s => s.x === newHead.x && s.y === newHead.y)
+            snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)
         ) {
             endGame();
             return;
@@ -79,52 +72,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKey(e) {
-        if (!window.gameActive || gameOver) return;
-
         switch (e.key) {
             case 'ArrowUp':
-                if (direction.y === 1) break;
-                direction = { x: 0, y: -1 };
+                if (direction.y !== 1) direction = { x: 0, y: -1 };
                 break;
             case 'ArrowDown':
-                if (direction.y === -1) break;
-                direction = { x: 0, y: 1 };
+                if (direction.y !== -1) direction = { x: 0, y: 1 };
                 break;
             case 'ArrowLeft':
-                if (direction.x === 1) break;
-                direction = { x: -1, y: 0 };
+                if (direction.x !== 1) direction = { x: -1, y: 0 };
                 break;
             case 'ArrowRight':
-                if (direction.x === -1) break;
-                direction = { x: 1, y: 0 };
+                if (direction.x !== -1) direction = { x: 1, y: 0 };
                 break;
         }
     }
 
     window.startGame = function () {
+        console.log("Starting Snake Game");
+
         snake = [
-            { x: 10, y: 5 },
-            { x: 9, y: 5 },
-            { x: 8, y: 5 }
+            { x: 5, y: 5 },
+            { x: 4, y: 5 },
+            { x: 3, y: 5 }
         ];
         direction = { x: 1, y: 0 };
         gameOver = false;
         window.gameActive = true;
-        placeFood();
-        draw();
-        snakeGame.style.display = 'grid';
         terminalInput.disabled = true;
+
+        snakeGame.style.display = 'grid';
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
+
+        draw();
+        placeFood();
+        gameInterval = setInterval(moveSnake, 200);
         document.addEventListener('keydown', handleKey);
-        gameInterval = setInterval(moveSnake, 150);
     };
 
     window.endGame = function () {
-        gameOver = true;
+        console.log("Game Over");
         clearInterval(gameInterval);
+        gameOver = true;
         window.gameActive = false;
-        snakeGame.style.display = 'none';
         terminalInput.disabled = false;
+        snakeGame.style.display = 'none';
+        alert("Game Over. Type 'play snake' to try again.");
         document.removeEventListener('keydown', handleKey);
-        alert('Game Over! Type "play snake" to try again.');
     };
 });
