@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (input === 'play snake') {
-            if (!gameActive) {
+            if (!window.gameActive && typeof startGame === 'function') {
                 startGame();
                 return "Starting Snake game! Use arrow keys to play.";
             } else {
