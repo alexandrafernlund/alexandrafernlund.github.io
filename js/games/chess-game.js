@@ -70,7 +70,15 @@ window.toggleChess = function () {
   const nowHidden = container.style.display === "none";
   container.style.display = nowHidden ? "block" : "none";
 
-  if (nowHidden) initChessBoard();
+  if (nowHidden) {
+    // Wait for #board to exist and be visible
+    setTimeout(() => {
+      const el = document.getElementById("board");
+      console.log("Checking if #board exists:", el);
+      if (el) initChessBoard();
+      else console.error("#board element missing!");
+    }, 50);
+  }
 };
 
 window.resetChessGame = function () {
