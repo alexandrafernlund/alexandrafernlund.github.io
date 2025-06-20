@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let width;
+    let width = 20; // Fixed for debugging!
     const height = 10;
     let snake = [];
     let food = {};
@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     food.y === y
                 ) {
                     cell.classList.add('snake-food');
-                    cell.textContent = 'F'; // Debug marker
                     foodDrawn = true;
                 }
 
@@ -47,12 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (!foodDrawn) {
-            console.warn("⚠️ Food not drawn!", food, snake);
+        console.log(`DRAWING GRID: width=${width}, height=${height}, food=(${food?.x}, ${food?.y})`);
+
+        if (food && (food.x >= width || food.y >= height)) {
+            console.error("❌ Food outside bounds in draw():", food, width, height);
         }
 
-        if (food.x >= width || food.y >= height) {
-            console.error("❌ Food out of bounds:", food, "Grid:", width, height);
+        if (!foodDrawn) {
+            console.warn("⚠️ Food was not drawn!", food, snake);
         }
     }
 
@@ -75,13 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const chosen = validCells[Math.floor(Math.random() * validCells.length)];
 
-        if (!chosen || typeof chosen.x !== 'number' || typeof chosen.y !== 'number') {
-            console.error("Invalid food placement:", chosen);
-            return;
-        }
-
-        if (chosen.x >= width || chosen.y >= height) {
-            console.error("❌ Attempted to place food outside bounds:", chosen, "Grid:", width, height);
+        if (
+            !chosen ||
+            typeof chosen.x !== 'number' ||
+            typeof chosen.y !== 'number' ||
+            chosen.x >= width ||
+            chosen.y >= height
+        ) {
+            console.error("❌ Invalid food placement:", chosen, "Grid:", width, height);
             return;
         }
 
@@ -109,14 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.startGame = function () {
-        console.log("Starting Snake Game");
+        console.log("🟢 Starting Snake Game");
 
-        const cellSize = 20;
-        const terminalWidth = terminal.clientWidth;
-        width = Math.floor(terminalWidth / cellSize);
-
-        // Clamp to prevent extremely wide grids
-        width = Math.max(5, Math.min(width, 100));
+        // width = Math.floor(terminal.clientWidth / 20); // DISABLED for now
+        // width = Math.max(5, Math.min(width, 100));      // Not used while testing
 
         snake = [
             { x: Math.floor(width / 2), y: 5 },
@@ -130,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         terminalInput.disabled = true;
 
         snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
         snakeGame.style.padding = '10px';
         snakeGame.style.height = 'auto';
 
@@ -145,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
 
-        // Ensure game is visible
         snakeGame.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
@@ -177,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.endGame = function () {
-        console.log("Game Over");
+        console.log("🔴 Game Over");
         clearInterval(gameInterval);
         gameOver = true;
         window.gameActive = false;
