@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset
     clearInterval(gameInterval);
     snake = [
-        { x: 5, y: 5 },
-        { x: 4, y: 5 },
-        { x: 3, y: 5 }
+        { x: 10, y: 5 },
+        { x: 9, y: 5 },
+        { x: 8, y: 5 }
     ];
     direction = { x: 1, y: 0 };
     gameOver = false;
@@ -102,6 +102,9 @@ function moveSnake() {
     const head = snake[0];
     const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
+    console.log("New head:", newHead);
+    console.log("Snake:", snake);
+
     // Check wall or self collision
     const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
     const hitsSelf = snake.some(part => part.x === newHead.x && part.y === newHead.y);
@@ -130,7 +133,7 @@ function moveSnake() {
         gameOver = true;
         window.gameActive = false;
         terminalInput.disabled = false;
-        snakeGame.style.display = 'none';
+        // snakeGame.style.display = 'none';
         alert("Game Over. Type 'play snake' to try again.");
         document.removeEventListener('keydown', handleKey);
     };
