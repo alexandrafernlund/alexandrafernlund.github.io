@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const width = 20;  // fixed grid width
+    let width; // will be dynamically set
     const height = 10;
     let snake = [];
     let food = {};
@@ -40,9 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!snakeGame) return;
         snakeGame.innerHTML = '';
 
-        // If food somehow out of bounds, replace it immediately
         if (!food || food.x < 0 || food.x >= width || food.y < 0 || food.y >= height) {
-            console.warn("Food out of bounds, repositioning...");
+            console.warn("⚠️ Food out of bounds, repositioning...");
             placeFood();
         }
 
@@ -88,9 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.startGame = function () {
         const cellSize = 20;
-        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
-        height = 10; // fixed, or you can compute this if needed
-
+        width = Math.floor(terminal.clientWidth / cellSize);
         console.log("🟢 Grid size set to:", width, height);
 
         snake = [
@@ -107,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.style.display = 'grid';
         snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
+        snakeGame.style.padding = '10px';
+        snakeGame.style.height = 'auto';
 
         placeFood();
         draw();
@@ -119,15 +118,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     };
 
-
     function moveSnake() {
         if (gameOver || !snake.length) return;
 
         const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
-        if (newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height ||
-            snake.some(part => part.x === newHead.x && part.y === newHead.y)) {
+        if (
+            newHead.x < 0 || newHead.x >= width ||
+            newHead.y < 0 || newHead.y >= height ||
+            snake.some(part => part.x === newHead.x && part.y === newHead.y)
+        ) {
             endGame("Game Over. Type 'play snake' to try again.");
             return;
         }
