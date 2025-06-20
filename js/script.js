@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
     let fuse;
+    window.addEventListener('snakeGameOver', (e) => {
+        displayMessage(e.detail, 'bot');
+    });
 
     function toggleView() {
         const terminal = document.getElementById('chat-terminal');
@@ -166,10 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return "Snake game is already running.";
             }
         }
-
-        window.addEventListener('snakeGameOver', (e) => {
-            displayMessage(e.detail, 'bot');  // Assuming displayMessage is your function to add text to terminal
-        });
 
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;

@@ -39,18 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function placeFood() {
-    let newFoodPosition;
-    do {
-        newFoodPosition = {
-            x: Math.floor(Math.random() * width),
-            y: Math.floor(Math.random() * height)
-        };
-        // Repeat if food spawns on the snake
-    } while (snake.some(part => part.x === newFoodPosition.x && part.y === newFoodPosition.y));
+        let newFood;
+        do {
+            newFood = {
+                x: Math.floor(Math.random() * width),
+                y: Math.floor(Math.random() * height)
+            };
+        } while (snake.some(part => part.x === newFood.x && part.y === newFood.y)); // Avoid placing on snake
 
-    food = newFoodPosition;
-    console.log('Placed food at', food);
-}
+        food = newFood;
+        console.log('Placed food at', food);
+    }
 
     function handleKey(e) {
         e.preventDefault(); // prevent page scrolling
@@ -147,8 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.innerHTML = '';
         document.removeEventListener('keydown', handleKey);
 
-        // Dispatch custom event with message
-        const event = new CustomEvent('snakeGameOver', { detail: "Game Over. Type 'play snake' to try again." });
+        // 👇 Send message to the terminal via custom event
+        const event = new CustomEvent('snakeGameOver', {
+            detail: "Game Over. Type 'play snake' to try again."
+        });
         window.dispatchEvent(event);
     };
+
 });
