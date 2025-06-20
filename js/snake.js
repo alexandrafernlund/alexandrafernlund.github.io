@@ -135,9 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function moveSnake() {
-        if (gameOver || !snake.length) return;
+    if (gameOver || !snake.length) return;
 
-        const head = snake[0];
+    const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
         const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
@@ -153,15 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const ateFood = food && newHead.x === food.x && newHead.y === food.y;
 
         if (ateFood) {
-            setTimeout(() => {
-                placeFood();
-                draw(); // Make sure we draw after placing new food
-            }, 0);
+            placeFood();  // place AFTER tail stays (growth)
         } else {
-            snake.pop();
-            draw();
+            snake.pop();  // only pop when not eating
         }
+
+        draw();
     }
+
 
     window.endGame = function () {
         console.log("Game Over");
