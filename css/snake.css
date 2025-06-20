@@ -12,13 +12,17 @@
 
   background: black;
   margin-bottom: 20px;
-  z-index: 1;
+  z-index: 0;
+  max-height: 220px;
+  overflow-y: auto;
 }
 
 .snake-cell {
     width: 20px;
     height: 20px;
     background-color: black;
+    border: 1px solid #444;
+    box-sizing: border-box;
 }
 
 .snake-part {
@@ -26,5 +30,6 @@
 }
 
 .snake-food {
-    background-color: white;
+    background-color: red !important; /* make food very visible */
+    z-index: 10;
 }
