@@ -3,14 +3,14 @@
   height: 0;                 /* Collapsed by default */
   overflow: hidden;          /* Prevent space when hidden */
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
 
   /* Let JS control the grid dimensions */
   display: grid;
   gap: 2px;
 
   background: black;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   z-index: 0;
   max-height: 220px;
   overflow-y: auto;
