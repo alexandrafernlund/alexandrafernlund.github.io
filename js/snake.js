@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let width; // will be dynamically set
+    const width = 20;  // fixed grid width
     const height = 10;
     let snake = [];
     let food = {};
@@ -40,8 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!snakeGame) return;
         snakeGame.innerHTML = '';
 
+        // If food somehow out of bounds, replace it immediately
         if (!food || food.x < 0 || food.x >= width || food.y < 0 || food.y >= height) {
-            console.warn("⚠️ Food out of bounds, repositioning...");
+            console.warn("Food out of bounds, repositioning...");
             placeFood();
         }
 
@@ -86,28 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.startGame = function () {
-        const cellSize = 20;
-
-        // Force display before calculating width
-        snakeGame.style.display = 'grid';
-        snakeGame.style.padding = '10px';
-        snakeGame.style.height = 'auto';
-
-        // Give the DOM time to layout the terminal
-        const terminalWidth = terminal.getBoundingClientRect().width;
-        width = Math.floor(terminalWidth / cellSize);
-        height = 10;
-
-        console.log("🟢 Grid size set to:", width, height);
-
-        // Now update grid styles
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
-
         snake = [
-            { x: Math.floor(width / 2), y: Math.floor(height / 2) },
-            { x: Math.floor(width / 2) - 1, y: Math.floor(height / 2) },
-            { x: Math.floor(width / 2) - 2, y: Math.floor(height / 2) }
+            { x: Math.floor(width / 2), y: 5 },
+            { x: Math.floor(width / 2) - 1, y: 5 },
+            { x: Math.floor(width / 2) - 2, y: 5 }
         ];
 
         direction = { x: 1, y: 0 };
@@ -115,18 +98,22 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gameActive = true;
         terminalInput.disabled = true;
 
-        // Force draw styles before placing food
-        requestAnimationFrame(() => {
-            placeFood();
-            draw();
-        });
+        snakeGame.style.display = 'grid';
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
+        snakeGame.style.padding = '10px';
+        snakeGame.style.height = 'auto';
+
+        placeFood();
+        draw();
 
         document.removeEventListener('keydown', handleKey);
         document.addEventListener('keydown', handleKey);
 
-        gameInterval = setInterval(moveSnake, 200);
+        setTimeout(() => {
+            gameInterval = setInterval(moveSnake, 200);
+        }, 500);
     };
-
 
     function moveSnake() {
         if (gameOver || !snake.length) return;
@@ -134,11 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
-        if (
-            newHead.x < 0 || newHead.x >= width ||
-            newHead.y < 0 || newHead.y >= height ||
-            snake.some(part => part.x === newHead.x && part.y === newHead.y)
-        ) {
+        if (newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height ||
+            snake.some(part => part.x === newHead.x && part.y === newHead.y)) {
             endGame("Game Over. Type 'play snake' to try again.");
             return;
         }
