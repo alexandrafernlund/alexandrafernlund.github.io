@@ -126,7 +126,6 @@ function moveSnake() {
     draw();
 }
 
-
     window.endGame = function () {
         console.log("Game Over");
         clearInterval(gameInterval);
