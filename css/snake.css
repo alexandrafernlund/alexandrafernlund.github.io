@@ -1,6 +1,5 @@
 #snake-game {
     display: block;
-    border: 2px solid yellow;
     grid-template-columns: repeat(20, 20px);
     grid-template-rows: repeat(10, 20px);
     gap: 1px;
@@ -12,12 +11,13 @@
     max-height: 220px;
     width: fit-content;
     user-select: none;
+    margin: 1rem;
 }
 
 .snake-cell {
     width: 20px;
     height: 20px;
-    background-color: #222;
+    background-color: black;
 }
 
 .snake-part {
