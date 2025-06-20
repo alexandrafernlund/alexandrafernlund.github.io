@@ -87,10 +87,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.startGame = function () {
+        const cellSize = 20;
+        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
+        height = 10; // fixed, or you can compute this if needed
+
+        console.log("🟢 Grid size set to:", width, height);
+
         snake = [
-            { x: Math.floor(width / 2), y: 5 },
-            { x: Math.floor(width / 2) - 1, y: 5 },
-            { x: Math.floor(width / 2) - 2, y: 5 }
+            { x: Math.floor(width / 2), y: Math.floor(height / 2) },
+            { x: Math.floor(width / 2) - 1, y: Math.floor(height / 2) },
+            { x: Math.floor(width / 2) - 2, y: Math.floor(height / 2) }
         ];
 
         direction = { x: 1, y: 0 };
@@ -99,10 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
         terminalInput.disabled = true;
 
         snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
-        snakeGame.style.padding = '10px';
-        snakeGame.style.height = 'auto';
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
 
         placeFood();
         draw();
@@ -114,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
     };
+
 
     function moveSnake() {
         if (gameOver || !snake.length) return;
