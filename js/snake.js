@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     food.y === y
                 ) {
                     cell.classList.add('snake-food');
-                    cell.textContent = 'F'; // Optional: debug marker
+                    cell.textContent = 'F'; // Debug marker
                     foodDrawn = true;
                 }
 
@@ -48,7 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!foodDrawn) {
-            console.warn("Food was not drawn!", food, snake);
+            console.warn("⚠️ Food not drawn!", food, snake);
+        }
+
+        if (food.x >= width || food.y >= height) {
+            console.error("❌ Food out of bounds:", food, "Grid:", width, height);
         }
     }
 
@@ -76,8 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (chosen.x >= width || chosen.y >= height) {
+            console.error("❌ Attempted to place food outside bounds:", chosen, "Grid:", width, height);
+            return;
+        }
+
         food = chosen;
-        console.log("Placing food at", chosen, "Snake is:", snake);
+        console.log("✅ Placed food at", food);
     }
 
     function handleKey(e) {
@@ -106,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const terminalWidth = terminal.clientWidth;
         width = Math.floor(terminalWidth / cellSize);
 
+        // Clamp to prevent extremely wide grids
+        width = Math.max(5, Math.min(width, 100));
+
         snake = [
             { x: Math.floor(width / 2), y: 5 },
             { x: Math.floor(width / 2) - 1, y: 5 },
@@ -132,12 +144,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
+
+        // Ensure game is visible
+        snakeGame.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     function moveSnake() {
-    if (gameOver || !snake.length) return;
+        if (gameOver || !snake.length) return;
 
-    const head = snake[0];
+        const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
         const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
@@ -153,14 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const ateFood = food && newHead.x === food.x && newHead.y === food.y;
 
         if (ateFood) {
-            placeFood();  // place AFTER tail stays (growth)
+            placeFood();
         } else {
-            snake.pop();  // only pop when not eating
+            snake.pop();
         }
 
         draw();
     }
-
 
     window.endGame = function () {
         console.log("Game Over");
