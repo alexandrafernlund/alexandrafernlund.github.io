@@ -21,9 +21,9 @@
 }
 
 .snake-part {
-    background-color: limegreen;
+    background-color: white;
 }
 
 .snake-food {
-    background-color: red;
+    background-color: white;
 }
