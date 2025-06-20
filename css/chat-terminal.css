@@ -115,6 +115,7 @@ html, body {
     font-family: 'Courier New', monospace;
     position: relative;
     flex-shrink: 0;
+    z-index: 2;
 }
 
     /* Cursor animation */
