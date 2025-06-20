@@ -87,8 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.startGame = function () {
         const cellSize = 20;
-        width = Math.floor(terminal.clientWidth / cellSize);
+
+        // Force display before calculating width
+        snakeGame.style.display = 'grid';
+        snakeGame.style.padding = '10px';
+        snakeGame.style.height = 'auto';
+
+        // Give the DOM time to layout the terminal
+        const terminalWidth = terminal.getBoundingClientRect().width;
+        width = Math.floor(terminalWidth / cellSize);
+        height = 10;
+
         console.log("🟢 Grid size set to:", width, height);
+
+        // Now update grid styles
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
 
         snake = [
             { x: Math.floor(width / 2), y: Math.floor(height / 2) },
@@ -101,22 +115,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gameActive = true;
         terminalInput.disabled = true;
 
-        snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
-        snakeGame.style.padding = '10px';
-        snakeGame.style.height = 'auto';
-
-        placeFood();
-        draw();
+        // Force draw styles before placing food
+        requestAnimationFrame(() => {
+            placeFood();
+            draw();
+        });
 
         document.removeEventListener('keydown', handleKey);
         document.addEventListener('keydown', handleKey);
 
-        setTimeout(() => {
-            gameInterval = setInterval(moveSnake, 200);
-        }, 500);
+        gameInterval = setInterval(moveSnake, 200);
     };
+
 
     function moveSnake() {
         if (gameOver || !snake.length) return;
