@@ -167,6 +167,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        window.addEventListener('snakeGameOver', (e) => {
+            displayMessage(e.detail, 'bot');  // Assuming displayMessage is your function to add text to terminal
+        });
+
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 

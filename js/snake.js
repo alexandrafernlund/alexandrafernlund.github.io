@@ -145,7 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
         terminalInput.disabled = false;
         snakeGame.style.display = 'none';
         snakeGame.innerHTML = '';
-        return("Game Over. Type 'play snake' to try again.");
         document.removeEventListener('keydown', handleKey);
+
+        // Dispatch custom event with message
+        const event = new CustomEvent('snakeGameOver', { detail: "Game Over. Type 'play snake' to try again." });
+        window.dispatchEvent(event);
     };
 });
