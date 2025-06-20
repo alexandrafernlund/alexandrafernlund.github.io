@@ -3,7 +3,10 @@
   height: 0;                  /* Collapsed by default */
   overflow: hidden;
   padding: 0;
-  margin: 0;                  /* REMOVE the auto centering */
+  
+    margin: 0 auto;
+    justify-self: center;
+    align-self: center;
   
   display: grid;
   gap: 2px;
