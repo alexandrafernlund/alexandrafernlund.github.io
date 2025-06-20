@@ -29,7 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (snake.some(part => part.x === x && part.y === y)) {
                     cell.classList.add('snake-part');
-                } else if (food && food.x === x && food.y === y) {
+                } 
+                else if (
+                    food &&
+                    Number.isInteger(food.x) &&
+                    Number.isInteger(food.y) &&
+                    food.x === x &&
+                    food.y === y
+                ) {
                     cell.classList.add('snake-food');
                 }
 
@@ -50,13 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (validCells.length === 0) {
-            console.warn("No available space for food.");
-            food = null;
+            console.warn("No space left for food. You win!");
+            endGame("You win! No space left for food.");
             return;
         }
 
-        food = validCells[Math.floor(Math.random() * validCells.length)];
-        console.log("Placed food at", food);
+        const chosen = validCells[Math.floor(Math.random() * validCells.length)];
+        console.log("Placing food at", chosen);
+
+        if (!chosen || typeof chosen.x !== 'number' || typeof chosen.y !== 'number') {
+            console.error("Invalid food placement:", chosen);
+        }
+
+        food = chosen;
     }
 
     function handleKey(e) {
@@ -123,26 +136,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
-        // Collision checks
         const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
         const hitsSelf = snake.some(part => part.x === newHead.x && part.y === newHead.y);
 
         if (hitsWall || hitsSelf) {
-            console.log("Collision detected. Wall:", hitsWall, "Self:", hitsSelf);
-            endGame();
+            endGame("Game Over. Type 'play snake' to try again.");
             return;
         }
 
         snake.unshift(newHead);
 
-        if (newHead.x === food.x && newHead.y === food.y) {
-            placeFood(); // grow
+        if (food && newHead.x === food.x && newHead.y === food.y) {
+            placeFood();  // place new food
         } else {
-            snake.pop(); // move forward
+            snake.pop();  // move forward
         }
 
-        draw();
+        draw(); // draw no matter what
     }
+
 
     window.endGame = function () {
         console.log("Game Over");
