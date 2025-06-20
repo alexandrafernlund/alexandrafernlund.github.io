@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     food.y === y
                 ) {
                     cell.classList.add('snake-food');
+                    cell.textContent = 'F'; // Optional: debug marker
                     foodDrawn = true;
                 }
 
@@ -75,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        console.log("Placing food at", chosen);
         food = chosen;
+        console.log("Placing food at", chosen, "Snake is:", snake);
     }
 
     function handleKey(e) {
@@ -149,13 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         snake.unshift(newHead);
 
-        if (food && newHead.x === food.x && newHead.y === food.y) {
-            placeFood();
+        const ateFood = food && newHead.x === food.x && newHead.y === food.y;
+
+        if (ateFood) {
+            setTimeout(() => {
+                placeFood();
+                draw(); // Make sure we draw after placing new food
+            }, 0);
         } else {
             snake.pop();
+            draw();
         }
-
-        setTimeout(() => draw(), 0);  // Ensure DOM updates happen after food logic
     }
 
     window.endGame = function () {
