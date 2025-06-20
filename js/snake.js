@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let width;  // will be set dynamically
+    let width;
     const height = 10;
     let snake = [];
     let food = {};
@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!snakeGame) return;
         snakeGame.innerHTML = '';
 
+        let foodDrawn = false;
+
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const cell = document.createElement('div');
@@ -29,8 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (snake.some(part => part.x === x && part.y === y)) {
                     cell.classList.add('snake-part');
-                } 
-                else if (
+                } else if (
                     food &&
                     Number.isInteger(food.x) &&
                     Number.isInteger(food.y) &&
@@ -38,10 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     food.y === y
                 ) {
                     cell.classList.add('snake-food');
+                    foodDrawn = true;
                 }
 
                 snakeGame.appendChild(cell);
             }
+        }
+
+        if (!foodDrawn) {
+            console.warn("Food was not drawn!", food, snake);
         }
     }
 
@@ -63,17 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const chosen = validCells[Math.floor(Math.random() * validCells.length)];
-        console.log("Placing food at", chosen);
 
         if (!chosen || typeof chosen.x !== 'number' || typeof chosen.y !== 'number') {
             console.error("Invalid food placement:", chosen);
+            return;
         }
 
+        console.log("Placing food at", chosen);
         food = chosen;
     }
 
     function handleKey(e) {
-        e.preventDefault(); // prevent page scrolling
+        e.preventDefault();
 
         switch (e.key) {
             case 'ArrowUp':
@@ -94,12 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.startGame = function () {
         console.log("Starting Snake Game");
 
-        // Calculate dynamic width based on terminal width and cell size
-        const cellSize = 20; // must match your CSS cell width & height
+        const cellSize = 20;
         const terminalWidth = terminal.clientWidth;
         width = Math.floor(terminalWidth / cellSize);
 
-        // Reset snake starting position near the middle
         snake = [
             { x: Math.floor(width / 2), y: 5 },
             { x: Math.floor(width / 2) - 1, y: 5 },
@@ -111,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gameActive = true;
         terminalInput.disabled = true;
 
-        // Show and style the snake grid
         snakeGame.style.display = 'grid';
         snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
@@ -124,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('keydown', handleKey);
         document.addEventListener('keydown', handleKey);
 
-        // Delay first move for smooth start
         setTimeout(() => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
@@ -147,14 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
         snake.unshift(newHead);
 
         if (food && newHead.x === food.x && newHead.y === food.y) {
-            placeFood();  // place new food
+            placeFood();
         } else {
-            snake.pop();  // move forward
+            snake.pop();
         }
 
-        draw(); // draw no matter what
+        setTimeout(() => draw(), 0);  // Ensure DOM updates happen after food logic
     }
-
 
     window.endGame = function () {
         console.log("Game Over");
@@ -166,11 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.innerHTML = '';
         document.removeEventListener('keydown', handleKey);
 
-        // 👇 Send message to the terminal via custom event
         const event = new CustomEvent('snakeGameOver', {
             detail: "Game Over. Type 'play snake' to try again."
         });
         window.dispatchEvent(event);
     };
-
 });
