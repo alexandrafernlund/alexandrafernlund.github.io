@@ -75,6 +75,7 @@ html, body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    align-items: flex-start;
 }
 
 /* Output section */
