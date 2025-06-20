@@ -24,14 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const cell = document.createElement('div');
-                cell.style.width = '20px';
-                cell.style.height = '20px';
-                cell.style.backgroundColor = '#222';
+                cell.classList.add('snake-cell');
 
                 if (snake.some(part => part.x === x && part.y === y)) {
-                    cell.style.backgroundColor = 'limegreen';
+                    cell.classList.add('snake-part');
                 } else if (food.x === x && food.y === y) {
-                    cell.style.backgroundColor = 'red';
+                    cell.classList.add('snake-food');
                 }
 
                 snakeGame.appendChild(cell);
