@@ -113,6 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.startGame = function () {
         console.log("🟢 Starting Snake Game");
 
+        const cellSize = 20;
+        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
+        height = 10; // fixed, or you can compute this if needed
+
+        console.log("🟢 Grid size set to:", width, height);
+
         // width = Math.floor(terminal.clientWidth / 20); // DISABLED for now
         // width = Math.max(5, Math.min(width, 100));      // Not used while testing
 
