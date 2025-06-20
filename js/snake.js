@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (snake.some(part => part.x === x && part.y === y)) {
                     cell.classList.add('snake-part');
-                } else if (food.x === x && food.y === y) {
+                } else if (food && food.x === x && food.y === y) {
                     cell.classList.add('snake-food');
                 }
 
@@ -39,16 +39,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function placeFood() {
-        let newFood;
-        do {
-            newFood = {
-                x: Math.floor(Math.random() * width),
-                y: Math.floor(Math.random() * height)
-            };
-        } while (snake.some(part => part.x === newFood.x && part.y === newFood.y)); // Avoid placing on snake
+        const validCells = [];
 
-        food = newFood;
-        console.log('Placed food at', food);
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (!snake.some(segment => segment.x === x && segment.y === y)) {
+                    validCells.push({ x, y });
+                }
+            }
+        }
+
+        if (validCells.length === 0) {
+            console.warn("No available space for food.");
+            food = null;
+            return;
+        }
+
+        food = validCells[Math.floor(Math.random() * validCells.length)];
+        console.log("Placed food at", food);
     }
 
     function handleKey(e) {
