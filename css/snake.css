@@ -1,5 +1,6 @@
 #snake-game {
-    display: grid;
+    display: block;
+    border: 2px solid yellow;
     grid-template-columns: repeat(20, 20px);
     grid-template-rows: repeat(10, 20px);
     gap: 1px;
