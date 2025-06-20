@@ -9,6 +9,10 @@
   display: grid;
   gap: 2px;
 
+  width: max-content; /* ensures it only takes up exactly as much width as it needs */
+  align-self: flex-start; /* in case it's inside a flex container */
+  justify-self: start;
+
   background: black;
   margin-bottom: 10px;
   z-index: 0;
