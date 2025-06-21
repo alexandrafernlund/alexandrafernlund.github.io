@@ -11,8 +11,6 @@
   max-height: 220px;
   overflow-y: auto;
 
-  width: max-content;         /* Only take up exactly the space needed */
-  position: relative;                /* Force alignment to left */
 }
 
 .snake-cell {
