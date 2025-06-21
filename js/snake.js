@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+
     const snakeGame = document.getElementById('snake-game');
     const terminalInput = document.getElementById('userInput');
     const terminal = document.querySelector('.terminal');
@@ -196,4 +196,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.dispatchEvent(event);
     };
-});
+
