@@ -1,9 +1,9 @@
 #snake-game {
-  display: none;              /* Hidden until game starts */
-  height: 0;                  /* Collapsed by default */
+  display: none;              
+  height: 0;                  
   overflow: hidden;
   padding: 0;
-  margin: 0;                  /* REMOVE the auto centering */
+  margin: 0;
   
   display: grid;
   gap: 2px;
@@ -12,9 +12,10 @@
   max-height: 220px;
   overflow-y: auto;
 
-  width: max-content;         /* Only take up exactly the space needed */
+  width: 100%; /* Changed from max-content */
+  max-width: 100%; /* Prevent overflow */
   position: relative;
-  left: 0;                    /* Force alignment to left */
+  left: 0;
 }
 
 .snake-cell {
