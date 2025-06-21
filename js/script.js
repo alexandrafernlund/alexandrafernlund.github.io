@@ -200,8 +200,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // ✅ Directly trigger game if command is 'play snake'
             if (normalizedInput === 'play snake') {
-                if (!window.gameActive && typeof startGame === 'function') {
-                    startGame();
+                if (!window.gameActive && typeof window.startGame === 'function') {
+                    window.startGame();
                     displayMessage("Starting Snake game! Use arrow keys to play.", 'bot');
                 } else {
                     displayMessage("Snake game is already running.", 'bot');
