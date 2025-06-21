@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const width = 20;  // fixed grid width
+    const width = 80;  // fixed grid width
     const height = 10;
     let snake = [];
     let food = {};

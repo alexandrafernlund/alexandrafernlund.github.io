@@ -10,7 +10,6 @@
 
   background: black;
   max-height: 220px;
-  max-width:max-content;
   overflow-y: auto;
 
   position: relative;
