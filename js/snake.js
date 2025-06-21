@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let width = 20; // Fixed for debugging!
+    const width = 20;  // fixed grid width
     const height = 10;
     let snake = [];
     let food = {};
@@ -18,12 +18,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.gameActive = false;
 
+    function placeFood() {
+        const validCells = [];
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (!snake.some(segment => segment.x === x && segment.y === y)) {
+                    validCells.push({ x, y });
+                }
+            }
+        }
+        if (validCells.length === 0) {
+            endGame("You win! No space left for food.");
+            return;
+        }
+        const chosen = validCells[Math.floor(Math.random() * validCells.length)];
+        food = chosen;
+        console.log("✅ Placed food at", food);
+    }
+
     function draw() {
         if (!snakeGame) return;
         snakeGame.innerHTML = '';
 
-        let foodDrawn = false;
+        // If food somehow out of bounds, replace it immediately
+        if (!food || food.x < 0 || food.x >= width || food.y < 0 || food.y >= height) {
+            console.warn("Food out of bounds, repositioning...");
+            placeFood();
+        }
 
+        let foodDrawn = false;
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const cell = document.createElement('div');
@@ -31,13 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (snake.some(part => part.x === x && part.y === y)) {
                     cell.classList.add('snake-part');
-                } else if (
-                    food &&
-                    Number.isInteger(food.x) &&
-                    Number.isInteger(food.y) &&
-                    food.x === x &&
-                    food.y === y
-                ) {
+                } else if (food.x === x && food.y === y) {
                     cell.classList.add('snake-food');
                     foodDrawn = true;
                 }
@@ -46,54 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        console.log(`DRAWING GRID: width=${width}, height=${height}, food=(${food?.x}, ${food?.y})`);
-
-        if (food && (food.x >= width || food.y >= height)) {
-            console.error("❌ Food outside bounds in draw():", food, width, height);
-        }
-
         if (!foodDrawn) {
-            console.warn("⚠️ Food was not drawn!", food, snake);
+            console.warn("⚠️ Food was not drawn!", food);
         }
-    }
-
-    function placeFood() {
-        const validCells = [];
-
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                if (!snake.some(segment => segment.x === x && segment.y === y)) {
-                    validCells.push({ x, y });
-                }
-            }
-        }
-
-        if (validCells.length === 0) {
-            console.warn("No space left for food. You win!");
-            endGame("You win! No space left for food.");
-            return;
-        }
-
-        const chosen = validCells[Math.floor(Math.random() * validCells.length)];
-
-        if (
-            !chosen ||
-            typeof chosen.x !== 'number' ||
-            typeof chosen.y !== 'number' ||
-            chosen.x >= width ||
-            chosen.y >= height
-        ) {
-            console.error("❌ Invalid food placement:", chosen, "Grid:", width, height);
-            return;
-        }
-
-        food = chosen;
-        console.log("✅ Placed food at", food);
     }
 
     function handleKey(e) {
         e.preventDefault();
-
         switch (e.key) {
             case 'ArrowUp':
                 if (direction.y !== 1) direction = { x: 0, y: -1 };
@@ -111,15 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.startGame = function () {
-        console.log("🟢 Starting Snake Game");
-
-        const cellSize = 20;
-        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
-        // height is fixed for now
-        // height = 10;
-
-        console.log("🟢 Grid size set to:", width, height);
-
         snake = [
             { x: Math.floor(width / 2), y: 5 },
             { x: Math.floor(width / 2) - 1, y: 5 },
@@ -134,12 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.style.display = 'grid';
         snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
-        snakeGame.style.padding = '0px';
+        snakeGame.style.padding = '10px';
         snakeGame.style.height = 'auto';
-        snakeGame.style.marginLeft = '0px';
-        snakeGame.style.marginBottom = '0px';
-        snakeGame.style.padding = '0px';
-
 
         placeFood();
         draw();
@@ -150,8 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
-
-        snakeGame.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     function moveSnake() {
@@ -160,19 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const head = snake[0];
         const newHead = { x: head.x + direction.x, y: head.y + direction.y };
 
-        const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
-        const hitsSelf = snake.some(part => part.x === newHead.x && part.y === newHead.y);
-
-        if (hitsWall || hitsSelf) {
+        if (newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height ||
+            snake.some(part => part.x === newHead.x && part.y === newHead.y)) {
             endGame("Game Over. Type 'play snake' to try again.");
             return;
         }
 
         snake.unshift(newHead);
 
-        const ateFood = food && newHead.x === food.x && newHead.y === food.y;
-
-        if (ateFood) {
+        if (newHead.x === food.x && newHead.y === food.y) {
             placeFood();
         } else {
             snake.pop();
@@ -182,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.endGame = function () {
-        console.log("🔴 Game Over");
         clearInterval(gameInterval);
         gameOver = true;
         window.gameActive = false;
