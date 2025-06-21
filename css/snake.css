@@ -12,7 +12,6 @@
   max-height: 220px;
   overflow-y: auto;
 
-  width: max-content;         /* Only take up exactly the space needed */
   position: relative;
   left: 0;                    /* Force alignment to left */
 }
