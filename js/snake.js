@@ -1,195 +1,234 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const snakeGame = document.getElementById('snake-game');
-    const terminalInput = document.getElementById('userInput');
-    const terminal = document.querySelector('.terminal');
+document.addEventListener('DOMContentLoaded', function () {
+    const userInput = document.getElementById('userInput');
+    const output = document.getElementById('output');
+    let responses = {};
+    let lastResponseByCategory = {};
+    let fuse;
 
-    if (!snakeGame || !terminalInput || !terminal) {
-        console.error('Required elements not found.');
-        return;
-    }
+    window.addEventListener('snakeGameOver', (e) => {
+        displayMessage(e.detail, 'bot');
+    });
 
-    let width = 20; // Fixed for debugging!
-    const height = 10;
-    let snake = [];
-    let food = {};
-    let direction = { x: 1, y: 0 };
-    let gameInterval;
-    let gameOver = false;
+    function toggleView() {
+        const terminal = document.getElementById('chat-terminal');
+        const guiSite = document.getElementById('main-site');
 
-    window.gameActive = false;
-
-    function draw() {
-        if (!snakeGame) return;
-        snakeGame.innerHTML = '';
-
-        let foodDrawn = false;
-
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                const cell = document.createElement('div');
-                cell.classList.add('snake-cell');
-
-                if (snake.some(part => part.x === x && part.y === y)) {
-                    cell.classList.add('snake-part');
-                } else if (
-                    food &&
-                    Number.isInteger(food.x) &&
-                    Number.isInteger(food.y) &&
-                    food.x === x &&
-                    food.y === y
-                ) {
-                    cell.classList.add('snake-food');
-                    foodDrawn = true;
-                }
-
-                snakeGame.appendChild(cell);
-            }
-        }
-
-        console.log(`DRAWING GRID: width=${width}, height=${height}, food=(${food?.x}, ${food?.y})`);
-
-        if (food && (food.x >= width || food.y >= height)) {
-            console.error("❌ Food outside bounds in draw():", food, width, height);
-        }
-
-        if (!foodDrawn) {
-            console.warn("⚠️ Food was not drawn!", food, snake);
+        if (terminal && guiSite) {
+            terminal.style.display = 'none';
+            guiSite.style.display = 'block';
         }
     }
 
-    function placeFood() {
-        const validCells = [];
-
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                if (!snake.some(segment => segment.x === x && segment.y === y)) {
-                    validCells.push({ x, y });
-                }
-            }
-        }
-
-        if (validCells.length === 0) {
-            console.warn("No space left for food. You win!");
-            endGame("You win! No space left for food.");
-            return;
-        }
-
-        const chosen = validCells[Math.floor(Math.random() * validCells.length)];
-
-        if (
-            !chosen ||
-            typeof chosen.x !== 'number' ||
-            typeof chosen.y !== 'number' ||
-            chosen.x >= width ||
-            chosen.y >= height
-        ) {
-            console.error("❌ Invalid food placement:", chosen, "Grid:", width, height);
-            return;
-        }
-
-        food = chosen;
-        console.log("✅ Placed food at", food);
-    }
-
-    function handleKey(e) {
-        e.preventDefault();
-
-        switch (e.key) {
-            case 'ArrowUp':
-                if (direction.y !== 1) direction = { x: 0, y: -1 };
-                break;
-            case 'ArrowDown':
-                if (direction.y !== -1) direction = { x: 0, y: 1 };
-                break;
-            case 'ArrowLeft':
-                if (direction.x !== 1) direction = { x: -1, y: 0 };
-                break;
-            case 'ArrowRight':
-                if (direction.x !== -1) direction = { x: 1, y: 0 };
-                break;
+    async function loadResponses() {
+        try {
+            const response = await fetch('responses.json');
+            responses = await response.json();
+            console.log("Loaded responses:", responses);
+            initializeFuse();
+            displayWelcomeMessage();
+        } catch (error) {
+            console.error("Error loading responses.json:", error);
         }
     }
 
-    window.startGame = function () {
-        console.log("🟢 Starting Snake Game");
-
-        const cellSize = 20;
-        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
-        // height is fixed for now
-        // height = 10;
-
-        console.log("🟢 Grid size set to:", width, height);
-
-        snake = [
-            { x: Math.floor(width / 2), y: 5 },
-            { x: Math.floor(width / 2) - 1, y: 5 },
-            { x: Math.floor(width / 2) - 2, y: 5 }
+    function displayWelcomeMessage() {
+        const messages = [
+            'Initializing terminal...',
+            'Loading portfolio bot...',
+            'Ready.',
+            "Hi! I'm Alexandra's bot.",
+            "For a list of available commands, type 'help'.",
+            "You can ask me about her projects, technical skills, or any personal questions you're curious about."
         ];
-
-        direction = { x: 1, y: 0 };
-        gameOver = false;
-        window.gameActive = true;
-        terminalInput.disabled = true;
-
-        snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
-        snakeGame.style.padding = '10px';
-        snakeGame.style.height = 'auto';
-
-        placeFood();
-        draw();
-
-        document.removeEventListener('keydown', handleKey);
-        document.addEventListener('keydown', handleKey);
-
-        setTimeout(() => {
-            gameInterval = setInterval(moveSnake, 200);
-        }, 500);
-
-        snakeGame.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    function moveSnake() {
-        if (gameOver || !snake.length) return;
-
-        const head = snake[0];
-        const newHead = { x: head.x + direction.x, y: head.y + direction.y };
-
-        const hitsWall = newHead.x < 0 || newHead.x >= width || newHead.y < 0 || newHead.y >= height;
-        const hitsSelf = snake.some(part => part.x === newHead.x && part.y === newHead.y);
-
-        if (hitsWall || hitsSelf) {
-            endGame("Game Over. Type 'play snake' to try again.");
-            return;
+        let index = 0;
+        function showNextMessage() {
+            if (index < messages.length) {
+                displayMessage(messages[index], 'bot');
+                index++;
+                setTimeout(showNextMessage, 800);
+            }
         }
-
-        snake.unshift(newHead);
-
-        const ateFood = food && newHead.x === food.x && newHead.y === food.y;
-
-        if (ateFood) {
-            placeFood();
-        } else {
-            snake.pop();
-        }
-
-        draw();
+        showNextMessage();
     }
 
-    window.endGame = function () {
-        console.log("🔴 Game Over");
-        clearInterval(gameInterval);
-        gameOver = true;
-        window.gameActive = false;
-        terminalInput.disabled = false;
-        snakeGame.style.display = 'none';
-        snakeGame.innerHTML = '';
-        document.removeEventListener('keydown', handleKey);
-
-        const event = new CustomEvent('snakeGameOver', {
-            detail: "Game Over. Type 'play snake' to try again."
+    function initializeFuse() {
+        const fuseCommands = Object.entries(responses).map(([key, value]) => ({
+            key,
+            aliases: value.aliases || [key]
+        }));
+        fuse = new Fuse(fuseCommands, {
+            keys: ['aliases'],
+            threshold: 0.4
         });
-        window.dispatchEvent(event);
+    }
+
+    function matchIntent(input) {
+        input = input.trim().toLowerCase();
+        for (const key in responses) {
+            const aliases = responses[key].aliases || [key];
+            if (aliases.some(alias => input === alias.toLowerCase())) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    function getRandomResponse(response, category = "general") {
+        if (Array.isArray(response)) {
+            let randomResponse;
+            do {
+                randomResponse = response[Math.floor(Math.random() * response.length)];
+            } while (randomResponse === lastResponseByCategory[category]);
+            lastResponseByCategory[category] = randomResponse;
+            return randomResponse;
+        }
+        return response;
+    }
+
+    function typeMessage(message, sender, callback) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
+        let index = 0;
+
+        function typeNextChar() {
+            if (index < message.length) {
+                div.textContent += message.charAt(index);
+                index++;
+                scrollToBottom();
+                setTimeout(typeNextChar, Math.random() * 100 + 50);
+            } else if (callback) {
+                callback();
+            }
+        }
+
+        typeNextChar();
+    }
+
+    function displayMessage(message, sender, callback) {
+        const div = document.createElement('div');
+        div.classList.add(sender);
+        output.appendChild(div);
+        typeMessage(message, sender, callback);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function matchIntentFromDoc(doc, responses) {
+        for (const key in responses) {
+            const entry = responses[key];
+            const aliases = entry.aliases || [];
+
+            for (const alias of aliases) {
+                if (doc.has(alias) || doc.match(alias).found) {
+                    return key;
+                }
+            }
+        }
+        return null;
+    }
+
+    function getBotResponse(input) {
+        const cleanedInput = input.toLowerCase().trim();
+        let doc, normalized, verbs, nouns;
+
+        try {
+            doc = nlp(cleanedInput);
+            normalized = doc.normalize().out('text');
+            verbs = doc.verbs().out('array');
+            nouns = doc.nouns().out('array');
+        } catch (err) {
+            console.error("NLP error:", err);
+            normalized = cleanedInput;
+            verbs = nouns = [];
+        }
+
+        let responseKey = matchIntentFromDoc(doc, responses);
+
+        if (!responseKey) {
+            responseKey = matchIntent(normalized) || matchIntent(cleanedInput);
+        }
+
+        if (!responseKey) {
+            for (const key in responses) {
+                const aliases = responses[key].aliases || [key];
+                if (nouns.some(noun => aliases.includes(noun)) || verbs.some(verb => aliases.includes(verb))) {
+                    responseKey = key;
+                    break;
+                }
+            }
+        }
+
+        const fuzzyResults = fuse.search(cleanedInput);
+        const fuzzyKey = fuzzyResults[0]?.item.key;
+
+        if (responseKey === 'help' || fuzzyKey === 'help') {
+            let helpMessage = "Here are the available commands:\n\n";
+            for (const key in responses) {
+                const description = responses[key].description || "No description provided.";
+                helpMessage += `• ${key}: ${description}\n`;
+            }
+            return helpMessage;
+        }
+
+        if (!responseKey && fuzzyResults.length > 0) {
+            return getRandomResponse(responses[fuzzyKey].text, fuzzyKey);
+        }
+
+        return responseKey
+            ? getRandomResponse(responses[responseKey].text, responseKey)
+            : "I'm not sure how to respond to that.";
+    }
+
+    userInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && userInput.value.trim() !== '') {
+            const userMessage = userInput.value.trim();
+            displayMessage(`> ${userMessage}`, 'user');
+            userInput.value = '';
+
+            const normalizedInput = userMessage.toLowerCase().trim();
+
+            if (normalizedInput === 'exit') {
+                displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
+                    toggleView();
+                });
+                return;
+            }
+
+            // ✅ Directly trigger game if command is 'play snake'
+            if (normalizedInput === 'play snake') {
+                if (!window.gameActive && typeof window.startGame === 'function') {
+                    window.startGame();
+                    displayMessage("Starting Snake game! Use arrow keys to play.", 'bot');
+                } else {
+                    displayMessage("Snake game is already running.", 'bot');
+                }
+                return;
+            }
+
+            const botMessage = getBotResponse(userMessage);
+
+            if (typeof botMessage === 'string') {
+                displayMessage(botMessage, 'bot', () => {
+                    const exitAliases = responses['goodbye']?.aliases || [];
+                    if (
+                        matchIntent(normalizedInput) === 'goodbye' ||
+                        exitAliases.some(alias => normalizedInput.includes(alias))
+                    ) {
+                        setTimeout(() => toggleView(), 1500);
+                    }
+                });
+            }
+        }
+    });
+
+    loadResponses();
+
+    window.showTerminal = function () {
+        document.getElementById('main-site').style.display = 'none';
+        document.getElementById('chat-terminal').style.display = 'block';
     };
 });
