@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.startGame = function () {
         const cellSize = 20; // Width of one cell in pixels
-        const gapSize = 2;   // Match the gap in your CSS
+        const gapSize = 1;   // Match the gap in your CSS
 
         // 1. Force snakeGame to be shown so dimensions are accurate
         snakeGame.style.display = 'grid';
