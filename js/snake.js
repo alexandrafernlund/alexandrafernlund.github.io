@@ -111,31 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.startGame = function () {
-        const cellSize = 20; // Width of one cell in pixels
-        const gapSize = 2;   // Match the gap in your CSS
+        console.log("🟢 Starting Snake Game");
 
-        // 1. Force snakeGame to be shown so dimensions are accurate
-        snakeGame.style.display = 'grid';
-        snakeGame.style.padding = '10px';
-        snakeGame.style.height = 'auto';
+        const cellSize = 20;
+        width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
+        height = 10; // fixed, or you can compute this if needed
 
-        // 2. Calculate terminal width and derive number of cells that fit
-        const terminalWidth = terminal.clientWidth;
-        width = Math.floor((terminalWidth + gapSize) / (cellSize + gapSize));
-        const totalGridWidth = width * (cellSize + gapSize) - gapSize;
+        console.log("🟢 Grid size set to:", width, height);
 
-        // 3. Set styles based on calculated width
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
-        snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
-        snakeGame.style.width = `${totalGridWidth}px`; // Set actual width to match exact columns
+        // width = Math.floor(terminal.clientWidth / 20); // DISABLED for now
+        // width = Math.max(5, Math.min(width, 100));      // Not used while testing
 
-        console.log("🟢 Grid width:", width, "px:", totalGridWidth);
-
-        // 4. Initialize snake
         snake = [
-            { x: Math.floor(width / 2), y: Math.floor(height / 2) },
-            { x: Math.floor(width / 2) - 1, y: Math.floor(height / 2) },
-            { x: Math.floor(width / 2) - 2, y: Math.floor(height / 2) }
+            { x: Math.floor(width / 2), y: 5 },
+            { x: Math.floor(width / 2) - 1, y: 5 },
+            { x: Math.floor(width / 2) - 2, y: 5 }
         ];
 
         direction = { x: 1, y: 0 };
@@ -143,7 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gameActive = true;
         terminalInput.disabled = true;
 
-        // 5. Place food and draw grid
+        snakeGame.style.display = 'grid';
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+        snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
+        snakeGame.style.padding = '10px';
+        snakeGame.style.height = 'auto';
+
         placeFood();
         draw();
 
@@ -153,8 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             gameInterval = setInterval(moveSnake, 200);
         }, 500);
-    };
 
+        snakeGame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     function moveSnake() {
         if (gameOver || !snake.length) return;
