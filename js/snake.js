@@ -1,4 +1,4 @@
-
+document.addEventListener('DOMContentLoaded', () => {
     const snakeGame = document.getElementById('snake-game');
     const terminalInput = document.getElementById('userInput');
     const terminal = document.querySelector('.terminal');
@@ -115,12 +115,10 @@
 
         const cellSize = 20;
         width = Math.floor(terminal.clientWidth / cellSize); // dynamically sized
-        height = 10; // fixed, or you can compute this if needed
+        // height is fixed for now
+        // height = 10;
 
         console.log("🟢 Grid size set to:", width, height);
-
-        // width = Math.floor(terminal.clientWidth / 20); // DISABLED for now
-        // width = Math.max(5, Math.min(width, 100));      // Not used while testing
 
         snake = [
             { x: Math.floor(width / 2), y: 5 },
@@ -138,8 +136,6 @@
         snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
         snakeGame.style.padding = '10px';
         snakeGame.style.height = 'auto';
-        snakeGame.style.justifySelf = 'center'; // for grid alignment
-        snakeGame.style.margin = '0 auto';      // for traditional centering
 
         placeFood();
         draw();
@@ -196,4 +192,4 @@
         });
         window.dispatchEvent(event);
     };
-
+});
