@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.style.display = 'grid';
         snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
-        snakeGame.style.padding = '10px';
+        snakeGame.style.padding = '0px';
         snakeGame.style.height = 'auto';
 
         placeFood();
