@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let responses = {};
     let lastResponseByCategory = {};
     let fuse;
+
     window.addEventListener('snakeGameOver', (e) => {
         displayMessage(e.detail, 'bot');
     });
@@ -161,15 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (input === 'play snake') {
-            if (!window.gameActive && typeof startGame === 'function') {
-                startGame();
-                return "Starting Snake game! Use arrow keys to play.";
-            } else {
-                return "Snake game is already running.";
-            }
-        }
-
         const fuzzyResults = fuse.search(cleanedInput);
         const fuzzyKey = fuzzyResults[0]?.item.key;
 
@@ -197,10 +189,23 @@ document.addEventListener('DOMContentLoaded', function () {
             displayMessage(`> ${userMessage}`, 'user');
             userInput.value = '';
 
-            if (userMessage.toLowerCase() === 'exit') {
+            const normalizedInput = userMessage.toLowerCase().trim();
+
+            if (normalizedInput === 'exit') {
                 displayMessage("Exiting terminal and returning to GUI...", 'bot', () => {
                     toggleView();
                 });
+                return;
+            }
+
+            // ✅ Directly trigger game if command is 'play snake'
+            if (normalizedInput === 'play snake') {
+                if (!window.gameActive && typeof startGame === 'function') {
+                    startGame();
+                    displayMessage("Starting Snake game! Use arrow keys to play.", 'bot');
+                } else {
+                    displayMessage("Snake game is already running.", 'bot');
+                }
                 return;
             }
 
@@ -209,8 +214,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof botMessage === 'string') {
                 displayMessage(botMessage, 'bot', () => {
                     const exitAliases = responses['goodbye']?.aliases || [];
-                    const normalizedInput = userMessage.toLowerCase().trim();
-
                     if (
                         matchIntent(normalizedInput) === 'goodbye' ||
                         exitAliases.some(alias => normalizedInput.includes(alias))
