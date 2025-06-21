@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    let width = 20; // Fixed for debugging!
+    let width = 10; // Fixed for debugging!
     const height = 10;
     let snake = [];
     let food = {};
