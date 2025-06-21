@@ -72,7 +72,6 @@ html, body {
 
 /* Terminal inner content */
 .terminal {
-    display: flex;
     flex-direction: column;
     height: 100%;
 }
