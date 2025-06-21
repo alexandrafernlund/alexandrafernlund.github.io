@@ -138,6 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
         snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
         snakeGame.style.padding = '10px';
         snakeGame.style.height = 'auto';
+        snakeGame.style.justifySelf = 'center'; // for grid alignment
+        snakeGame.style.margin = '0 auto';      // for traditional centering
 
         placeFood();
         draw();
