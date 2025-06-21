@@ -4,13 +4,13 @@
   overflow: hidden;
   padding: 0;
   margin: 0;                  /* REMOVE the auto centering */
-  width:max-content;
   
   display: grid;
   gap: 2px;
 
   background: black;
   max-height: 220px;
+  max-width:max-content;
   overflow-y: auto;
 
   position: relative;
