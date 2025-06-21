@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const width = 40;  // fixed grid width
+    const cellSize = 20;  // size of each cell in pixels
+    let width = Math.floor(window.innerWidth / cellSize);
     const height = 10;
     let snake = [];
     let food = {};
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         terminalInput.disabled = true;
 
         snakeGame.style.display = 'grid';
-        snakeGame.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, 20px)`;
         snakeGame.style.padding = '10px';
         snakeGame.style.height = 'auto';
@@ -152,4 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.dispatchEvent(event);
     };
+
+    window.addEventListener('resize', () => {
+        if (!window.gameActive) return;
+        width = Math.floor(window.innerWidth / cellSize);
+        snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
+        draw();  // redraw with the new width
+    });
 });
