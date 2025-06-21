@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.startGame = function () {
         const cellSize = 20; // Width of one cell in pixels
-        const gapSize = 1;   // Match the gap in your CSS
+        const gapSize = 2;   // Match the gap in your CSS
 
         // 1. Force snakeGame to be shown so dimensions are accurate
         snakeGame.style.display = 'grid';
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Set styles based on calculated width
         snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
         snakeGame.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
+        snakeGame.style.width = `${totalGridWidth}px`; // Set actual width to match exact columns
 
         console.log("🟢 Grid width:", width, "px:", totalGridWidth);
 

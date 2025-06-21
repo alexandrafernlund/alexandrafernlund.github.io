@@ -4,13 +4,18 @@
   overflow: hidden;
   padding: 0;
   
+
+  
   display: grid;
-  gap: 1px;
+  gap: 2px;
 
   background: black;
   max-height: 220px;
   overflow-y: auto;
 
+  width: max-content;         /* Only take up exactly the space needed */
+  position: relative;
+  left: 0;                    /* Force alignment to left */
 }
 
 .snake-cell {
