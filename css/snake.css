@@ -3,7 +3,7 @@
   height: 0;                  /* Collapsed by default */
   overflow: hidden;
   padding: 0;
-  margin: 0;                  /* REMOVE the auto centering */
+  margin: 0 auto;                  /* REMOVE the auto centering */
   
   display: grid;
   gap: 2px;
@@ -15,6 +15,7 @@
   width: max-content;         /* Only take up exactly the space needed */
   position: relative;
   left: 0;                    /* Force alignment to left */
+  justify-content: center;
 }
 
 .snake-cell {
