@@ -11,6 +11,7 @@
   background: black;
   max-height: 220px;
   overflow-y: auto;
+  justify-content: left;
 
   position: relative;
   left: 0;                    /* Force alignment to left */
