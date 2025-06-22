@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cellSize = 20;  // size of each cell in pixels
-    let width = Math.floor(window.innerWidth / cellSize);
+    let width = Math.floor((window.innerWidth - 20) / cellSize); // subtract padding or scrollbar width
     const height = 10;
     let snake = [];
     let food = {};
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('resize', () => {
         if (!window.gameActive) return;
-        width = Math.floor(window.innerWidth / cellSize);
+        width = Math.floor((window.innerWidth - 20) / cellSize);
         snakeGame.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
         draw();  // redraw with the new width
     });
