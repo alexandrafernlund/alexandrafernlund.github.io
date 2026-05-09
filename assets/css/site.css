@@ -1,0 +1,339 @@
+/* ================================================= */
+/* MAIN SITE — SYSTEM SURFACE MODE */
+/* ================================================= */
+
+#main-site {
+
+    display: none;
+
+    position: relative;
+
+    min-height: 100vh;
+
+    background: #050505;
+
+    color: rgba(255,255,255,0.88);
+
+    padding: 5rem 2rem 8rem 2rem;
+
+}
+
+
+/* ================================================= */
+/* SYSTEM CONTAINER */
+/* ================================================= */
+
+#main-site section {
+
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto 5rem auto;
+
+}
+
+
+/* ================================================= */
+/* HERO / SYSTEM HEADER */
+/* ================================================= */
+
+.hero {
+
+    padding-top: 2rem;
+
+}
+
+
+.hero-tag {
+
+    color: rgba(120,255,200,0.75);
+
+    font-size: 0.75rem;
+
+    letter-spacing: 0.18em;
+
+    text-transform: uppercase;
+
+    margin-bottom: 1.2rem;
+
+    font-family: "Inter", sans-serif;
+
+}
+
+
+.hero h1 {
+
+    font-family: "Courier New", monospace;
+
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+
+    font-weight: normal;
+
+    letter-spacing: -0.04em;
+
+    line-height: 1;
+
+    margin-bottom: 1.4rem;
+
+    color: #ffffff;
+
+}
+
+
+.hero-description {
+
+    max-width: 60ch;
+
+    color: rgba(255,255,255,0.55);
+
+    line-height: 1.8;
+
+    font-size: 1rem;
+
+}
+
+
+/* ================================================= */
+/* SYSTEM DIVIDER */
+/* ================================================= */
+
+.hero::after {
+
+    content: "";
+
+    display: block;
+
+    width: 100%;
+
+    height: 1px;
+
+    background: rgba(255,255,255,0.08);
+
+    margin-top: 3rem;
+
+}
+
+
+/* ================================================= */
+/* SECTION TITLES */
+/* ================================================= */
+
+section h2 {
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.18em;
+
+    text-transform: uppercase;
+
+    color: rgba(255,255,255,0.5);
+
+    margin-bottom: 2rem;
+
+    font-family: "Inter", sans-serif;
+
+}
+
+
+/* ================================================= */
+/* ABOUT */
+/* ================================================= */
+
+.about p {
+
+    max-width: 65ch;
+
+    color: rgba(255,255,255,0.65);
+
+    line-height: 1.9;
+
+    font-size: 1rem;
+
+}
+
+
+/* ================================================= */
+/* PROJECTS */
+/* ================================================= */
+
+.project-grid {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+
+}
+
+
+/* system registry entry */
+.project {
+
+    padding: 1.5rem 0;
+
+    border-top: 1px solid rgba(255,255,255,0.08);
+
+}
+
+
+/* final divider */
+.project:last-child {
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+
+}
+
+
+/* project index */
+.project::before {
+
+    content: attr(data-index);
+
+    display: block;
+
+    margin-bottom: 0.8rem;
+
+    color: rgba(120,255,200,0.7);
+
+    font-size: 0.72rem;
+
+    letter-spacing: 0.18em;
+
+    text-transform: uppercase;
+
+    font-family: "Inter", sans-serif;
+
+}
+
+
+/* project title */
+.project h3 {
+
+    font-family: "Courier New", monospace;
+
+    font-size: 1.05rem;
+
+    font-weight: normal;
+
+    color: #ffffff;
+
+    margin-bottom: 0.6rem;
+
+}
+
+
+/* project description */
+.project p {
+
+    max-width: 65ch;
+
+    color: rgba(255,255,255,0.55);
+
+    line-height: 1.8;
+
+    font-size: 0.95rem;
+
+}
+
+
+/* project links */
+.project a {
+
+    display: inline-block;
+
+    margin-top: 1rem;
+
+    color: rgba(120,255,200,0.85);
+
+    text-decoration: none;
+
+    font-size: 0.9rem;
+
+    transition: opacity 0.2s ease;
+
+}
+
+
+.project a:hover {
+
+    opacity: 0.6;
+
+}
+
+
+/* ================================================= */
+/* CONTACT */
+/* ================================================= */
+
+.contact p {
+
+    color: rgba(255,255,255,0.55);
+
+    margin-bottom: 1rem;
+
+}
+
+
+.contact a {
+
+    color: rgba(120,255,200,0.85);
+
+    text-decoration: none;
+
+    font-family: "Courier New", monospace;
+
+    transition: opacity 0.2s ease;
+
+}
+
+
+.contact a:hover {
+
+    opacity: 0.65;
+
+}
+
+
+/* ================================================= */
+/* SUBTLE SELECTION */
+/* ================================================= */
+
+::selection {
+
+    background: rgba(120,255,200,0.2);
+
+    color: #fff;
+
+}
+
+
+/* ================================================= */
+/* MOBILE */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+    #main-site {
+
+        padding: 4rem 1.4rem 6rem 1.4rem;
+
+    }
+
+    .hero h1 {
+
+        font-size: 2.4rem;
+
+    }
+
+    .hero-description,
+    .about p,
+    .project p {
+
+        font-size: 0.95rem;
+
+    }
+
+}

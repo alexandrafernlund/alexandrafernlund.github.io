@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ================================================= */
+/* RESET */
+/* ================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ================================================= */
+/* BASE SYSTEM */
+/* ================================================= */
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: rgba(255,255,255,0.88);
+    font-family: "Courier New", monospace;
+}
+
+body {
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ================================================= */
+/* TERMINAL LAYER */
+/* ================================================= */
+
+#terminal-layer {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+    background: #000;
+}
+
+/* ================================================= */
+/* TERMINAL WINDOW */
+/* ================================================= */
+
+.terminal {
+    width: min(860px, 100%);
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 14px 16px;
+
+    font-size: 14px;
+    line-height: 1.35;
+
+    letter-spacing: 0.2px;
+
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-right: 1px solid rgba(255,255,255,0.05);
+
+    overflow: hidden;
+}
+
+/* ================================================= */
+/* OUTPUT AREA */
+/* ================================================= */
+
+#output {
+    flex: 1;
+    overflow-y: auto;
+
+    font-size: 14px;
+    line-height: 1.35;
+
+    white-space: pre-wrap;
+
+    padding: 6px 0;
+}
+
+/* spacing ONLY between lines */
+#output > * {
+    margin-bottom: 4px;
+}
+
+/* ================================================= */
+/* MESSAGE TYPES */
+/* ================================================= */
+
+.user-command,
+.system-message,
+.output-block,
+.error-message {
+    margin: 0;
+    padding: 0;
+    line-height: 1.35;
+}
+
+/* USER */
+.user-command {
+    text-align: right;
+    color: rgba(255,255,255,0.88);
+}
+
+.user-command::before {
+    content: "visitor@system:~$ ";
+    color: rgba(255,255,255,0.5);
+}
+
+/* SYSTEM */
+.system-message {
+    display: flex;
+    gap: 10px;
+    color: rgba(255,255,255,0.72);
+}
+
+.log-tag {
+    min-width: 52px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4);
+}
+
+/* OUTPUT */
+.output-block {
+    color: rgba(255,255,255,0.88);
+    white-space: pre-wrap;
+}
+
+/* ERROR */
+.error-message {
+    color: rgba(255,100,100,0.85);
+}
+
+.error-message::before {
+    content: "[error] ";
+    color: rgba(255,100,100,0.6);
+}
+
+/* ================================================= */
+/* INPUT LINE (FIXED ALIGNMENT) */
+/* ================================================= */
+
+#input-line {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 0 12px 0;
+
+    border-top: 1px solid rgba(255,255,255,0.12);
+
+    margin-top: auto;
+}
+
+/* prompt */
+.prompt {
+    white-space: nowrap;
+    color: rgba(255,255,255,0.88);
+}
+
+/* input */
+#userInput {
+    flex: 1;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: rgba(255,255,255,0.88);
+    font-size: 14px;
+
+    font-family: "Courier New", monospace;
+
+    caret-color: rgba(255,255,255,0.88);
+}
+
+/* ================================================= */
+/* SCROLLBAR */
+/* ================================================= */
+
+#output::-webkit-scrollbar {
+    width: 8px;
+}
+
+#output::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#output::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+#output::-webkit-scrollbar-thumb:hover {
+    background: transparent;
+}
+
+/* ================================================= */
+/* HERO TEXT (optional) */
+/* ================================================= */
+
+#hero-terminal-title {
+    font-family: "Press Start 2P", monospace;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.88);
+}
