@@ -1,84 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexandra Fernlund</title>
 
-    <link rel="stylesheet" href="css/chat-terminal.css" />
-    <link rel="stylesheet" href="css/main-site.css" />
-    <link rel="stylesheet" href="css/snake.css">
+    <title>alexandra@system</title>
 
-    <script src="js/snake.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/terminal.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/transition.css">
+
+    <!-- Snake -->
+    <link rel="stylesheet" href="assets/games/snake/snake.css">
+
 </head>
+
 <body>
-    <!-- Chatbot Terminal Section -->
-    <section id="chat-terminal" class="active" style="display: block;">
+
+    <!-- ================================================= -->
+    <!-- MAIN SITE (hidden underneath terminal initially) -->
+    <!-- ================================================= -->
+
+    <main id="main-site">
+
+        <!-- Hero -->
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <p class="hero-tag">
+                    SYSTEM EXITED
+                </p>
+
+                <h1>
+                    Alexandra Fernlund
+                </h1>
+
+                <p class="hero-description">
+                    Systems • Networking • Security • Development
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- About -->
+        <section class="about">
+
+            <h2>About</h2>
+
+            <p>
+                I build experimental digital systems,
+                networking projects, educational material,
+                and immersive web experiences.
+            </p>
+
+        </section>
+
+
+        <!-- Projects -->
+        <section class="projects">
+
+            <h2>Projects</h2>
+
+            <div class="project-grid">
+
+                <!-- JS injects projects -->
+
+            </div>
+
+        </section>
+
+
+        <!-- Contact -->
+        <section class="contact">
+
+            <h2>Contact</h2>
+
+            <p>
+                Open to collaboration and interesting ideas.
+            </p>
+
+            <a href="mailto:alexandrafernlund@gmail.com">
+                alexandrafernlund@gmail.com
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================================= -->
+    <!-- TERMINAL OVERLAY -->
+    <!-- ================================================= -->
+
+    <section id="terminal-layer">
+
+        <!-- CRT effects -->
+        <div id="scanlines"></div>
+        <div id="noise"></div>
+
+        <!-- Terminal -->
         <div class="terminal">
-            <!-- <section class="hero-terminal" id="hero-terminal">
-                <h1 id="hero-terminal-title">Alexandra Fernlund</h1>
-            </section> -->
+
+            <!-- Output -->
             <div id="output"></div>
 
-            <section id="snake">    
+            <!-- Snake -->
+            <section id="snake-container">
+
                 <div id="snake-game"></div>
+
             </section>
 
-            <input type="text" id="userInput" placeholder="Ask me anything..." autofocus>
+            <!-- Input -->
+            <div id="input-line">
+
+                <span class="prompt">
+                    visitor@system:${FileSystem.cwd}$
+                </span>
+
+                <input
+                    type="text"
+                    id="userInput"
+                    autocomplete="off"
+                    spellcheck="false"
+                    autofocus
+                >
+
+            </div>
 
         </div>
+
     </section>
 
-    <!-- Main Portfolio Site Section -->
-    <section id="main-site" style="display: none;">
-        <section class="hero" id="hero">
-            <h1>Alexandra Fernlund</h1>
-            <p>Want to collaborate, ask a question, or just say hello?</p>
-        </section>
 
-        <section class="about" id="about">
-            <h2>About Me</h2>
-            <p>
-                I’m a web developer with a love for sci-fi aesthetics, futuristic terminals, and crafting immersive digital experiences. I blend creative design with technical know-how to build websites and apps that are not only functional—but fun.
-            </p>
-            <p>
-                <a href="#" onclick="showTerminal(); return false;">Launch Terminal</a>
-            </p>
-        </section>
+    <!-- ================================================= -->
+    <!-- TRANSITION EFFECTS -->
+    <!-- ================================================= -->
 
-        <section class="portfolio" id="portfolio">
-            <h2>Projects</h2>
-            <div class="project-list">
-                <div class="project">
-                    <h3>Galactic Chatbot</h3>
-                    <p>A sci-fi-themed chatbot interface with hidden Easter eggs and state-machine logic.</p>
-                    <a href="#" target="_blank">View Project</a>
-                </div>
-                <div class="project">
-                    <h3>Terminal Portfolio</h3>
-                    <p>A fully interactive portfolio site that mimics a retro computer terminal.</p>
-                    <a href="#" target="_blank">View Project</a>
-                </div>
-            </div>
-        </section>
+    <div id="transition-layer"></div>
 
-        <section class="contact" id="contact">
-            <h2>Contact</h2>
-            <p>Want to collaborate, ask a question, or just say hello?</p>
-            <p>Mail: <a href="mailto:alexandrafernlund@gmail.com">alexandrafernlund@gmail.com</a></p>
-            <p>
-                <a href="https://github.com/alexandrafernlund" target="_blank">GitHub</a>
-            </p>
-        </section>
-    </section>
 
+    <!-- ================================================= -->
+    <!-- LIBRARIES -->
+    <!-- ================================================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
     <script src="https://unpkg.com/compromise"></script>
-    <script src="https://unpkg.com/compromise-dates"></script> <!-- Compromise-dates plugin -->
+    <script src="https://unpkg.com/compromise-dates"></script>
+
     <script>
-        nlp.extend(window.compromiseDates); 
+        nlp.extend(window.compromiseDates);
     </script>
-    <script src="js/script.js"></script>
+
+
+    <!-- ================================================= -->
+    <!-- SCRIPTS -->
+    <!-- ================================================= -->
+
+    <script src="assets/js/filesystem.js"></script>
+    <script src="assets/js/commands.js"></script>
+    <script src="assets/js/terminal.js"></script>
+    <script src="assets/js/transition.js"></script>
+    <script src="assets/js/site.js"></script>
+    <script src="assets/games/snake/snake.js"></script>
+    <script src="assets/js/app.js"></script>
+
 </body>
 </html>
