@@ -114,32 +114,37 @@
         <div id="scanlines"></div>
         <div id="noise"></div>
 
-        <!-- Terminal -->
         <div class="terminal">
+
+            <!-- File Viewer (FIXED STRUCTURE) -->
+            <div id="file-viewer" class="file-viewer hidden window">
+
+                <div class="file-viewer-header" id="file-viewer-header">
+                    <span class="title" id="file-viewer-title">file.txt</span>
+                </div>
+
+                <div class="file-viewer-content" id="file-viewer-content"></div>
+
+            </div>
 
             <!-- Output -->
             <div id="output"></div>
 
             <!-- Snake -->
             <section id="snake-container">
-
                 <div id="snake-game"></div>
-
             </section>
 
             <!-- Input -->
             <div id="input-line">
 
-                <span class="prompt">
-                    visitor@system:${FileSystem.cwd}$
-                </span>
+                <span id="prompt" class="prompt">visitor@system:/$</span>
 
                 <input
                     type="text"
                     id="userInput"
                     autocomplete="off"
                     spellcheck="false"
-                    autofocus
                 >
 
             </div>

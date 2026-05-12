@@ -1,51 +1,50 @@
-const Commands = {
+const Commands = (() => {
 
     /* ================================================= */
     /* HELP */
     /* ================================================= */
 
-    async help() {
+    async function help() {
 
-        Terminal.logPlain(`
-COMMAND MANUAL
-    ────────────────────────────
-
-    NAVIGATION
-    ls [path]        list directory contents
-    cd <dir>         change directory
-    pwd              print working directory
-    cat <file>       read file contents
-    tree [path]      visualize filesystem
-
-    SYSTEM
-    clear            clear terminal screen
-    help             show this manual
-
-    TIPS
-    - use "cd .." to go back
-    - paths can be absolute or relative
-    - everything is a virtual filesystem
-        `.trim());
-
-    },
+        await Terminal.printLines([
+            "COMMAND MANUAL",
+            "────────────────────────────────",
+            "",
+            "NAVIGATION",
+            "",
+            "ls                list directory contents",
+            "cd <dir>          change directory",
+            "cd ..             go back one directory",
+            "pwd               print working directory",
+            "cat <file>        open file viewer",
+            "",
+            "SYSTEM",
+            "",
+            "tree              visualize filesystem",
+            "clear             clear terminal",
+            "help              show this manual",
+            "",
+            "────────────────────────────────",
+            "",
+            "TIP: use 'ls' to explore the filesystem"
+        ], 10);
+    }
 
 
     /* ================================================= */
     /* PWD */
     /* ================================================= */
 
-    async pwd() {
-
-        Terminal.logPlain(FileSystem.cwd);
-
-    },
+    async function pwd() {
+        Terminal.print(FileSystem.cwd);
+    }
 
 
     /* ================================================= */
     /* LS */
     /* ================================================= */
 
-    async ls(args) {
+    async function ls(args = []) {
 
         const path = args[0] || FileSystem.cwd;
         const result = FileSystem.ls(path);
@@ -55,21 +54,22 @@ COMMAND MANUAL
             return;
         }
 
-        result.forEach(item => {
-
-            const prefix = item.type === "dir" ? "d" : "f";
-            Terminal.logPlain(`${prefix} ${item.name}`);
-
-        });
-
-    },
+        await Terminal.printLines(
+            result.map(item =>
+                item.type === "dir"
+                    ? `${item.name}/`
+                    : item.name
+            ),
+            0
+        );
+    }
 
 
     /* ================================================= */
     /* CD */
     /* ================================================= */
 
-    async cd(args) {
+    async function cd(args = []) {
 
         const target = args[0];
 
@@ -86,15 +86,15 @@ COMMAND MANUAL
         }
 
         Terminal.logSystem("SYS", `entered ${FileSystem.cwd}`);
-
-    },
+        Terminal.updatePrompt();
+    }
 
 
     /* ================================================= */
     /* CAT */
     /* ================================================= */
 
-    async cat(args) {
+    async function cat(args = []) {
 
         const file = args[0];
 
@@ -110,35 +110,54 @@ COMMAND MANUAL
             return;
         }
 
-        Terminal.logPlain(content);
-
-    },
+        Terminal.openFileView(content, file);
+    }
 
 
     /* ================================================= */
     /* TREE */
     /* ================================================= */
 
-    async tree(args) {
+    async function tree(args = []) {
 
         const path = args[0] || FileSystem.cwd;
         const lines = FileSystem.tree(path);
 
-        lines.forEach(line => Terminal.logPlain(line));
+        if (!lines) {
+            Terminal.logError(`tree: cannot access '${path}'`);
+            return;
+        }
 
-    },
+        for (const line of lines) {
+            Terminal.print(line);
+        }
+    }
 
 
     /* ================================================= */
     /* CLEAR */
     /* ================================================= */
 
-    async clear() {
-
+    async function clear() {
         Terminal.clear();
-
+        Terminal.updatePrompt();
     }
 
-};
+
+    /* ================================================= */
+    /* EXPORT */
+    /* ================================================= */
+
+    return {
+        help,
+        pwd,
+        ls,
+        cd,
+        cat,
+        tree,
+        clear
+    };
+
+})();
 
 window.Commands = Commands;

@@ -19,18 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function loadResponses() {
-        try {
-            const response = await fetch('responses.json');
-            responses = await response.json();
-            console.log("Loaded responses:", responses);
-            initializeFuse();
-            displayWelcomeMessage();
-        } catch (error) {
-            console.error("Error loading responses.json:", error);
-        }
-    }
-
     function displayWelcomeMessage() {
         const messages = [
             'Initializing terminal...',
@@ -224,8 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-
-    loadResponses();
 
     window.showTerminal = function () {
         document.getElementById('site').style.display = 'none';

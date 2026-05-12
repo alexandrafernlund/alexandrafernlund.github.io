@@ -13,15 +13,15 @@ const FileSystem = (() => {
             projects: {
                 type: "dir",
                 children: {
-                    "terminal-system": {
+                    "terminal-system.txt": {
                         type: "file",
                         content: "Interactive shell portfolio environment"
                     },
-                    "dna-analysis-tool": {
+                    "dna-analysis-tool.txt": {
                         type: "file",
                         content: "Bacterial sequence matching system"
                     },
-                    "networking-labs": {
+                    "networking-labs.txt": {
                         type: "file",
                         content: "Educational infrastructure simulations"
                     }
@@ -30,6 +30,12 @@ const FileSystem = (() => {
 
             system: {
                 type: "dir",
+                meta: {
+                    onEnter: () => {
+                        Terminal.logSystem("SYS", "entering system layer");
+                        Terminal.logSystem("WARN", "restricted environment");
+                    }
+                },
                 children: {
                     "kernel.sys": {
                         type: "file",
@@ -42,12 +48,17 @@ const FileSystem = (() => {
                 }
             },
 
-            user: {
+            profile: {
                 type: "dir",
                 children: {
                     "profile.txt": {
                         type: "file",
-                        content: "Alexandra Fernlund — systems / networking / dev"
+                        content: "Alexandra Fernlund — systems / networking / development"
+                    },
+
+                    "about.txt": {
+                        type: "file",
+                        content: "ALEXANDRA FERNLUND\n\nsystems / networking / development\nbuilding experimental digital systems\ninteractive terminal environments"
                     }
                 }
             }
@@ -132,6 +143,12 @@ const FileSystem = (() => {
         if (!node || node.type !== "dir") return false;
 
         cwd = target;
+
+        // reactive behavior
+        if (node.meta?.onEnter) {
+            node.meta.onEnter();
+        }
+
         return true;
     }
 
@@ -141,7 +158,7 @@ const FileSystem = (() => {
 
         if (!node || node.type !== "file") return null;
 
-        return node.content;
+        return node.content?.trim();
     }
 
 

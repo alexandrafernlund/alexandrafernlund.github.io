@@ -2,11 +2,59 @@ const Terminal = (() => {
 
     const outputEl = document.getElementById("output");
     const inputEl = document.getElementById("userInput");
+    const promptEl = document.getElementById("prompt");
 
     let history = [];
     let historyIndex = -1;
     let bootComplete = false;
-    let hasShownHelpHint = false;
+
+    /* ================================================= */
+    /* WINDOW SYSTEM */
+    /* ================================================= */
+
+    let windows = [];
+    let zIndex = 1000;
+
+    function bringToFront(el) {
+        el.style.zIndex = ++zIndex;
+    }
+
+    function makeDraggable(win) {
+
+        const header = win.querySelector(".file-viewer-header");
+
+        let active = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        header.style.cursor = "grab";
+
+        header.addEventListener("mousedown", (e) => {
+
+            active = true;
+
+            const rect = win.getBoundingClientRect();
+
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            header.style.cursor = "grabbing";
+            bringToFront(win);
+        });
+
+        document.addEventListener("mousemove", (e) => {
+
+            if (!active) return;
+
+            win.style.left = `${e.clientX - offsetX}px`;
+            win.style.top = `${e.clientY - offsetY}px`;
+        });
+
+        document.addEventListener("mouseup", () => {
+            active = false;
+            header.style.cursor = "grab";
+        });
+    }
 
     /* ================================================= */
     /* INIT */
@@ -14,11 +62,56 @@ const Terminal = (() => {
 
     function init() {
 
-        console.log("Commands at boot:", window.Commands);
+        console.log("Commands loaded:", window.Commands);
+        console.log("Filesystem loaded:", window.FileSystem);
 
         inputEl.addEventListener("keydown", handleInput);
-        bootSequence();
 
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeAllWindows();
+        });
+
+        SystemEvents.on((msg) => logSystem("SYS", msg));
+        SystemEvents.startNoiseLoop();
+
+        bootSequence();
+    }
+
+    /* ================================================= */
+    /* WINDOW API */
+    /* ================================================= */
+
+    function openFileView(content, filename = "file") {
+
+        const win = document.createElement("div");
+        win.className = "file-window";
+
+        win.style.position = "fixed";
+        win.style.left = "200px";
+        win.style.top = "200px";
+        win.style.zIndex = ++zIndex;
+
+        win.innerHTML = `
+            <div class="file-viewer-header">
+                <span class="title">${filename}</span>
+            </div>
+            <div class="file-viewer-content"></div>
+        `;
+
+        win.querySelector(".file-viewer-content").textContent = content;
+
+        document.body.appendChild(win);
+
+        makeDraggable(win);
+
+        windows.push(win);
+
+        bringToFront(win);
+    }
+
+    function closeAllWindows() {
+        windows.forEach(w => w.remove());
+        windows = [];
     }
 
     /* ================================================= */
@@ -27,56 +120,24 @@ const Terminal = (() => {
 
     async function handleInput(e) {
 
-        /* HISTORY UP */
-        if (e.key === "ArrowUp") {
+        if (e.key === "Enter") {
 
-            e.preventDefault();
+            if (!bootComplete) return;
 
-            if (historyIndex > 0) {
-                historyIndex--;
-                inputEl.value = history[historyIndex];
-            }
+            const raw = inputEl.value.trim();
+            if (!raw) return;
 
-            return;
+            inputEl.value = "";
+
+            logUser(raw);
+
+            const { command, args } = parse(raw);
+            await route(command, args);
         }
-
-        /* HISTORY DOWN */
-        if (e.key === "ArrowDown") {
-
-            e.preventDefault();
-
-            if (historyIndex < history.length - 1) {
-                historyIndex++;
-                inputEl.value = history[historyIndex];
-            } else {
-                historyIndex = history.length;
-                inputEl.value = "";
-            }
-
-            return;
-        }
-
-        /* ENTER */
-        if (e.key !== "Enter") return;
-        if (!bootComplete) return;
-
-        const raw = inputEl.value.trim();
-        if (!raw) return;
-
-        inputEl.value = "";
-
-        history.push(raw);
-        historyIndex = history.length;
-
-        logUser(raw);
-
-        const { command, args } = parse(raw);
-
-        await route(command, args);
     }
 
     /* ================================================= */
-    /* BOOT SEQUENCE (CLEAN + CONSISTENT LOGGING) */
+    /* BOOT */
     /* ================================================= */
 
     async function bootSequence() {
@@ -92,73 +153,54 @@ const Terminal = (() => {
 
         for (const [type, text] of steps) {
             logSystem(type, text);
-            await wait(520);
+            await wait(400);
         }
 
         bootComplete = true;
 
-        await wait(200);
-
         logSystem("SYS", "boot complete");
 
-        logPlain(`
-        WELCOME TO ALEXANDRA SYSTEM SHELL
+        await printLines([
+            " ",
+            "ALEXANDRA OS v1.0",
+            "────────────────────────────────",
+            "",
+            "type 'help' to begin",
+            " "
+        ], 10);
 
-        This is a simulated operating system interface.
-
-        BASIC NAVIGATION:
-        - ls        → list files
-        - cd <dir>  → enter directory
-        - cd ..     → go back
-        - pwd       → show location
-        - cat <file>→ read file contents
-
-        `.trim());
-
+        updatePrompt();
         inputEl.focus();
-
-        if (!hasShownHelpHint) {
-            logSystem("INFO", "type 'help' to see available commands");
-            hasShownHelpHint = true;
-        }
     }
 
     /* ================================================= */
-    /* PARSER */
+    /* PARSER + ROUTER */
     /* ================================================= */
 
     function parse(input) {
 
-        const parts = input.trim().split(" ");
+        const parts = input.split(" ").filter(Boolean);
 
         return {
-            command: parts[0].toLowerCase(),
+            command: (parts[0] || "").toLowerCase(),
             args: parts.slice(1)
         };
-
     }
-
-    /* ================================================= */
-    /* ROUTER */
-    /* ================================================= */
 
     async function route(command, args) {
 
-        if (!command) return;
-
         const cmd = window.Commands?.[command];
 
-        console.log("CMD:", command, "FOUND:", cmd);
-
-        if (typeof cmd === "function") {
-            await cmd(args);
-        } else {
+        if (!cmd) {
             logError(`unknown command: ${command}`);
+            return;
         }
+
+        await cmd(args);
     }
 
     /* ================================================= */
-    /* OUTPUT CORE (ONE SYSTEM ONLY) */
+    /* OUTPUT */
     /* ================================================= */
 
     function append(el) {
@@ -167,88 +209,117 @@ const Terminal = (() => {
     }
 
     function logUser(text) {
-
         const el = document.createElement("div");
         el.className = "user-command";
         el.textContent = text;
-
         append(el);
     }
 
     function logSystem(type, text) {
-
         const el = document.createElement("div");
         el.className = "system-message";
-
-        el.innerHTML = `
-            <span class="log-tag">[${type}]</span>
-            <span>${text}</span>
-        `;
-
-        append(el);
-    }
-
-    function logPlain(text) {
-
-        const el = document.createElement("div");
-        el.className = "output-block";
-        el.textContent = text;
-
+        el.innerHTML = `<span class="log-tag">[${type}]</span> ${text}`;
         append(el);
     }
 
     function logError(text) {
-
         const el = document.createElement("div");
         el.className = "error-message";
-
-        el.innerHTML = `
-            <span class="log-tag">[ERR]</span>
-            <span>${text}</span>
-        `;
-
+        el.innerHTML = `<span class="log-tag">[ERR]</span> ${text}`;
         append(el);
     }
 
-    async function printBlock(text, delay = 0) {
-
-    const lines = text.trim().split("\n");
-
-    for (const line of lines) {
-
-        logPlain(line);
-
-        if (delay > 0) {
-            await wait(delay);
-        }
+    function print(text = "") {
+        const el = document.createElement("div");
+        el.className = "output-line";
+        el.textContent = text;
+        append(el);
     }
-}
 
-    async function printLines(lines, delay = 40) {
+    async function printLines(lines = [], delay = 25) {
 
         for (const line of lines) {
+            await printStream(line, delay);
+        }
+    }
 
-            logPlain(line);
+    async function printStream(text, delay = 10) {
 
+        const el = document.createElement("div");
+        el.className = "output-line";
+        outputEl.appendChild(el);
+
+        let out = "";
+
+        for (const char of text) {
+            out += char;
+            el.textContent = out;
             await wait(delay);
         }
+
+        scroll();
     }
 
     /* ================================================= */
-    /* UTILITIES */
+    /* UTIL */
     /* ================================================= */
 
     function scroll() {
         outputEl.scrollTop = outputEl.scrollHeight;
     }
 
+    function wait(ms) {
+        return new Promise(r => setTimeout(r, ms));
+    }
+
     function clear() {
         outputEl.innerHTML = "";
     }
 
-    function wait(ms) {
-        return new Promise(r => setTimeout(r, ms));
+    function updatePrompt() {
+        const cwd = window.FileSystem?.cwd ?? "/";
+        if (!promptEl) return;
+        promptEl.textContent = `visitor@system:${cwd}$`;
     }
+
+    /* ================================================= */
+    /* SYSTEM EVENTS */
+    /* ================================================= */
+
+    const SystemEvents = (() => {
+
+        let listeners = [];
+
+        function on(fn) {
+            listeners.push(fn);
+        }
+
+        function emit(e) {
+            listeners.forEach(fn => fn(e));
+        }
+
+        function randomNoise() {
+
+            const noises = [
+                "[SYS] cache flushed",
+                "[MEM] cleanup cycle",
+                "[NET] heartbeat OK",
+                "[FS] indexing",
+                "[SYS] idle"
+            ];
+
+            emit(noises[Math.floor(Math.random() * noises.length)]);
+        }
+
+        function startNoiseLoop() {
+            setInterval(() => {
+                if (Math.random() < 0.12) randomNoise();
+            }, 6000);
+        }
+
+        return { on, emit, startNoiseLoop };
+
+    })();
 
     /* ================================================= */
     /* PUBLIC API */
@@ -256,21 +327,20 @@ const Terminal = (() => {
 
     return {
         init,
-        logPlain,
+        print,
+        printLines,
         logSystem,
         logError,
         clear,
         wait,
-        printBlock,
-        printLines
+        updatePrompt,
+        openFileView,
+        closeAllWindows
     };
 
 })();
 
-/* ===================================================== */
-/* START SYSTEM */
-/* ===================================================== */
-
+/* BOOT */
 document.addEventListener("DOMContentLoaded", () => {
     Terminal.init();
 });

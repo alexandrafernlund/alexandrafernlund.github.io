@@ -49,7 +49,7 @@ body {
 /* ================================================= */
 
 .terminal {
-    width: min(860px, 100%);
+    width: min(100%);
     height: 100%;
 
     display: flex;
@@ -66,6 +66,41 @@ body {
     border-right: 1px solid rgba(255,255,255,0.05);
 
     overflow: hidden;
+}
+
+/* ================================================= */
+/* File Viewer */
+/* ================================================= */
+.file-window {
+    width: 420px;
+    max-height: 70vh;
+
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+
+    font-family: monospace;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.file-viewer-header {
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+    cursor: grab;
+    user-select: none;
+}
+
+.file-viewer-content {
+    padding: 10px;
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
+/* hidden */
+.hidden {
+    display: none !important;
 }
 
 /* ================================================= */
@@ -87,6 +122,12 @@ body {
 /* spacing ONLY between lines */
 #output > * {
     margin-bottom: 4px;
+}
+
+.output-line {
+    color: rgba(255,255,255,0.88);
+    line-height: 1.35;
+    white-space: pre-wrap;
 }
 
 /* ================================================= */
